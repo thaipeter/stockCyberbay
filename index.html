@@ -860,14 +860,18 @@ window.addEventListener('DOMContentLoaded', () => {
 // poll users ทุก 10 วิ เพื่อรับคนที่ Admin เพิ่งอนุมัติ โดยไม่ต้องรีเพจ
 function startUserPoll() {
   setInterval(() => {
-    // หยุด poll ถ้ากำลังกรอก PIN อยู่
     const pinSection = document.getElementById('pinSection');
-    const nameInput = document.getElementById('loginUid');
+    const nameInput  = document.getElementById('loginUid');
+    // หยุด poll ถ้ากำลังกรอก PIN อยู่
     if (pinSection && pinSection.style.display !== 'none') return;
-    if (nameInput && nameInput.value.trim() !== '') return;
+    // หยุด poll ถ้าเลือกชื่อแล้ว หรือ dropdown กำลัง focus อยู่
+    if (nameInput && (nameInput.value.trim() !== '' || document.activeElement === nameInput)) return;
     callGAS('getLoginUsers', [], users => {
       if (!users || !users.length) return;
       allData.users = users;
+      // อย่า reset ถ้า dropdown กำลัง focus หรือมีค่าแล้ว
+      const sel = document.getElementById('loginUid');
+      if (sel && (sel.value !== '' || document.activeElement === sel)) return;
       populateUsers(users);
     }, () => {});
   }, 10000);
@@ -877,7 +881,7 @@ function startUserPoll() {
 function populateUsers(users) {
   const sel = document.getElementById('loginUid');
   sel.innerHTML = '<option value="">-- เลือกชื่อของคุณ --</option>';
-  users.filter(u => u.role === 'qr').forEach(u => {
+  users.forEach(u => {
     const o = document.createElement('option');
     o.value = u.userId; o.text = u.name;
     sel.appendChild(o);
