@@ -887,6 +887,9 @@ function confirmLogout() {
 
 /* ══ APP ══ */
 function initApp() {
+  // ✅ reset ก่อน render
+  resetCatScreen('withdraw');
+  resetCatScreen('borrow');
   renderCats('withdraw');
   renderCats('borrow');
   renderReturnList();
@@ -978,8 +981,22 @@ function switchTab(tab) {
   });
   const subs = { withdraw: 'เบิกของออก', borrow: 'ยืม / คืนเครื่องมือ', receive: 'รับสินค้าเข้าคลัง' };
   document.getElementById('topSub').textContent = subs[tab] || '';
-}
 
+  // ✅ เพิ่มส่วนนี้ — reset category screen ทุกครั้งที่เปลี่ยน tab
+  if (tab === 'withdraw') resetCatScreen('withdraw');
+  if (tab === 'borrow')   resetCatScreen('borrow');
+}
+  
+function resetCatScreen(mode) {
+  const catScreen = document.getElementById(mode === 'withdraw' ? 'wCatScreen' : 'bCatScreen');
+  const backRow   = document.getElementById(mode === 'withdraw' ? 'wBackRow' : 'bBackRow');
+  const listEl    = document.getElementById(mode === 'withdraw' ? 'withdrawList' : 'borrowList');
+  const searchEl  = document.getElementById(mode === 'withdraw' ? 'withdrawSearch' : 'borrowSearch');
+  catScreen.classList.remove('hidden');
+  backRow.classList.add('hidden');
+  listEl.classList.add('hidden');
+  if (searchEl) searchEl.value = '';
+}
 function switchBorrowSub(sub) {
   ['borrow','return'].forEach(s => {
     document.getElementById('section' + cap(s)).classList.toggle('active', s === sub);
