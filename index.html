@@ -784,18 +784,22 @@ function populateUsers(users) {
 }
 
 function onUserSelected() {
-  const uid = document.getElementById('loginUid').value;
+  const selectedName = document.getElementById('loginUid').value;
   clearPin();
-  document.getElementById('pinSection').style.display = uid ? 'block' : 'none';
+  
+  // ค้นหาข้อมูล user จากชื่อที่พิมพ์ลงไป
+  const u = (allData.users || []).find(x => x.name === selectedName);
+  
+  // แสดง PIN Section ถ้าเจอชื่อ
+  document.getElementById('pinSection').style.display = u ? 'block' : 'none';
   document.getElementById('loginError').style.display = 'none';
 
-  // แสดง role indicator
+  // แสดง Role Indicator
   const indicator = document.getElementById('roleIndicator');
-  if (uid) {
-    const u  = (allData.users || []).find(x => x.userId === uid);
-    const rc = u ? (ROLE_CONFIG[u.role] || ROLE_CONFIG.user) : ROLE_CONFIG.user;
+  if (u) {
+    const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
     document.getElementById('roleIcon').textContent = rc.icon;
-    document.getElementById('roleName').textContent = u ? u.name : '';
+    document.getElementById('roleName').textContent = u.name;
     const badge = document.getElementById('roleBadge');
     badge.textContent  = rc.badgeText;
     badge.className    = 'sri-role-badge ' + rc.badgeClass;
