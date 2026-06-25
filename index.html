@@ -752,7 +752,18 @@ window.addEventListener('DOMContentLoaded', () => {
     populateUsers(allData.users || []);
   });
 });
-
+/* จำชื่อผู้ใช้งานล่าสุด */
+window.addEventListener('load', () => {
+  const lastUser = localStorage.getItem('lastLoginUser');
+  if (lastUser) {
+    const inputField = document.getElementById('loginUid');
+    if (inputField) {
+      inputField.value = lastUser;
+      // เมื่อได้ชื่อแล้ว ให้เรียกฟังก์ชันเลือกชื่อเพื่อให้แสดง PIN
+      onUserSelected(); 
+    }
+  }
+});
 function startUserPoll() {
   setInterval(() => {
     const pinSection = document.getElementById('pinSection');
@@ -813,6 +824,10 @@ function numPress(n) {
   updatePinDots();
   if (pinBuffer.length === PIN_LEN) {
     document.getElementById('loginBtn').disabled = false;
+    
+    // [วางตรงนี้ได้เลย!] บันทึกชื่อก่อนจะเข้าสู่ระบบ
+    localStorage.setItem('lastLoginUser', document.getElementById('loginUid').value);
+    
     setTimeout(doLogin, 200);
   }
 }
@@ -1424,6 +1439,7 @@ function submitRegister() {
   });
 }
 
+  
 function showToast(msg, type) {
   const w = document.getElementById('toastWrap');
   const t = document.createElement('div');
@@ -1441,7 +1457,19 @@ function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
+window.addEventListener('load', () => {
+  const lastUser = localStorage.getItem('lastLoginUser');
+  if (lastUser) {
+    const inputField = document.getElementById('loginUid');
+    if (inputField) {
+      inputField.value = lastUser;
+      // เรียกฟังก์ชันเพื่อเช็คชื่อและเปิดช่องใส่ PIN ให้ทันที
+      onUserSelected(); 
+    }
+  }
+});
 function demoData() {
+  
   return {
     items: [
       {code:'BL-001',name:'สายยางอุตสาหกรรม 1/2"',category:'ระบบน้ำ',unit:'เมตร',stock:48,min:10},
