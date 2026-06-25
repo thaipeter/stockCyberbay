@@ -556,7 +556,7 @@ body{display:flex;flex-direction:column}
     <button class="back-btn" onclick="backToCat('withdraw')"><i class="fas fa-chevron-left"></i> หมวดหมู่</button>
     <span class="active-cat-label" id="wActiveCat"></span>
   </div>
-  <div class="item-list hidden" id="withdrawList"></div>
+  <div class="item-list" id="withdrawList" style="display: block !important;"></div>
   <div class="cart-bar">
     <div class="cart-count-info">
       <div class="cart-count">ตะกร้า: <span id="wCartCount">0</span> รายการ</div>
@@ -596,7 +596,7 @@ body{display:flex;flex-direction:column}
 </div>
       <span class="active-cat-label" id="bActiveCat"></span>
     </div>
-    <div class="item-list hidden" id="borrowList"></div>
+    <div class="item-list" id="borrowList" style="display: block !important;"></div>
     <div class="cart-bar">
       <div class="cart-count-info">
         <div class="cart-count">เลือกแล้ว: <span id="bCartCount">0</span> รายการ</div>
