@@ -571,10 +571,10 @@ body{display:flex;flex-direction:column}
         <button class="scan-btn" onclick="openScanner('borrow')"><i class="fas fa-camera"></i> สแกน</button>
       </div>
     </div>
-    <div class="cat-screen" id="bCatScreen">
-      <div class="cat-header">เลือกหมวดหมู่</div>
-      <div class="cat-grid" id="bCatGrid"></div>
-    </div>
+    <div class="cat-screen" id="bCatScreen" style="display: none !important;">
+     <div class="cat-header">เลือกหมวดหมู่</div>
+     <div class="cat-grid" id="bCatGrid"></div>
+   </div>
     <div class="back-row hidden" id="bBackRow">
       <button class="back-btn" onclick="backToCat('borrow')"><i class="fas fa-chevron-left"></i> หมวดหมู่</button>
       <span class="active-cat-label" id="bActiveCat"></span>
