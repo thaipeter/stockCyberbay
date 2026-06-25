@@ -1,3 +1,4 @@
+<style> .back-row, #wBackRow, #bBackRow { display: none !important; } </style>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -8,6 +9,8 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
+  /* บังคับซ่อนแท็บสีดำ ใส่ตรงนี้เลย! */
+.back-row, #wBackRow, #bBackRow { display: none !important; }
 :root {
   --bg:#0f0f0f; --surface:#161616; --surface2:#1e1e1e;
   --border:#2a2a2a; --border2:#333;
@@ -898,16 +901,10 @@ function confirmLogout() {
 /* ══ APP ══ */
 function initApp() {
   renderCats('withdraw');
-  // renderCats('borrow'); // ลบบรรทัดนี้ออก หรือใส่ // นำหน้า เพื่อปิดการสร้างหมวดหมู่
-  
-  // สั่งโหลดรายการสินค้าหน้า "ยืม" มาแสดงทันที
-  renderList('borrow', '', '__all__'); 
-  document.getElementById('borrowList').classList.remove('hidden');
-  
+  renderCats('borrow');
   renderReturnList();
   renderReceiveCart();
 }
-
 const CAT_ICON = {
   'ระบบน้ำ':'🚰','ไฟฟ้า':'⚡','เครื่องจักร':'⚙️','น้ำมัน':'🛢️',
   'ระบบลม':'💨','เครื่องมือ':'🔧','เครื่องมือไฟฟ้า':'🔌',
