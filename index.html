@@ -1446,7 +1446,23 @@ function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
-
+  
+// สั่งให้ระบบโหลดสินค้าโดยไม่ต้องกดเลือกหมวดหมู่
+window.addEventListener('load', function() {
+    // ฟังก์ชันที่คุณใช้โหลดข้อมูล (ชื่อฟังก์ชันอาจจะเป็น loadItems หรือ renderItems)
+    // ลองเช็คในไฟล์ของคุณว่าฟังก์ชันไหนที่ดึงของมาโชว์ ให้เรียกฟังก์ชันนั้นที่นี่
+    // ตัวอย่าง: ถ้าฟังก์ชันคือ loadCategory ให้ใส่:
+    
+    setTimeout(() => {
+        // จำลองการคลิกเลือกหมวดหมู่ "ทั้งหมด" (ใส่ ID ของหมวดหมู่ "ทั้งหมด" ของคุณแทน 'all')
+        if(typeof openCategory === 'function') {
+            openCategory('all'); 
+        }
+        // ถ้าวิธีข้างบนไม่ทำงาน ให้สั่งโชว์ list ตรงๆ
+        document.getElementById('borrowList').classList.remove('hidden');
+    }, 500);
+});
+  
 function demoData() {
   return {
     items: [
