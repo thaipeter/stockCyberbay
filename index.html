@@ -388,8 +388,12 @@ body{display:flex;flex-direction:column}
       <div class="role-badge"><span class="rb-icon">📱</span><span class="rb-label">QR</span></div>
     </div>
     <!-- เลือกชื่อ -->
-   <input type="text" id="loginUid" list="userList" class="login-input" placeholder="พิมพ์ชื่อเพื่อค้นหา..." oninput="onUserSelected()">
-<datalist id="userList"></datalist>
+    <div class="login-field">
+      <div class="login-label">ชื่อผู้ใช้งาน</div>
+      <select class="login-select" id="loginUid" onchange="onUserSelected()">
+        <option value="">-- เลือกชื่อของคุณ --</option>
+      </select>
+    </div>
     <!-- role indicator -->
     <div class="selected-role-indicator" id="roleIndicator">
       <div class="sri-icon" id="roleIcon">👷</div>
@@ -752,18 +756,7 @@ window.addEventListener('DOMContentLoaded', () => {
     populateUsers(allData.users || []);
   });
 });
-/* จำชื่อผู้ใช้งานล่าสุด */
-window.addEventListener('load', () => {
-  const lastUser = localStorage.getItem('lastLoginUser');
-  if (lastUser) {
-    const inputField = document.getElementById('loginUid');
-    if (inputField) {
-      inputField.value = lastUser;
-      // เมื่อได้ชื่อแล้ว ให้เรียกฟังก์ชันเลือกชื่อเพื่อให้แสดง PIN
-      onUserSelected(); 
-    }
-  }
-});
+
 function startUserPoll() {
   setInterval(() => {
     const pinSection = document.getElementById('pinSection');
@@ -782,36 +775,33 @@ function startUserPoll() {
 
 /* ══ LOGIN ══ */
 function populateUsers(users) {
-  const dataList = document.getElementById('userList'); // ต้องดึง id ของ datalist
-  dataList.innerHTML = ''; // ล้างค่าเก่า
-  
+  const sel = document.getElementById('loginUid');
+  sel.innerHTML = '<option value="">-- เลือกชื่อของคุณ --</option>';
   users.forEach(u => {
-    const o = document.createElement('option');
-    o.value = u.name; // ใส่ชื่อพนักงานเป็นตัวเลือก
-    dataList.appendChild(o);
+    const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
+    const o  = document.createElement('option');
+    o.value = u.userId;
+    o.text  = rc.icon + ' ' + u.name;
+    sel.appendChild(o);
   });
 }
 
 function onUserSelected() {
-  const inputElement = document.getElementById('loginUid');
-  const uid = inputElement.value; // นี่คือชื่อที่พนักงานพิมพ์หรือเลือก
-  
+  const uid = document.getElementById('loginUid').value;
   clearPin();
-  
-  // ตรวจสอบว่าชื่อนี้มีอยู่ในระบบจริงๆ หรือไม่ (อ้างอิงจาก allData.users ที่คุณมีอยู่)
-  const userExists = allData.users ? allData.users.find(u => u.name === uid || u.userId === uid) : null;
-
-  // ถ้าชื่อถูกต้องถึงจะโชว์ส่วนใส่ PIN
-  document.getElementById('pinSection').style.display = (userExists) ? 'block' : 'none';
+  document.getElementById('pinSection').style.display = uid ? 'block' : 'none';
   document.getElementById('loginError').style.display = 'none';
 
-  // แสดง role indicator (ปรับปรุงให้รองรับชื่อที่ค้นหา)
+  // แสดง role indicator
   const indicator = document.getElementById('roleIndicator');
-  if (userExists) {
-    const rc = ROLE_CONFIG[userExists.role] || ROLE_CONFIG.user;
+  if (uid) {
+    const u  = (allData.users || []).find(x => x.userId === uid);
+    const rc = u ? (ROLE_CONFIG[u.role] || ROLE_CONFIG.user) : ROLE_CONFIG.user;
     document.getElementById('roleIcon').textContent = rc.icon;
-    document.getElementById('roleName').textContent = userExists.name;
-    // ... ส่วนที่เหลือของโค้ดเดิมคงไว้ได้เลยครับ
+    document.getElementById('roleName').textContent = u ? u.name : '';
+    const badge = document.getElementById('roleBadge');
+    badge.textContent  = rc.badgeText;
+    badge.className    = 'sri-role-badge ' + rc.badgeClass;
     indicator.classList.add('show');
   } else {
     indicator.classList.remove('show');
@@ -824,10 +814,6 @@ function numPress(n) {
   updatePinDots();
   if (pinBuffer.length === PIN_LEN) {
     document.getElementById('loginBtn').disabled = false;
-    
-    // [วางตรงนี้ได้เลย!] บันทึกชื่อก่อนจะเข้าสู่ระบบ
-    localStorage.setItem('lastLoginUser', document.getElementById('loginUid').value);
-    
     setTimeout(doLogin, 200);
   }
 }
@@ -1439,7 +1425,6 @@ function submitRegister() {
   });
 }
 
-  
 function showToast(msg, type) {
   const w = document.getElementById('toastWrap');
   const t = document.createElement('div');
@@ -1457,19 +1442,7 @@ function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
-window.addEventListener('load', () => {
-  const lastUser = localStorage.getItem('lastLoginUser');
-  if (lastUser) {
-    const inputField = document.getElementById('loginUid');
-    if (inputField) {
-      inputField.value = lastUser;
-      // เรียกฟังก์ชันเพื่อเช็คชื่อและเปิดช่องใส่ PIN ให้ทันที
-      onUserSelected(); 
-    }
-  }
-});
 function demoData() {
-  
   return {
     items: [
       {code:'BL-001',name:'สายยางอุตสาหกรรม 1/2"',category:'ระบบน้ำ',unit:'เมตร',stock:48,min:10},
