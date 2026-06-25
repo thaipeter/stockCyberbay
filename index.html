@@ -388,12 +388,8 @@ body{display:flex;flex-direction:column}
       <div class="role-badge"><span class="rb-icon">📱</span><span class="rb-label">QR</span></div>
     </div>
     <!-- เลือกชื่อ -->
-    <div class="login-field">
-      <div class="login-label">ชื่อผู้ใช้งาน</div>
-      <select class="login-select" id="loginUid" onchange="onUserSelected()">
-        <option value="">-- เลือกชื่อของคุณ --</option>
-      </select>
-    </div>
+   <input type="text" id="loginUid" list="userList" class="login-input" placeholder="พิมพ์ชื่อเพื่อค้นหา..." oninput="onUserSelected()">
+<datalist id="userList"></datalist>
     <!-- role indicator -->
     <div class="selected-role-indicator" id="roleIndicator">
       <div class="sri-icon" id="roleIcon">👷</div>
@@ -775,33 +771,36 @@ function startUserPoll() {
 
 /* ══ LOGIN ══ */
 function populateUsers(users) {
-  const sel = document.getElementById('loginUid');
-  sel.innerHTML = '<option value="">-- เลือกชื่อของคุณ --</option>';
+  const dataList = document.getElementById('userList'); // ต้องดึง id ของ datalist
+  dataList.innerHTML = ''; // ล้างค่าเก่า
+  
   users.forEach(u => {
-    const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
-    const o  = document.createElement('option');
-    o.value = u.userId;
-    o.text  = rc.icon + ' ' + u.name;
-    sel.appendChild(o);
+    const o = document.createElement('option');
+    o.value = u.name; // ใส่ชื่อพนักงานเป็นตัวเลือก
+    dataList.appendChild(o);
   });
 }
 
 function onUserSelected() {
-  const uid = document.getElementById('loginUid').value;
+  const inputElement = document.getElementById('loginUid');
+  const uid = inputElement.value; // นี่คือชื่อที่พนักงานพิมพ์หรือเลือก
+  
   clearPin();
-  document.getElementById('pinSection').style.display = uid ? 'block' : 'none';
+  
+  // ตรวจสอบว่าชื่อนี้มีอยู่ในระบบจริงๆ หรือไม่ (อ้างอิงจาก allData.users ที่คุณมีอยู่)
+  const userExists = allData.users ? allData.users.find(u => u.name === uid || u.userId === uid) : null;
+
+  // ถ้าชื่อถูกต้องถึงจะโชว์ส่วนใส่ PIN
+  document.getElementById('pinSection').style.display = (userExists) ? 'block' : 'none';
   document.getElementById('loginError').style.display = 'none';
 
-  // แสดง role indicator
+  // แสดง role indicator (ปรับปรุงให้รองรับชื่อที่ค้นหา)
   const indicator = document.getElementById('roleIndicator');
-  if (uid) {
-    const u  = (allData.users || []).find(x => x.userId === uid);
-    const rc = u ? (ROLE_CONFIG[u.role] || ROLE_CONFIG.user) : ROLE_CONFIG.user;
+  if (userExists) {
+    const rc = ROLE_CONFIG[userExists.role] || ROLE_CONFIG.user;
     document.getElementById('roleIcon').textContent = rc.icon;
-    document.getElementById('roleName').textContent = u ? u.name : '';
-    const badge = document.getElementById('roleBadge');
-    badge.textContent  = rc.badgeText;
-    badge.className    = 'sri-role-badge ' + rc.badgeClass;
+    document.getElementById('roleName').textContent = userExists.name;
+    // ... ส่วนที่เหลือของโค้ดเดิมคงไว้ได้เลยครับ
     indicator.classList.add('show');
   } else {
     indicator.classList.remove('show');
