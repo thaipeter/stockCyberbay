@@ -169,7 +169,7 @@ body{display:flex;flex-direction:column}
 .scan-btn:active{opacity:.8;transform:scale(.96)}
 
 /* ── Item list ── */
-.item-list{flex:1;overflow-y:auto;padding: 12px 8px;min-height:0}
+.item-list{flex:1;overflow-y:auto;padding:0 12px 8px;min-height:0}
 .item-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;-webkit-user-select:none;user-select:none}
 .item-card:active{transform:scale(.98)}
 .item-card.in-cart{border-color:var(--green);background:var(--green-dim)}
@@ -389,10 +389,11 @@ body{display:flex;flex-direction:column}
     </div>
     <!-- เลือกชื่อ -->
     <div class="login-field">
-     <div class="login-label">ชื่อผู้ใช้งาน</div>
-     <input type="text" id="loginUid" list="userList" class="login-input" placeholder="พิมพ์ชื่อเพื่อค้นหา..." oninput="onUserSelected()">
-     <datalist id="userList"></datalist>
-  </div>
+      <div class="login-label">ชื่อผู้ใช้งาน</div>
+      <select class="login-select" id="loginUid" onchange="onUserSelected()">
+        <option value="">-- เลือกชื่อของคุณ --</option>
+      </select>
+    </div>
     <!-- role indicator -->
     <div class="selected-role-indicator" id="roleIndicator">
       <div class="sri-icon" id="roleIcon">👷</div>
@@ -774,35 +775,34 @@ function startUserPoll() {
 
 /* ══ LOGIN ══ */
 function populateUsers(users) {
-  const dataList = document.getElementById('userList');
-  dataList.innerHTML = '';
+  const sel = document.getElementById('loginUid');
+  sel.innerHTML = '<option value="">-- เลือกชื่อของคุณ --</option>';
   users.forEach(u => {
-    const o = document.createElement('option');
-    o.dataset.uid = u.userId; // เก็บ UID ไว้ในนี้
-    o.value = u.name;         // โชว์แค่ชื่อ
-    dataList.appendChild(o);
+    const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
+    const o  = document.createElement('option');
+    o.value = u.userId;
+    o.text  = rc.icon + ' ' + u.name;
+    sel.appendChild(o);
   });
 }
 
 function onUserSelected() {
-  const name = document.getElementById('loginUid').value;
-  const opt = Array.from(document.getElementById('userList').options).find(o => o.value === name);
-  const uid = opt ? opt.dataset.uid : null;
-
+  const uid = document.getElementById('loginUid').value;
   clearPin();
   document.getElementById('pinSection').style.display = uid ? 'block' : 'none';
+  document.getElementById('loginError').style.display = 'none';
 
-  const u = (allData.users || []).find(x => x.userId === uid);
+  // แสดง role indicator
   const indicator = document.getElementById('roleIndicator');
-  if (u) {
-    const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
+  if (uid) {
+    const u  = (allData.users || []).find(x => x.userId === uid);
+    const rc = u ? (ROLE_CONFIG[u.role] || ROLE_CONFIG.user) : ROLE_CONFIG.user;
     document.getElementById('roleIcon').textContent = rc.icon;
-    document.getElementById('roleName').textContent = u.name;
+    document.getElementById('roleName').textContent = u ? u.name : '';
     const badge = document.getElementById('roleBadge');
-    badge.textContent = rc.badgeText;
-    badge.className = 'sri-role-badge ' + rc.badgeClass;
+    badge.textContent  = rc.badgeText;
+    badge.className    = 'sri-role-badge ' + rc.badgeClass;
     indicator.classList.add('show');
-    me.uid = uid; // ตั้งค่า UID เพื่อส่งเข้า Login
   } else {
     indicator.classList.remove('show');
   }
@@ -838,16 +838,11 @@ function clearPin() {
 }
 
 function doLogin() {
-  // แก้บรรทัดนี้บรรทัดเดียวพอ!
-  const uid = me.uid; 
-  
+  const uid = document.getElementById('loginUid').value;
   const pin = pinBuffer;
   if (!uid || pin.length < PIN_LEN) return;
-  
   const btn = document.getElementById('loginBtn');
-  btn.disabled = true; 
-  btn.textContent = 'กำลังตรวจสอบ...';
-  
+  btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
   callGAS('webVerifyUserPin', [uid, pin], isValid => {
     btn.textContent = 'เข้าสู่ระบบ';
     if (isValid) loginSuccess(uid);
