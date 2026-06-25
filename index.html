@@ -389,10 +389,11 @@ body{display:flex;flex-direction:column}
     </div>
     <!-- เลือกชื่อ -->
     <div class="login-field">
-     <div class="login-label">ชื่อผู้ใช้งาน</div>
-     <input type="text" id="loginUid" list="userList" class="login-input" placeholder="พิมพ์ชื่อเพื่อค้นหา..." oninput="onUserSelected()">
-     <datalist id="userList"></datalist>
-  </div>
+      <div class="login-label">ชื่อผู้ใช้งาน</div>
+      <select class="login-select" id="loginUid" onchange="onUserSelected()">
+        <option value="">-- เลือกชื่อของคุณ --</option>
+      </select>
+    </div>
     <!-- role indicator -->
     <div class="selected-role-indicator" id="roleIndicator">
       <div class="sri-icon" id="roleIcon">👷</div>
@@ -774,32 +775,30 @@ function startUserPoll() {
 
 /* ══ LOGIN ══ */
 function populateUsers(users) {
-  const dataList = document.getElementById('userList'); // ต้องเรียกให้ตรงกับ id ของ datalist
-  dataList.innerHTML = ''; 
+  const sel = document.getElementById('loginUid');
+  sel.innerHTML = '<option value="">-- เลือกชื่อของคุณ --</option>';
   users.forEach(u => {
-    const o = document.createElement('option');
-    o.value = u.name; // ใส่ชื่อพนักงาน
-    dataList.appendChild(o);
+    const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
+    const o  = document.createElement('option');
+    o.value = u.userId;
+    o.text  = rc.icon + ' ' + u.name;
+    sel.appendChild(o);
   });
 }
 
 function onUserSelected() {
-  const selectedName = document.getElementById('loginUid').value;
+  const uid = document.getElementById('loginUid').value;
   clearPin();
-  
-  // ค้นหาข้อมูล user จากชื่อที่พิมพ์ลงไป
-  const u = (allData.users || []).find(x => x.name === selectedName);
-  
-  // แสดง PIN Section ถ้าเจอชื่อ
-  document.getElementById('pinSection').style.display = u ? 'block' : 'none';
+  document.getElementById('pinSection').style.display = uid ? 'block' : 'none';
   document.getElementById('loginError').style.display = 'none';
 
-  // แสดง Role Indicator
+  // แสดง role indicator
   const indicator = document.getElementById('roleIndicator');
-  if (u) {
-    const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
+  if (uid) {
+    const u  = (allData.users || []).find(x => x.userId === uid);
+    const rc = u ? (ROLE_CONFIG[u.role] || ROLE_CONFIG.user) : ROLE_CONFIG.user;
     document.getElementById('roleIcon').textContent = rc.icon;
-    document.getElementById('roleName').textContent = u.name;
+    document.getElementById('roleName').textContent = u ? u.name : '';
     const badge = document.getElementById('roleBadge');
     badge.textContent  = rc.badgeText;
     badge.className    = 'sri-role-badge ' + rc.badgeClass;
