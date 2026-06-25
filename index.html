@@ -1,3 +1,4 @@
+<style> .back-row, #wBackRow, #bBackRow { display: none !important; } </style>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -8,18 +9,8 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
- /* บังคับซ่อนแท็บหมวดหมู่และปุ่มย้อนกลับให้หมด */
-  .cat-screen, .back-row, #wCatScreen, #wBackRow, #bCatScreen, #bBackRow {
-    display: none !important;
-  }
-  
-  /* เพิ่มคำสั่งนี้เพื่อให้รายการสินค้าแสดงเต็มหน้าจอ */
-  .item-list {
-    flex: 1 !important;
-    display: block !important;
-    height: 100% !important;
-    overflow-y: auto !important;
-  }
+  /* บังคับซ่อนแท็บสีดำ ใส่ตรงนี้เลย! */
+.back-row, #wBackRow, #bBackRow { display: none !important; }
 :root {
   --bg:#0f0f0f; --surface:#161616; --surface2:#1e1e1e;
   --border:#2a2a2a; --border2:#333;
@@ -556,7 +547,7 @@ body{display:flex;flex-direction:column}
     <button class="back-btn" onclick="backToCat('withdraw')"><i class="fas fa-chevron-left"></i> หมวดหมู่</button>
     <span class="active-cat-label" id="wActiveCat"></span>
   </div>
-  <div class="item-list" id="withdrawList" style="display: block !important;"></div>
+  <div class="item-list hidden" id="withdrawList"></div>
   <div class="cart-bar">
     <div class="cart-count-info">
       <div class="cart-count">ตะกร้า: <span id="wCartCount">0</span> รายการ</div>
@@ -596,7 +587,7 @@ body{display:flex;flex-direction:column}
 </div>
       <span class="active-cat-label" id="bActiveCat"></span>
     </div>
-    <div class="item-list" id="borrowList" style="display: block !important;"></div>
+    <div class="item-list hidden" id="borrowList"></div>
     <div class="cart-bar">
       <div class="cart-count-info">
         <div class="cart-count">เลือกแล้ว: <span id="bCartCount">0</span> รายการ</div>
