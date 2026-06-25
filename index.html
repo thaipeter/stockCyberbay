@@ -900,7 +900,12 @@ function confirmLogout() {
 /* ══ APP ══ */
 function initApp() {
   renderCats('withdraw');
-  renderCats('borrow');
+  // renderCats('borrow'); // ลบบรรทัดนี้ออก หรือใส่ // นำหน้า เพื่อปิดการสร้างหมวดหมู่
+  
+  // สั่งโหลดรายการสินค้าหน้า "ยืม" มาแสดงทันที
+  renderList('borrow', '', '__all__'); 
+  document.getElementById('borrowList').classList.remove('hidden');
+  
   renderReturnList();
   renderReceiveCart();
 }
