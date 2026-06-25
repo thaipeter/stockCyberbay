@@ -389,11 +389,10 @@ body{display:flex;flex-direction:column}
     </div>
     <!-- เลือกชื่อ -->
     <div class="login-field">
-      <div class="login-label">ชื่อผู้ใช้งาน</div>
-      <select class="login-select" id="loginUid" onchange="onUserSelected()">
-        <option value="">-- เลือกชื่อของคุณ --</option>
-      </select>
-    </div>
+     <div class="login-label">ชื่อผู้ใช้งาน</div>
+     <input type="text" id="loginUid" list="userList" class="login-input" placeholder="พิมพ์ชื่อเพื่อค้นหา..." oninput="onUserSelected()">
+     <datalist id="userList"></datalist>
+  </div>
     <!-- role indicator -->
     <div class="selected-role-indicator" id="roleIndicator">
       <div class="sri-icon" id="roleIcon">👷</div>
@@ -775,14 +774,12 @@ function startUserPoll() {
 
 /* ══ LOGIN ══ */
 function populateUsers(users) {
-  const sel = document.getElementById('loginUid');
-  sel.innerHTML = '<option value="">-- เลือกชื่อของคุณ --</option>';
+  const dataList = document.getElementById('userList'); // ต้องเรียกให้ตรงกับ id ของ datalist
+  dataList.innerHTML = ''; 
   users.forEach(u => {
-    const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
-    const o  = document.createElement('option');
-    o.value = u.userId;
-    o.text  = rc.icon + ' ' + u.name;
-    sel.appendChild(o);
+    const o = document.createElement('option');
+    o.value = u.name; // ใส่ชื่อพนักงาน
+    dataList.appendChild(o);
   });
 }
 
