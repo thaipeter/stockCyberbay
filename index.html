@@ -157,7 +157,7 @@ body{display:flex;flex-direction:column}
 .tab-btn.active-receive{color:var(--green);border-bottom-color:var(--green);background:var(--green-dim)}
 
 /* ── Content ── */
-.content{flex:1;overflow-y:auto;display:none;flex-direction:column;min-height:0}
+.content{flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden}
 .content.active{display:flex}
 
 /* ── Search ── */
@@ -189,7 +189,7 @@ body{display:flex;flex-direction:column}
 .empty-state p{font-size:13px}
 
 /* ── Cart bar ── */
-.cart-bar{background:var(--surface);border-top:1px solid var(--border2);padding:10px 12px;flex-shrink:0;display:flex;gap:8px;align-items:center}
+.cart-bar{background:var(--surface);border-top:1px solid var(--border2);padding:10px 12px;flex-shrink:0;display:none;gap:8px;align-items:center}
 .cart-count-info{flex:1}
 .cart-count{font-size:12px;color:var(--text2)}
 .cart-count span{color:var(--amber);font-weight:700}
@@ -1445,14 +1445,19 @@ function updateCartBar(mode) {
     const n = withdrawCart.length;
     document.getElementById('wCartCount').textContent = n;
     const btn = document.getElementById('wCartBtn');
+    const bar = btn.closest('.cart-bar');
     btn.disabled = n === 0;
     btn.innerHTML = n > 0
       ? `<i class="fas fa-shopping-basket"></i> ตะกร้า (${n}) & ยืนยัน`
       : `<i class="fas fa-shopping-basket"></i> ดูตะกร้า & ยืนยัน`;
+    if (bar) bar.style.display = n === 0 ? 'none' : 'flex';
   } else {
     const n = borrowCart.length;
     document.getElementById('bCartCount').textContent = n;
-    document.getElementById('bCartBtn').disabled = n === 0;
+    const bBtn = document.getElementById('bCartBtn');
+    bBtn.disabled = n === 0;
+    const bBar = bBtn.closest('.cart-bar');
+    if (bBar) bBar.style.display = n === 0 ? 'none' : 'flex';
   }
 }
 
@@ -1894,7 +1899,7 @@ function updateMineStats() {
     const parts = (h.date || '').split('/');
     if (parts.length < 3) return true; // can't parse, count it
     const m = parseInt(parts[1]) - 1;
-    const yy = parseInt(parts[2]); const y = yy < 100 ? yy + 2000 : yy;
+    const yy = parseInt(parts[2]); const y = yy >= 2500 ? yy - 543 : (yy > 100 ? yy : (yy > 43 ? yy + 1957 : yy + 2000));
     return m === thisMonth && y === thisYear;
   }).length;
   document.getElementById('mineStatWithdraw').textContent = withdrawThisMonth;
