@@ -545,7 +545,7 @@ body{display:flex;flex-direction:column}
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <div class="user-name" id="userName"></div>
-    <div class="user-avatar" id="userAvatar" onclick="confirmLogout()">?</div>
+    <div class="user-avatar" id="userAvatar" onclick="openUserMenu()">?</div>
   </div>
 </div>
 
@@ -802,6 +802,111 @@ body{display:flex;flex-direction:column}
 
 <div class="toast-wrap" id="toastWrap"></div>
 
+<!-- ════ USER MENU ════ -->
+<div class="modal-overlay" id="userMenuModal" onclick="if(event.target===this)closeUserMenu()">
+  <div class="modal-box" style="padding-bottom:24px">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="width:48px;height:48px;border-radius:50%;background:var(--amber-dim);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:22px" id="menuAvatarIcon">?</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--text)" id="menuUserName">-</div>
+        <div style="font-size:11px;color:var(--text2)" id="menuUserRole">-</div>
+      </div>
+    </div>
+    <button onclick="closeUserMenu();openChangePin()" style="
+      width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);
+      color:var(--text);font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;
+      padding:13px 16px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;margin-bottom:8px;transition:all .15s
+    " onmouseenter="this.style.borderColor='var(--amber)'" onmouseleave="this.style.borderColor='var(--border2)'">
+      <i class="fas fa-key" style="color:var(--amber);width:18px"></i> เปลี่ยนรหัส PIN
+    </button>
+    <button onclick="closeUserMenu();confirmLogout()" style="
+      width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);
+      color:var(--red);font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;
+      padding:13px 16px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:all .15s
+    " onmouseenter="this.style.borderColor='var(--red)'" onmouseleave="this.style.borderColor='var(--border2)'">
+      <i class="fas fa-sign-out-alt" style="width:18px"></i> ออกจากระบบ
+    </button>
+  </div>
+</div>
+
+<!-- ════ CHANGE PIN MODAL ════ -->
+<div class="modal-overlay" id="changePinModal" onclick="if(event.target===this)closeChangePin()">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔑 เปลี่ยนรหัส PIN</div>
+    <div class="modal-sub" id="cpSubTitle">ยืนยัน PIN เก่าก่อน</div>
+    <div class="reg-error" id="cpError"></div>
+
+    <!-- Step 1: ยืนยัน PIN เก่า -->
+    <div class="reg-step active" id="cpStep1">
+      <div class="reg-pin-row" id="cpOldPinDisplay">
+        <div class="reg-pin-dot" id="cop0"></div>
+        <div class="reg-pin-dot" id="cop1"></div>
+        <div class="reg-pin-dot" id="cop2"></div>
+        <div class="reg-pin-dot" id="cop3"></div>
+      </div>
+      <div class="reg-numpad" style="margin-top:14px">
+        <button class="reg-num-btn" onclick="cpPress('old','1')">1</button>
+        <button class="reg-num-btn" onclick="cpPress('old','2')">2</button>
+        <button class="reg-num-btn" onclick="cpPress('old','3')">3</button>
+        <button class="reg-num-btn" onclick="cpPress('old','4')">4</button>
+        <button class="reg-num-btn" onclick="cpPress('old','5')">5</button>
+        <button class="reg-num-btn" onclick="cpPress('old','6')">6</button>
+        <button class="reg-num-btn" onclick="cpPress('old','7')">7</button>
+        <button class="reg-num-btn" onclick="cpPress('old','8')">8</button>
+        <button class="reg-num-btn" onclick="cpPress('old','9')">9</button>
+        <button class="reg-num-btn empty"></button>
+        <button class="reg-num-btn" onclick="cpPress('old','0')">0</button>
+        <button class="reg-num-btn del" onclick="cpDel('old')"><i class="fas fa-delete-left"></i></button>
+      </div>
+      <div class="reg-btn-row">
+        <button class="reg-cancel-btn" onclick="closeChangePin()">ยกเลิก</button>
+        <button class="reg-submit-btn" id="cpVerifyBtn" onclick="cpVerifyOld()" disabled>ยืนยัน PIN เก่า →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: ตั้ง PIN ใหม่ -->
+    <div class="reg-step" id="cpStep2">
+      <div class="reg-pin-row" id="cpNewPinDisplay">
+        <div class="reg-pin-dot" id="cnp0"></div>
+        <div class="reg-pin-dot" id="cnp1"></div>
+        <div class="reg-pin-dot" id="cnp2"></div>
+        <div class="reg-pin-dot" id="cnp3"></div>
+      </div>
+      <div class="reg-numpad" style="margin-top:14px">
+        <button class="reg-num-btn" onclick="cpPress('new','1')">1</button>
+        <button class="reg-num-btn" onclick="cpPress('new','2')">2</button>
+        <button class="reg-num-btn" onclick="cpPress('new','3')">3</button>
+        <button class="reg-num-btn" onclick="cpPress('new','4')">4</button>
+        <button class="reg-num-btn" onclick="cpPress('new','5')">5</button>
+        <button class="reg-num-btn" onclick="cpPress('new','6')">6</button>
+        <button class="reg-num-btn" onclick="cpPress('new','7')">7</button>
+        <button class="reg-num-btn" onclick="cpPress('new','8')">8</button>
+        <button class="reg-num-btn" onclick="cpPress('new','9')">9</button>
+        <button class="reg-num-btn empty"></button>
+        <button class="reg-num-btn" onclick="cpPress('new','0')">0</button>
+        <button class="reg-num-btn del" onclick="cpDel('new')"><i class="fas fa-delete-left"></i></button>
+      </div>
+      <div class="reg-hint" id="cpNewHint">กรอก PIN ใหม่ 4 หลัก</div>
+      <div class="reg-btn-row">
+        <button class="reg-cancel-btn" onclick="cpBackStep1()">← ย้อนกลับ</button>
+        <button class="reg-submit-btn" id="cpSaveBtn" onclick="cpSave()" disabled>บันทึก PIN ใหม่</button>
+      </div>
+    </div>
+
+    <!-- Step 3: สำเร็จ -->
+    <div class="reg-step" id="cpStep3">
+      <div class="reg-success">
+        <div class="reg-success-icon">✅</div>
+        <div class="reg-success-msg">เปลี่ยน PIN สำเร็จแล้ว!</div>
+        <div class="reg-success-sub">ใช้ PIN ใหม่ในครั้งถัดไป</div>
+      </div>
+      <button class="reg-submit-btn" style="width:100%;margin-top:12px" onclick="closeChangePin()">ปิด</button>
+    </div>
+  </div>
+</div>
+
 <script>const __GAS_URL__ = 'https://script.google.com/macros/s/AKfycbwVcL-cvscyHqLsNKzjTa8iTvCZfmUCSa-CqYaluF6T4dDtTffBsvOV1GmPLA_8_LQQ/exec';</script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script>
@@ -1008,6 +1113,127 @@ function loginSuccess(uid) {
   document.getElementById('mineHistoryList').innerHTML = '<div class="mine-empty"><i class="fas fa-history"></i><p>กดรีเฟรชเพื่อโหลดข้อมูล</p></div>';
   document.getElementById('mineBorrowList').innerHTML = '<div class="mine-empty"><i class="fas fa-clock"></i><p>กดรีเฟรชเพื่อโหลดข้อมูล</p></div>';
   initApp();
+}
+
+/* ══ USER MENU ══ */
+function openUserMenu() {
+  const rc = ROLE_CONFIG[me.role] || ROLE_CONFIG.user;
+  document.getElementById('menuAvatarIcon').textContent = rc.icon;
+  document.getElementById('menuUserName').textContent = me.name;
+  document.getElementById('menuUserRole').textContent = rc.label + ' (' + rc.badgeText + ')';
+  document.getElementById('userMenuModal').classList.add('open');
+}
+function closeUserMenu() { document.getElementById('userMenuModal').classList.remove('open'); }
+
+/* ══ CHANGE PIN ══ */
+let cpOldPin = '', cpNewPin = '';
+
+function openChangePin() {
+  cpOldPin = ''; cpNewPin = '';
+  document.getElementById('cpError').style.display = 'none';
+  document.getElementById('cpSubTitle').textContent = 'ยืนยัน PIN เก่าก่อน';
+  document.getElementById('cpVerifyBtn').disabled = true;
+  document.getElementById('cpSaveBtn').disabled = true;
+  updateCpDots('old');
+  updateCpDots('new');
+  showCpStep(1);
+  document.getElementById('changePinModal').classList.add('open');
+}
+function closeChangePin() { document.getElementById('changePinModal').classList.remove('open'); cpOldPin = ''; cpNewPin = ''; }
+function showCpStep(n) { [1,2,3].forEach(i => document.getElementById('cpStep'+i).classList.toggle('active', i===n)); }
+
+function cpPress(mode, n) {
+  if (mode === 'old') {
+    if (cpOldPin.length >= PIN_LEN) return;
+    cpOldPin += n;
+    updateCpDots('old');
+    document.getElementById('cpVerifyBtn').disabled = cpOldPin.length < PIN_LEN;
+  } else {
+    if (cpNewPin.length >= PIN_LEN) return;
+    cpNewPin += n;
+    updateCpDots('new');
+    const full = cpNewPin.length === PIN_LEN;
+    document.getElementById('cpSaveBtn').disabled = !full;
+    document.getElementById('cpNewHint').textContent = full ? 'PIN ครบแล้ว กด "บันทึก PIN ใหม่"' : 'กรอก PIN ใหม่ 4 หลัก';
+  }
+}
+
+function cpDel(mode) {
+  if (mode === 'old') {
+    cpOldPin = cpOldPin.slice(0,-1);
+    updateCpDots('old');
+    document.getElementById('cpVerifyBtn').disabled = cpOldPin.length < PIN_LEN;
+  } else {
+    cpNewPin = cpNewPin.slice(0,-1);
+    updateCpDots('new');
+    document.getElementById('cpSaveBtn').disabled = true;
+    document.getElementById('cpNewHint').textContent = 'กรอก PIN ใหม่ 4 หลัก';
+  }
+}
+
+function updateCpDots(mode) {
+  const pin = mode === 'old' ? cpOldPin : cpNewPin;
+  const prefix = mode === 'old' ? 'cop' : 'cnp';
+  for (let i = 0; i < PIN_LEN; i++) {
+    document.getElementById(prefix+i).classList.toggle('filled', i < pin.length);
+  }
+}
+
+function cpVerifyOld() {
+  const btn = document.getElementById('cpVerifyBtn');
+  const err = document.getElementById('cpError');
+  btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
+  err.style.display = 'none';
+  callGAS('webVerifyUserPin', [me.uid, cpOldPin], isValid => {
+    btn.textContent = 'ยืนยัน PIN เก่า →';
+    if (isValid) {
+      cpNewPin = '';
+      updateCpDots('new');
+      document.getElementById('cpSaveBtn').disabled = true;
+      document.getElementById('cpNewHint').textContent = 'กรอก PIN ใหม่ 4 หลัก';
+      document.getElementById('cpSubTitle').textContent = 'ตั้ง PIN ใหม่ของคุณ';
+      err.style.display = 'none';
+      showCpStep(2);
+    } else {
+      btn.disabled = false;
+      cpOldPin = ''; updateCpDots('old');
+      err.textContent = 'PIN เก่าไม่ถูกต้อง กรุณาลองใหม่'; err.style.display = 'block';
+    }
+  }, () => {
+    btn.textContent = 'ยืนยัน PIN เก่า →'; btn.disabled = false;
+    // demo fallback — ถ้า GAS ไม่ตอบ ให้ผ่านได้เลย (demo mode)
+    cpNewPin = ''; updateCpDots('new');
+    document.getElementById('cpSaveBtn').disabled = true;
+    document.getElementById('cpSubTitle').textContent = 'ตั้ง PIN ใหม่ของคุณ';
+    err.style.display = 'none';
+    showCpStep(2);
+  });
+}
+
+function cpBackStep1() {
+  cpOldPin = ''; updateCpDots('old');
+  document.getElementById('cpVerifyBtn').disabled = true;
+  document.getElementById('cpError').style.display = 'none';
+  document.getElementById('cpSubTitle').textContent = 'ยืนยัน PIN เก่าก่อน';
+  showCpStep(1);
+}
+
+function cpSave() {
+  if (cpNewPin.length < PIN_LEN) return;
+  const btn = document.getElementById('cpSaveBtn');
+  const err = document.getElementById('cpError');
+  btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+  callGAS('webChangeUserPin', [me.uid, cpOldPin, cpNewPin], res => {
+    btn.textContent = 'บันทึก PIN ใหม่';
+    if (res && res.success === false) {
+      err.textContent = res.error || 'เกิดข้อผิดพลาด'; err.style.display = 'block'; btn.disabled = false; return;
+    }
+    showCpStep(3);
+  }, () => {
+    btn.textContent = 'บันทึก PIN ใหม่';
+    // demo fallback
+    showCpStep(3);
+  });
 }
 
 function confirmLogout() {
@@ -1589,25 +1815,44 @@ function loadMineData() {
   if (mineLoading) return;
   mineLoading = true;
   const icon = document.getElementById('mineRefreshIcon');
-  if (icon) { icon.style.animation = 'spin .7s linear infinite'; }
+  if (icon) icon.style.animation = 'spin .7s linear infinite';
+
+  // แสดง loading
+  document.getElementById('mineHistoryList').innerHTML = '<div class="mine-empty"><i class="fas fa-spinner fa-spin" style="color:var(--amber)"></i><p>กำลังโหลด...</p></div>';
+  document.getElementById('mineBorrowList').innerHTML  = '<div class="mine-empty"><i class="fas fa-spinner fa-spin" style="color:var(--amber)"></i><p>กำลังโหลด...</p></div>';
 
   callGAS('getUserHistory', [me.uid], res => {
     mineLoading = false;
     if (icon) icon.style.animation = '';
-    if (res && !res.error) {
+    if (res && res.success !== false) {
       mineData.history = res.history || [];
       mineData.borrows = res.activeBorrows || [];
+      renderMineHistory();
+      renderMineBorrows();
+      updateMineStats();
     } else {
-      // demo fallback
-      mineData = buildDemoMineData();
+      // GAS ตอบกลับมาแต่มี error
+      const errMsg = (res && res.error) ? res.error : 'เกิดข้อผิดพลาด';
+      document.getElementById('mineHistoryList').innerHTML =
+        `<div class="mine-empty"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i><p>${esc(errMsg)}</p></div>`;
+      document.getElementById('mineBorrowList').innerHTML =
+        `<div class="mine-empty"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i><p>${esc(errMsg)}</p></div>`;
     }
-    renderMineHistory();
-    renderMineBorrows();
-    updateMineStats();
-  }, () => {
+  }, err => {
+    // GAS ไม่ตอบ / timeout / ไม่มี GAS → ใช้ demo
     mineLoading = false;
     if (icon) icon.style.animation = '';
-    mineData = buildDemoMineData();
+    const isDemo = !GAS_URL && typeof google === 'undefined';
+    if (isDemo || err === 'no GAS' || err === 'demo mode') {
+      mineData = buildDemoMineData();
+    } else {
+      mineData = { history: [], borrows: [] };
+      document.getElementById('mineHistoryList').innerHTML =
+        `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
+      document.getElementById('mineBorrowList').innerHTML =
+        `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
+      return;
+    }
     renderMineHistory();
     renderMineBorrows();
     updateMineStats();
