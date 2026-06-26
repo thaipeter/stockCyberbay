@@ -155,6 +155,7 @@ body{display:flex;flex-direction:column}
 .tab-btn.active-withdraw{color:var(--red);border-bottom-color:var(--red);background:var(--red-dim)}
 .tab-btn.active-borrow{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-dim)}
 .tab-btn.active-receive{color:var(--green);border-bottom-color:var(--green);background:var(--green-dim)}
+.tab-btn.active-newitem{color:#8b5cf6;border-bottom-color:#8b5cf6;background:rgba(139,92,246,.12)}
 
 /* ── Content ── */
 .content{flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden;position:relative}
@@ -254,8 +255,35 @@ body{display:flex;flex-direction:column}
 .return-meta{font-size:11px;color:var(--text2)}
 .return-btn{background:var(--green-dim);border:1px solid var(--green);border-radius:var(--radius-sm);color:var(--green);font-family:'Prompt',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;white-space:nowrap}
 
-/* ── Receive form ── */
-.receive-form{padding:12px 16px;flex:1;overflow-y:auto}
+/* ── New item tab ── */
+.newitem-form{padding:12px 16px;flex:1;overflow-y:auto}
+.ni-section-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.ni-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 14px 10px;margin-bottom:10px;position:relative}
+.ni-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ni-row{display:flex;gap:8px;margin-bottom:8px}
+.ni-field{flex:1;display:flex;flex-direction:column;gap:4px}
+.ni-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3)}
+.ni-input{background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Prompt',sans-serif;font-size:13px;padding:8px 10px;width:100%;outline:none;transition:border-color .2s}
+.ni-input:focus{border-color:var(--amber)}
+.ni-input[readonly]{opacity:.6;cursor:not-allowed}
+/* รูปภาพ upload */
+.ni-img-box{width:100%;aspect-ratio:16/9;border-radius:10px;border:2px dashed var(--border2);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;overflow:hidden;position:relative}
+.ni-img-box:hover{border-color:var(--amber);background:var(--amber-dim)}
+.ni-img-box img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.ni-img-box .ni-img-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text3);pointer-events:none}
+.ni-img-box .ni-img-placeholder i{font-size:28px}
+.ni-img-box .ni-img-placeholder span{font-size:11px;font-weight:600}
+.ni-img-remove{position:absolute;top:6px;right:6px;background:rgba(239,68,68,.85);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.ni-img-remove.show{display:flex}
+.ni-upload-bar{display:flex;gap:8px;margin-top:8px}
+.ni-upload-btn{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-family:'Prompt',sans-serif;font-size:12px;font-weight:600;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+.ni-upload-btn:hover{border-color:var(--amber);color:var(--amber)}
+/* item card image */
+.item-img{width:40px;height:40px;object-fit:cover;border-radius:8px;border:1px solid var(--border2);flex-shrink:0}
+.item-img-placeholder{width:40px;height:40px;border-radius:8px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+/* upload img inline btn */
+.upload-img-btn{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;color:var(--text3);font-family:'Prompt',sans-serif;font-size:11px;font-weight:600;padding:3px 8px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.upload-img-btn:hover{border-color:var(--amber);color:var(--amber)}
 .receive-section-title{font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 .receive-item-row{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
 .receive-item-row .item-icon{width:32px;height:32px;font-size:14px}
@@ -358,6 +386,7 @@ body{display:flex;flex-direction:column}
 .toast{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 16px;font-size:13px;color:var(--text);white-space:nowrap;animation:toastIn .2s ease;box-shadow:0 8px 24px rgba(0,0,0,.6);display:flex;align-items:center;gap:8px}
 .toast.success{border-color:var(--green);color:var(--green)}
 .toast.error{border-color:var(--red);color:var(--red)}
+.toast.info{border-color:var(--amber);color:var(--amber)}
 @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* ═══════════════════════════════════
@@ -566,6 +595,10 @@ body{display:flex;flex-direction:column}
   <button class="tab-btn" id="tabReceive" onclick="switchTab('receive')" style="display:none">
     <i class="fas fa-truck-loading"></i> รับเข้า
   </button>
+  <!-- แสดงเฉพาะ admin -->
+  <button class="tab-btn" id="tabNewItem" onclick="switchTab('newitem')" style="display:none">
+    <i class="fas fa-plus-circle"></i> รายการใหม่
+  </button>
 </div>
 
 <!-- ── TAB เบิก ── -->
@@ -668,6 +701,108 @@ body{display:flex;flex-direction:column}
     <div class="receive-total">รับเข้า: <span id="receiveCount">&nbsp;0&nbsp;</span> รายการ</div>
     <button class="cart-btn receive" id="receiveSubmitBtn" onclick="submitReceive()" disabled>
       <i class="fas fa-check-circle"></i> ยืนยันรับเข้า
+    </button>
+  </div>
+</div>
+
+<!-- ── TAB รับเข้าใหม่ (admin only) ── -->
+<div class="content" id="contentNewitem" style="display:none;flex-direction:column;overflow:hidden">
+  <div class="newitem-form" id="newitemForm">
+    <div class="ni-section-title"><i class="fas fa-plus-circle"></i> ขึ้นทะเบียนรายการใหม่</div>
+
+    <!-- ประเภท + หมวดหมู่ -->
+    <div class="ni-row">
+      <div class="ni-field">
+        <div class="ni-label">ประเภท</div>
+        <select class="ni-input" id="niType" onchange="niUpdateCategory()">
+          <option value="Items">📦 อะไหล่</option>
+          <option value="Tools">🔧 เครื่องมือ</option>
+        </select>
+      </div>
+      <div class="ni-field">
+        <div class="ni-label">หมวดหมู่ <span style="color:var(--red)">*</span></div>
+        <input class="ni-input" id="niCat" list="niCatList" placeholder="เลือกหรือพิมพ์" oninput="niUpdateCode()" required>
+        <datalist id="niCatList"></datalist>
+      </div>
+    </div>
+
+    <!-- รหัส -->
+    <div class="ni-row" style="align-items:flex-end">
+      <div class="ni-field" style="flex:2">
+        <div class="ni-label">รหัสสินค้า</div>
+        <input class="ni-input fw-bold" id="niCode" placeholder="AUTO" readonly>
+      </div>
+      <div style="flex:1">
+        <button class="ni-upload-btn" onclick="niGenerateCode()" style="height:37px;border-radius:8px">
+          <i class="fas fa-magic"></i> Auto
+        </button>
+      </div>
+    </div>
+
+    <!-- ชื่อ + หน่วย -->
+    <div class="ni-row">
+      <div class="ni-field" style="flex:3">
+        <div class="ni-label">ชื่อรายการ <span style="color:var(--red)">*</span></div>
+        <input class="ni-input" id="niName" placeholder="ชื่อสินค้า/อะไหล่" required>
+      </div>
+      <div class="ni-field" style="flex:2">
+        <div class="ni-label">หน่วย <span style="color:var(--red)">*</span></div>
+        <input class="ni-input" id="niUnit" placeholder="ชิ้น, อัน, ม้วน..." required>
+      </div>
+    </div>
+
+    <!-- Min + จำนวนเริ่มต้น -->
+    <div class="ni-row">
+      <div class="ni-field">
+        <div class="ni-label">Min Stock</div>
+        <input class="ni-input text-center" id="niMin" type="number" min="0" value="0">
+      </div>
+      <div class="ni-field">
+        <div class="ni-label">จำนวนเริ่มต้น</div>
+        <input class="ni-input text-center fw-bold" id="niQty" type="number" min="0" value="0" style="color:var(--green)">
+      </div>
+      <div class="ni-field">
+        <div class="ni-label">ตำแหน่ง</div>
+        <input class="ni-input" id="niLocation" placeholder="ชั้น A1..." list="niLocList">
+        <datalist id="niLocList"></datalist>
+      </div>
+    </div>
+
+    <!-- หมายเหตุ -->
+    <div class="ni-field" style="margin-bottom:12px">
+      <div class="ni-label">หมายเหตุ</div>
+      <input class="ni-input" id="niRemark" placeholder="บันทึกเพิ่มเติม...">
+    </div>
+
+    <!-- รูปภาพ -->
+    <div class="ni-section-title"><i class="fas fa-camera"></i> รูปภาพสินค้า</div>
+    <div class="ni-img-box" id="niImgBox" onclick="document.getElementById('niImgInput').click()">
+      <div class="ni-img-placeholder" id="niImgPlaceholder">
+        <i class="fas fa-camera"></i>
+        <span>แตะเพื่อถ่าย / เลือกรูป</span>
+      </div>
+      <button class="ni-img-remove" id="niImgRemove" onclick="niRemoveImage(event)"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="ni-upload-bar">
+      <label class="ni-upload-btn" style="flex:1">
+        <i class="fas fa-camera"></i> ถ่ายรูป
+        <input type="file" id="niImgInput" accept="image/*" capture="environment" style="display:none" onchange="niPreviewImage(this)">
+      </label>
+      <label class="ni-upload-btn" style="flex:1">
+        <i class="fas fa-image"></i> เลือกจากคลัง
+        <input type="file" id="niImgInputGallery" accept="image/*" style="display:none" onchange="niPreviewImage(this)">
+      </label>
+    </div>
+    <div id="niImgStatus" style="text-align:center;font-size:11px;color:var(--text3);margin-top:4px"></div>
+
+    <div style="height:80px"></div><!-- spacer for bottom bar -->
+  </div>
+
+  <!-- Bottom submit bar -->
+  <div class="receive-cart-bar" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">
+    <div class="receive-total" style="color:#fff"><i class="fas fa-plus-circle me-1"></i> ขึ้นทะเบียนใหม่</div>
+    <button class="cart-btn" id="niSubmitBtn" onclick="submitNewItem()" style="background:#fff;color:#7c3aed;font-weight:700">
+      <i class="fas fa-save"></i> บันทึก
     </button>
   </div>
 </div>
@@ -1106,8 +1241,10 @@ function loginSuccess(uid) {
   const rc = ROLE_CONFIG[me.role] || ROLE_CONFIG.user;
   document.getElementById('userName').textContent = me.name;
   document.getElementById('userAvatar').textContent = rc.icon;
-  // แสดง tab รับเข้าเฉพาะ admin
+  // แสดง tab รับเข้าและรายการใหม่เฉพาะ admin
   document.getElementById('tabReceive').style.display = me.role === 'admin' ? 'flex' : 'none';
+  const niTab = document.getElementById('tabNewItem');
+  if (niTab) niTab.style.display = me.role === 'admin' ? 'flex' : 'none';
   // reset mine data
   mineData = { history: [], borrows: [] };
   document.getElementById('mineStatWithdraw').textContent = '-';
@@ -1258,6 +1395,8 @@ function confirmLogout() {
     document.getElementById('roleIndicator').classList.remove('show');
     document.getElementById('userAvatar').textContent = '?';
     document.getElementById('tabReceive').style.display = 'none';
+    const niTabLo = document.getElementById('tabNewItem');
+    if (niTabLo) niTabLo.style.display = 'none';
     switchTab('withdraw');
     show('loginScreen'); document.getElementById('appWrap').classList.remove('visible');
   });
@@ -1347,16 +1486,19 @@ function onSearchInput(kw, mode) {
 }
 
 function switchTab(tab) {
-  ['withdraw','borrow','receive','mine'].forEach(t => {
+  ['withdraw','borrow','receive','mine','newitem'].forEach(t => {
     const c = document.getElementById('content' + cap(t));
-    if (c) c.classList.toggle('active', t === tab);
+    if (c) { c.classList.remove('active'); c.style.display = 'none'; }
     const btn = document.getElementById('tab' + cap(t));
     if (!btn) return;
     btn.className = 'tab-btn' + (t === tab ? ' active-' + t : '');
   });
-  const subs = { withdraw: 'เบิกของออก', borrow: 'ยืม / คืนเครื่องมือ', receive: 'รับสินค้าเข้าคลัง', mine: 'ประวัติและสถานะของฉัน' };
+  const active = document.getElementById('content' + cap(tab));
+  if (active) { active.style.display = 'flex'; active.classList.add('active'); }
+  const subs = { withdraw: 'เบิกของออก', borrow: 'ยืม / คืนเครื่องมือ', receive: 'รับสินค้าเข้าคลัง', mine: 'ประวัติและสถานะของฉัน', newitem: 'ขึ้นทะเบียนรายการใหม่' };
   document.getElementById('topSub').textContent = subs[tab] || '';
   if (tab === 'mine') loadMineData();
+  if (tab === 'newitem') niInit();
 }
 
 function switchBorrowSub(sub) {
@@ -1571,22 +1713,35 @@ function renderReceiveCart() {
     el.innerHTML = `<div class="empty-state" style="padding:20px 0"><i class="fas fa-inbox"></i><p>ยังไม่มีรายการ<br>กด "+ เพิ่มรายการ" ด้านล่าง</p></div>`;
     return;
   }
-  el.innerHTML = receiveCart.map((item, i) => `
-    <div class="receive-item-row">
-      <div class="item-icon">📦</div>
+  el.innerHTML = receiveCart.map((item, i) => {
+    const iconHtml = (item.imageUrl && item.imageUrl !== '-' && item.imageUrl !== '')
+      ? `<img class="item-img" src="${item.imageUrl}" alt="${esc(item.name)}" onclick="viewImg('${item.imageUrl}','${esc(item.name)}')" style="cursor:pointer" onerror="this.parentNode.innerHTML='<div class=item-img-placeholder>📦</div>'">`
+      : `<div class="item-img-placeholder">📦</div>`;
+    const uploadedBadge = item._newImg ? `<span style="font-size:9px;color:var(--green);font-weight:700"><i class="fas fa-check-circle"></i> มีรูป</span>` : '';
+    return `
+    <div class="receive-item-row" id="rcRow_${i}">
+      <div style="cursor:pointer;flex-shrink:0" onclick="item.imageUrl&&viewImg(item.imageUrl,item.name)">${iconHtml}</div>
       <div class="item-info" style="flex:1;min-width:0">
         <div class="item-name">${esc(item.name)}</div>
         <div class="item-code">${item.code}</div>
+        ${uploadedBadge}
       </div>
-      <div class="qty-row" style="gap:6px;flex-shrink:0">
-        <button class="qty-btn" style="width:30px;height:30px;font-size:16px" onclick="changeReceiveQty(${i},-1)">−</button>
-        <input class="qty-input" style="width:52px;font-size:16px" type="number" min="1" value="${item.qty}"
-          onchange="receiveCart[${i}].qty=Math.max(1,parseInt(this.value)||1);renderReceiveCart()">
-        <button class="qty-btn" style="width:30px;height:30px;font-size:16px" onclick="changeReceiveQty(${i},1)">+</button>
-        <span class="qty-unit">${item.unit}</span>
-        <button class="cart-remove" onclick="receiveCart.splice(${i},1);renderReceiveCart()"><i class="fas fa-trash-alt"></i></button>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <div class="qty-row" style="gap:6px">
+          <button class="qty-btn" style="width:30px;height:30px;font-size:16px" onclick="changeReceiveQty(${i},-1)">−</button>
+          <input class="qty-input" style="width:52px;font-size:16px" type="number" min="1" value="${item.qty}"
+            onchange="receiveCart[${i}].qty=Math.max(1,parseInt(this.value)||1);renderReceiveCart()">
+          <button class="qty-btn" style="width:30px;height:30px;font-size:16px" onclick="changeReceiveQty(${i},1)">+</button>
+          <span class="qty-unit">${item.unit}</span>
+          <button class="cart-remove" onclick="receiveCart.splice(${i},1);renderReceiveCart()"><i class="fas fa-trash-alt"></i></button>
+        </div>
+        <label class="upload-img-btn" title="อัปโหลดรูปสินค้า">
+          <i class="fas fa-camera"></i> อัปรูป
+          <input type="file" accept="image/*" style="display:none" onchange="uploadReceiveItemImg(this,${i})">
+        </label>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function changeReceiveQty(i, d) {
@@ -1621,6 +1776,215 @@ function submitReceive() {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-check-circle"></i> ยืนยันรับเข้า';
     showToast('เกิดข้อผิดพลาด: ' + err, 'error');
+  });
+}
+
+/* ══ UPLOAD IMAGE IN RECEIVE CART ══ */
+function uploadReceiveItemImg(inputEl, idx) {
+  const file = inputEl.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 5MB', 'error'); inputEl.value=''; return; }
+  showToast('กำลังอัปโหลดรูป...', 'info');
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result.split(',')[1];
+    const mimeType = file.type || 'image/jpeg';
+    const item = receiveCart[idx];
+    if (!item) return;
+    callGAS('webSaveItemImage', [{ code: item.code, type: 'item', base64, mimeType, userName: me.name, userId: me.uid }], res => {
+      if (res && res.success) {
+        receiveCart[idx].imageUrl = res.imageUrl;
+        receiveCart[idx]._newImg = true;
+        // อัปเดต allData ด้วย
+        const arr = [...(allData.items||[]), ...(allData.tools||[])];
+        const found = arr.find(i => i.code === item.code);
+        if (found) found.imageUrl = res.imageUrl;
+        renderReceiveCart();
+        showToast('อัปโหลดรูปสำเร็จ ✓', 'success');
+      } else { showToast('อัปโหลดล้มเหลว: ' + (res?.error||''), 'error'); }
+    }, err => showToast('เกิดข้อผิดพลาด: ' + err, 'error'));
+  };
+  reader.readAsDataURL(file);
+  inputEl.value = '';
+}
+
+/* ══ VIEW IMAGE FULLSCREEN ══ */
+function viewImg(url, name) {
+  if (!url) return;
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer';
+  ov.onclick = () => ov.remove();
+  ov.innerHTML = `
+    <div style="color:#fff;font-size:13px;font-weight:600;max-width:90vw;text-align:center;opacity:.8">${esc(name||'')}</div>
+    <img src="${url}" style="max-width:90vw;max-height:80vh;border-radius:12px;object-fit:contain;box-shadow:0 8px 32px rgba(0,0,0,.6)" onerror="this.src=''">
+    <div style="color:#fff;font-size:11px;opacity:.5">แตะเพื่อปิด</div>`;
+  document.body.appendChild(ov);
+}
+
+/* ══ NEW ITEM TAB ══ */
+let niImgBase64 = null;
+let niImgMime   = 'image/jpeg';
+
+function niInit() {
+  // populate categories datalist
+  const cats = [...new Set([...(allData.items||[]), ...(allData.tools||[])].map(i => i.category).filter(Boolean))].sort();
+  const catList = document.getElementById('niCatList');
+  if (catList) { catList.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join(''); }
+  // populate locations datalist
+  const locs = [...new Set([...(allData.items||[]), ...(allData.tools||[])].map(i => i.location).filter(Boolean))].sort();
+  const locList = document.getElementById('niLocList');
+  if (locList) { locList.innerHTML = locs.map(l => `<option value="${esc(l)}">`).join(''); }
+  // reset form
+  niImgBase64 = null; niImgMime = 'image/jpeg';
+  ['niName','niUnit','niRemark','niLocation'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const niMin=document.getElementById('niMin'); if(niMin) niMin.value='0';
+  const niQty=document.getElementById('niQty'); if(niQty) niQty.value='0';
+  const niCat=document.getElementById('niCat'); if(niCat) niCat.value='';
+  niResetImage();
+  niUpdateCode();
+}
+
+function niUpdateCategory() { niUpdateCode(); }
+
+function niUpdateCode() {
+  const type = document.getElementById('niType')?.value || 'Items';
+  const cat  = document.getElementById('niCat')?.value?.trim() || '';
+  if (!cat) { const el=document.getElementById('niCode'); if(el) el.value=''; return; }
+  // client-side code generation matching server logic
+  const existingItems = [...(allData.items||[]), ...(allData.tools||[])];
+  const settings = allData.settings || {};
+  let prefix = type === 'Tools' ? (settings.prefixTool || 'TL') : (settings.prefixItem || 'IT');
+  if (settings.categories) {
+    settings.categories.split(',').forEach(p => {
+      const s = p.trim();
+      if (s.includes(':')) {
+        const [c, pref] = s.split(':');
+        if (c.trim() === cat && pref.trim()) prefix = pref.trim().toUpperCase();
+      }
+    });
+  }
+  let maxNum = 0;
+  existingItems.forEach(r => {
+    if (!r.code) return;
+    if (r.code.startsWith(prefix)) {
+      let numPart = r.code.includes('-') ? r.code.split('-').slice(1).join('-') : r.code.substring(prefix.length);
+      const num = parseInt(numPart, 10);
+      if (!isNaN(num) && num > maxNum) maxNum = num;
+    }
+  });
+  const code = `${prefix}-${String(maxNum+1).padStart(3,'0')}`;
+  const el = document.getElementById('niCode'); if (el) el.value = code;
+}
+
+function niGenerateCode() {
+  const cat = document.getElementById('niCat')?.value?.trim();
+  if (!cat) { showToast('กรุณาเลือกหมวดหมู่ก่อน', 'error'); return; }
+  niUpdateCode();
+}
+
+function niPreviewImage(inputEl) {
+  const file = inputEl.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 5MB', 'error'); inputEl.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    niImgBase64 = e.target.result.split(',')[1];
+    niImgMime   = file.type || 'image/jpeg';
+    const box  = document.getElementById('niImgBox');
+    const ph   = document.getElementById('niImgPlaceholder');
+    const rmv  = document.getElementById('niImgRemove');
+    const stat = document.getElementById('niImgStatus');
+    if (box) {
+      // clear old img
+      let oldImg = box.querySelector('img');
+      if (oldImg) oldImg.remove();
+      if (ph) ph.style.display = 'none';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px';
+      box.insertBefore(img, box.firstChild);
+      box.style.borderColor = 'var(--green)';
+    }
+    if (rmv) rmv.classList.add('show');
+    if (stat) { stat.textContent = `✓ พร้อมอัปโหลด: ${file.name}`; stat.style.color = 'var(--green)'; }
+  };
+  reader.readAsDataURL(file);
+  inputEl.value = '';
+}
+
+function niRemoveImage(e) {
+  e.stopPropagation();
+  niImgBase64 = null; niImgMime = 'image/jpeg';
+  niResetImage();
+}
+
+function niResetImage() {
+  const box  = document.getElementById('niImgBox');
+  const ph   = document.getElementById('niImgPlaceholder');
+  const rmv  = document.getElementById('niImgRemove');
+  const stat = document.getElementById('niImgStatus');
+  if (box) {
+    let oldImg = box.querySelector('img'); if (oldImg) oldImg.remove();
+    box.style.borderColor = '';
+    if (ph) ph.style.display = 'flex';
+  }
+  if (rmv) rmv.classList.remove('show');
+  if (stat) stat.textContent = '';
+}
+
+function submitNewItem() {
+  const type     = document.getElementById('niType')?.value || 'Items';
+  const cat      = document.getElementById('niCat')?.value?.trim();
+  const code     = document.getElementById('niCode')?.value?.trim();
+  const name     = document.getElementById('niName')?.value?.trim();
+  const unit     = document.getElementById('niUnit')?.value?.trim();
+  const min      = parseFloat(document.getElementById('niMin')?.value) || 0;
+  const qty      = parseFloat(document.getElementById('niQty')?.value) || 0;
+  const location = document.getElementById('niLocation')?.value?.trim() || '';
+  const remark   = document.getElementById('niRemark')?.value?.trim() || '';
+
+  if (!cat)  { showToast('กรุณาเลือกหมวดหมู่', 'error'); return; }
+  if (!code) { showToast('กรุณากดสร้างรหัสก่อน', 'error'); return; }
+  if (!name) { showToast('กรุณากรอกชื่อรายการ', 'error'); return; }
+  if (!unit) { showToast('กรุณากรอกหน่วย', 'error'); return; }
+
+  const btn = document.getElementById('niSubmitBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...'; }
+
+  const payload = [{ type, category: cat, code, name, unit, min, qty, location, remark, user: me.name, userId: me.uid }];
+
+  callGAS('webAddNewItems', [payload], res => {
+    if (!res || !res.success) {
+      showToast('ข้อผิดพลาด: ' + (res?.error || ''), 'error');
+      if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
+      return;
+    }
+    // อัปโหลดรูป (ถ้ามี)
+    if (niImgBase64) {
+      callGAS('webSaveItemImage', [{ code, type: type==='Tools'?'tool':'item', base64: niImgBase64, mimeType: niImgMime, userName: me.name, userId: me.uid }], imgRes => {
+        const tempUrl = imgRes?.imageUrl || '';
+        const arr = type === 'Tools' ? (allData.tools||(allData.tools=[])) : (allData.items||(allData.items=[]));
+        arr.push({ code, name, category: cat, location, unit, min, stock: qty, remark, imageUrl: tempUrl });
+        showToast(`เพิ่ม "${name}" สำเร็จ!`, 'success');
+        if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
+        niInit();
+        // refresh data
+        callGAS('getInventoryData', [], d => { allData = d; }, null);
+      }, err => {
+        showToast(`บันทึกสำเร็จแต่อัปรูปล้มเหลว: ${err}`, 'error');
+        if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
+      });
+    } else {
+      const arr = type === 'Tools' ? (allData.tools||(allData.tools=[])) : (allData.items||(allData.items=[]));
+      arr.push({ code, name, category: cat, location, unit, min, stock: qty, remark, imageUrl: '' });
+      showToast(`เพิ่ม "${name}" สำเร็จ!`, 'success');
+      if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
+      niInit();
+      callGAS('getInventoryData', [], d => { allData = d; }, null);
+    }
+  }, err => {
+    showToast('เกิดข้อผิดพลาด: ' + err, 'error');
+    if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
   });
 }
 
