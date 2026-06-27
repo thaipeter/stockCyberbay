@@ -1425,9 +1425,9 @@ function renderCats(mode) {
   const catMap = {};
   items.forEach(i => {
     const c = i.category || 'อื่นๆ';
-    if (!catMap[c]) catMap[c] = { count: 0, hasStock: false };
+    if (!catMap[c]) catMap[c] = { count: 0, availCount: 0, hasStock: false };
     catMap[c].count++;
-    if (i.stock > 0) catMap[c].hasStock = true;
+    if (i.stock > 0) { catMap[c].hasStock = true; catMap[c].availCount++; }
   });
   const cats = Object.keys(catMap).sort();
   grid.innerHTML =
@@ -1442,7 +1442,7 @@ function renderCats(mode) {
     <div class="cat-card" onclick="selectCat('${mode}','${esc(c)}')">
       <div class="cat-icon">${catIcon(c)}</div>
       <div class="cat-name">${esc(c)}</div>
-      <div class="cat-count">${catMap[c].count} รายการ${catMap[c].hasStock ? '' : ' · <span style="color:var(--red)">หมด</span>'}</div>
+      <div class="cat-count">${catMap[c].availCount}/${catMap[c].count} รายการ${catMap[c].hasStock ? '' : ' · <span style="color:var(--red)">หมด</span>'}</div>
     </div>`).join('');
 }
 
@@ -1867,10 +1867,12 @@ function niUpdateCode() {
   const type = document.getElementById('niType')?.value || 'Items';
   const cat  = document.getElementById('niCat')?.value?.trim() || '';
   if (!cat) { const el=document.getElementById('niCode'); if(el) el.value=''; return; }
-  // client-side code generation matching server logic
+  // client-side code generation — รันต่อจากรหัสที่มีในหมวดนั้นๆ
   const existingItems = [...(allData.items||[]), ...(allData.tools||[])];
   const settings = allData.settings || {};
   let prefix = type === 'Tools' ? (settings.prefixTool || 'TL') : (settings.prefixItem || 'IT');
+
+  // ถ้า settings.categories มี map หมวด:prefix ใช้ตามนั้น
   if (settings.categories) {
     settings.categories.split(',').forEach(p => {
       const s = p.trim();
@@ -1880,17 +1882,24 @@ function niUpdateCode() {
       }
     });
   }
+
+  // หา maxNum เฉพาะรหัสที่ตรง prefix นี้ (ไม่สนหมวด)
   let maxNum = 0;
   existingItems.forEach(r => {
     if (!r.code) return;
-    if (r.code.startsWith(prefix)) {
-      let numPart = r.code.includes('-') ? r.code.split('-').slice(1).join('-') : r.code.substring(prefix.length);
+    const code = String(r.code).trim().toUpperCase();
+    const pfxUp = prefix.toUpperCase();
+    if (code.startsWith(pfxUp + '-') || code.startsWith(pfxUp)) {
+      const numPart = code.startsWith(pfxUp + '-')
+        ? code.slice(pfxUp.length + 1)
+        : code.slice(pfxUp.length);
       const num = parseInt(numPart, 10);
       if (!isNaN(num) && num > maxNum) maxNum = num;
     }
   });
-  const code = `${prefix}-${String(maxNum+1).padStart(3,'0')}`;
-  const el = document.getElementById('niCode'); if (el) el.value = code;
+
+  const newCode = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
+  const el = document.getElementById('niCode'); if (el) el.value = newCode;
 }
 
 function niGenerateCode() {
