@@ -1490,7 +1490,7 @@ function switchTab(tab) {
     const c = document.getElementById('content' + cap(t));
     if (c) { c.classList.remove('active'); c.style.display = 'none'; }
     const btn = document.getElementById('tab' + cap(t));
-    if (!btn) return;
+    if (!btn) return; // return ออกจาก forEach callback เท่านั้น — ถูกต้อง
     btn.className = 'tab-btn' + (t === tab ? ' active-' + t : '');
   });
   const active = document.getElementById('content' + cap(tab));
@@ -1499,6 +1499,8 @@ function switchTab(tab) {
   document.getElementById('topSub').textContent = subs[tab] || '';
   if (tab === 'mine') loadMineData();
   if (tab === 'newitem') niInit();
+  // บันทึก tab ล่าสุดเพื่อ restore ถ้าหน้า reload
+  try { sessionStorage.setItem('lastTab', tab); } catch(e) {}
 }
 
 function switchBorrowSub(sub) {
@@ -1518,28 +1520,29 @@ function renderList(mode, kw, cat) {
   if (cat && cat !== '__all__') list = list.filter(i => (i.category || 'อื่นๆ') === cat);
   if (kw) list = list.filter(i => i.name.toLowerCase().includes(kw) || i.code.toLowerCase().includes(kw));
   if (!list.length) {
-    el.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>${kw ? 'ไม่พบ "' + esc(kw) + '"' : 'ไม่มีสินค้าในหมวดนี้'}</p></div>`;
+    el.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>' + (kw ? 'ไม่พบ "' + esc(kw) + '"' : 'ไม่มีสินค้าในหมวดนี้') + '</p></div>';
     return;
   }
-  el.innerHTML = list.map(item => {
-    const inCart = cart.find(c => c.code === item.code);
+  el.innerHTML = list.map(function(item) {
+    const inCart = cart.find(function(c) { return c.code === item.code; });
     const sc     = item.stock <= 0 ? 'stock-zero' : item.stock <= (item.min || 0) ? 'stock-low' : 'stock-ok';
-    const iconEmoji = item.stock <= 0 ? '📦' : item.unit === 'เมตร' ? '📏' : item.unit === 'ลิตร' ? '🛢️' : '🔧';
-    const iconHtml = (item.imageUrl && item.imageUrl !== '-' && item.imageUrl !== '')
-      ? `<img src="${item.imageUrl}" alt="${esc(item.name)}" onerror="this.parentNode.textContent='${iconEmoji}'">`
-      : iconEmoji;
-    return `<div class="item-card${inCart ? ' in-cart' : ''}" onclick="addToCart('${item.code}','${mode}')">
-      <div class="item-icon">${iconHtml}</div>
-      <div class="item-info">
-        <div class="item-name">${esc(item.name)}</div>
-        <div class="item-code">${item.code}</div>
-        ${inCart ? `<div class="in-cart-badge"><i class="fas fa-check-circle"></i> ในตะกร้า ×${inCart.qty}</div>` : ''}
-      </div>
-      <div class="item-stock">
-        <div class="stock-num ${sc}">${item.stock}</div>
-        <div class="stock-unit">${item.unit}</div>
-      </div>
-    </div>`;
+    const imgUrl = getProxyImgUrl(item.imageUrl);
+    const iconHtml = imgUrl
+      ? '<img src="' + imgUrl + '" alt="' + esc(item.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'">'
+        + '<span style="display:none;font-size:18px">📦</span>'
+      : '<span style="font-size:18px">📦</span>';
+    return '<div class="item-card' + (inCart ? ' in-cart' : '') + '" onclick="addToCart(\'' + item.code + '\',\'' + mode + '\')">'
+      + '<div class="item-icon" style="width:46px;height:46px;overflow:hidden;border-radius:8px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center">' + iconHtml + '</div>'
+      + '<div class="item-info">'
+      + '<div class="item-name">' + esc(item.name) + '</div>'
+      + '<div class="item-code">' + item.code + '</div>'
+      + (inCart ? '<div class="in-cart-badge"><i class="fas fa-check-circle"></i> ในตะกร้า \u00d7' + inCart.qty + '</div>' : '')
+      + '</div>'
+      + '<div class="item-stock">'
+      + '<div class="stock-num ' + sc + '">' + item.stock + '</div>'
+      + '<div class="stock-unit">' + item.unit + '</div>'
+      + '</div>'
+      + '</div>';
   }).join('');
 }
 
@@ -1674,23 +1677,24 @@ function renderReceivePicker(kw) {
     !kw || i.name.toLowerCase().includes(kw.toLowerCase()) || i.code.toLowerCase().includes(kw.toLowerCase())
   );
   const el = document.getElementById('receivePickerList');
-  if (!items.length) { el.innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>ไม่พบสินค้า</p></div>`; return; }
-  el.innerHTML = items.map(item => {
-    const iconHtml = (item.imageUrl && item.imageUrl !== '-' && item.imageUrl !== '')
-      ? `<img src="${item.imageUrl}" alt="${esc(item.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.parentNode.textContent='📦'">`
-      : '📦';
-    return `
-    <div class="item-card" onclick="addToReceiveCart('${item.code}')">
-      <div class="item-icon">${iconHtml}</div>
-      <div class="item-info">
-        <div class="item-name">${esc(item.name)}</div>
-        <div class="item-code">${item.code}</div>
-      </div>
-      <div class="item-stock">
-        <div class="stock-num stock-ok">${item.stock}</div>
-        <div class="stock-unit">${item.unit}</div>
-      </div>
-    </div>`;
+  if (!items.length) { el.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>ไม่พบสินค้า</p></div>'; return; }
+  el.innerHTML = items.map(function(item) {
+    const imgUrl = getProxyImgUrl(item.imageUrl);
+    const iconHtml = imgUrl
+      ? '<img src="' + imgUrl + '" alt="' + esc(item.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'">'
+        + '<span style="display:none;font-size:18px">📦</span>'
+      : '<span style="font-size:18px">📦</span>';
+    return '<div class="item-card" onclick="addToReceiveCart(\'' + item.code + '\')">'
+      + '<div class="item-icon" style="width:46px;height:46px;overflow:hidden;border-radius:8px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center">' + iconHtml + '</div>'
+      + '<div class="item-info">'
+      + '<div class="item-name">' + esc(item.name) + '</div>'
+      + '<div class="item-code">' + item.code + '</div>'
+      + '</div>'
+      + '<div class="item-stock">'
+      + '<div class="stock-num stock-ok">' + item.stock + '</div>'
+      + '<div class="stock-unit">' + item.unit + '</div>'
+      + '</div>'
+      + '</div>';
   }).join('');
 }
 
@@ -1699,7 +1703,7 @@ function addToReceiveCart(code) {
   if (!item) return;
   const exist = receiveCart.find(c => c.code === code);
   if (exist) { exist.qty++; }
-  else receiveCart.push({ code: item.code, name: item.name, qty: 1, unit: item.unit });
+  else receiveCart.push({ code: item.code, name: item.name, qty: 1, unit: item.unit, imageUrl: item.imageUrl || '' });
   closeSheet('sheetReceivePicker');
   renderReceiveCart();
   showToast(esc(item.name) + ' +1', 'success');
@@ -1714,9 +1718,11 @@ function renderReceiveCart() {
     return;
   }
   el.innerHTML = receiveCart.map((item, i) => {
-    const iconHtml = (item.imageUrl && item.imageUrl !== '-' && item.imageUrl !== '')
-      ? `<img class="item-img" src="${item.imageUrl}" alt="${esc(item.name)}" onclick="viewImg('${item.imageUrl}','${esc(item.name)}')" style="cursor:pointer" onerror="this.parentNode.innerHTML='<div class=item-img-placeholder>📦</div>'">`
-      : `<div class="item-img-placeholder">📦</div>`;
+    const imgUrl = getProxyImgUrl(item.imageUrl);
+    const iconHtml = imgUrl
+      ? '<img class="item-img" src="' + imgUrl + '" alt="' + esc(item.name) + '" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')" style="cursor:pointer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<div class="item-img-placeholder" style="display:none">📦</div>'
+      : '<div class="item-img-placeholder">📦</div>';
     const uploadedBadge = item._newImg ? `<span style="font-size:9px;color:var(--green);font-weight:700"><i class="fas fa-check-circle"></i> มีรูป</span>` : '';
     return `
     <div class="receive-item-row" id="rcRow_${i}">
@@ -1783,29 +1789,34 @@ function submitReceive() {
 function uploadReceiveItemImg(inputEl, idx) {
   const file = inputEl.files[0];
   if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 5MB', 'error'); inputEl.value=''; return; }
+  inputEl.value = '';
+  if (file.size > 5 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 5MB', 'error'); return; }
   showToast('กำลังอัปโหลดรูป...', 'info');
   const reader = new FileReader();
   reader.onload = function(e) {
-    const base64 = e.target.result.split(',')[1];
+    const base64   = e.target.result.split(',')[1];
     const mimeType = file.type || 'image/jpeg';
-    const item = receiveCart[idx];
+    const item     = receiveCart[idx];
     if (!item) return;
-    callGAS('webSaveItemImage', [{ code: item.code, type: 'item', base64, mimeType, userName: me.name, userId: me.uid }], res => {
+    const payload = { code: item.code, type: 'item', base64: base64, mimeType: mimeType, userName: me.name, userId: me.uid };
+    callGAS('webSaveItemImage', [payload], function(res) {
       if (res && res.success) {
         receiveCart[idx].imageUrl = res.imageUrl;
-        receiveCart[idx]._newImg = true;
+        receiveCart[idx]._newImg  = true;
         // อัปเดต allData ด้วย
-        const arr = [...(allData.items||[]), ...(allData.tools||[])];
-        const found = arr.find(i => i.code === item.code);
+        var arr = [].concat(allData.items || [], allData.tools || []);
+        var found = arr.find(function(i) { return i.code === item.code; });
         if (found) found.imageUrl = res.imageUrl;
         renderReceiveCart();
         showToast('อัปโหลดรูปสำเร็จ ✓', 'success');
-      } else { showToast('อัปโหลดล้มเหลว: ' + (res?.error||''), 'error'); }
-    }, err => showToast('เกิดข้อผิดพลาด: ' + err, 'error'));
+      } else {
+        showToast('อัปโหลดล้มเหลว: ' + ((res && res.error) || 'unknown'), 'error');
+      }
+    }, function(err) {
+      showToast('เกิดข้อผิดพลาด: ' + err, 'error');
+    });
   };
   reader.readAsDataURL(file);
-  inputEl.value = '';
 }
 
 /* ══ VIEW IMAGE FULLSCREEN ══ */
@@ -1825,23 +1836,29 @@ function viewImg(url, name) {
 let niImgBase64 = null;
 let niImgMime   = 'image/jpeg';
 
+let _niInitialized = false;
 function niInit() {
   // populate categories datalist
   const cats = [...new Set([...(allData.items||[]), ...(allData.tools||[])].map(i => i.category).filter(Boolean))].sort();
   const catList = document.getElementById('niCatList');
-  if (catList) { catList.innerHTML = cats.map(c => `<option value="${esc(c)}">`).join(''); }
+  if (catList) { catList.innerHTML = cats.map(c => '<option value="' + esc(c) + '">').join(''); }
   // populate locations datalist
   const locs = [...new Set([...(allData.items||[]), ...(allData.tools||[])].map(i => i.location).filter(Boolean))].sort();
   const locList = document.getElementById('niLocList');
-  if (locList) { locList.innerHTML = locs.map(l => `<option value="${esc(l)}">`).join(''); }
-  // reset form
-  niImgBase64 = null; niImgMime = 'image/jpeg';
-  ['niName','niUnit','niRemark','niLocation'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-  const niMin=document.getElementById('niMin'); if(niMin) niMin.value='0';
-  const niQty=document.getElementById('niQty'); if(niQty) niQty.value='0';
-  const niCat=document.getElementById('niCat'); if(niCat) niCat.value='';
-  niResetImage();
-  niUpdateCode();
+  if (locList) { locList.innerHTML = locs.map(l => '<option value="' + esc(l) + '">').join(''); }
+  // reset form เฉพาะครั้งแรกหรือถ้าฟอร์มยังว่างอยู่ — ไม่ล้างถ้ากำลังกรอกอยู่
+  const niName = document.getElementById('niName');
+  const isBlank = !niName || !niName.value.trim();
+  if (isBlank || !_niInitialized) {
+    niImgBase64 = null; niImgMime = 'image/jpeg';
+    ['niName','niUnit','niRemark','niLocation'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    const niMin=document.getElementById('niMin'); if(niMin) niMin.value='0';
+    const niQty=document.getElementById('niQty'); if(niQty) niQty.value='0';
+    const niCat=document.getElementById('niCat'); if(niCat) niCat.value='';
+    niResetImage();
+    niUpdateCode();
+    _niInitialized = true;
+  }
 }
 
 function niUpdateCategory() { niUpdateCode(); }
@@ -1961,17 +1978,14 @@ function submitNewItem() {
     }
     // อัปโหลดรูป (ถ้ามี)
     if (niImgBase64) {
-      callGAS('webSaveItemImage', [{ code, type: type==='Tools'?'tool':'item', base64: niImgBase64, mimeType: niImgMime, userName: me.name, userId: me.uid }], imgRes => {
-        const tempUrl = imgRes?.imageUrl || '';
-        const arr = type === 'Tools' ? (allData.tools||(allData.tools=[])) : (allData.items||(allData.items=[]));
-        arr.push({ code, name, category: cat, location, unit, min, stock: qty, remark, imageUrl: tempUrl });
-        showToast(`เพิ่ม "${name}" สำเร็จ!`, 'success');
+    callGAS('webSaveItemImage', [{ code: code, type: type==='Tools'?'tool':'item', base64: niImgBase64, mimeType: niImgMime, userName: me.name, userId: me.uid }], function(imgRes) {
+        var tempUrl = (imgRes && imgRes.imageUrl) ? imgRes.imageUrl : '';
+        var arr = type === 'Tools' ? (allData.tools || (allData.tools=[])) : (allData.items || (allData.items=[]));
+        arr.push({ code:code, name:name, category:cat, location:location, unit:unit, min:min, stock:qty, remark:remark, imageUrl:tempUrl });
+        showToast('เพิ่ม "' + name + '" สำเร็จ!', 'success');
         if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
+        _niInitialized = false; // force reset form ครั้งถัดไป
         niInit();
-        // refresh data
-        callGAS('getInventoryData', [], d => { allData = d; }, null);
-      }, err => {
-        showToast(`บันทึกสำเร็จแต่อัปรูปล้มเหลว: ${err}`, 'error');
         if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
       });
     } else {
@@ -1979,8 +1993,9 @@ function submitNewItem() {
       arr.push({ code, name, category: cat, location, unit, min, stock: qty, remark, imageUrl: '' });
       showToast(`เพิ่ม "${name}" สำเร็จ!`, 'success');
       if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
+      _niInitialized = false; // force reset form ครั้งถัดไป
       niInit();
-      callGAS('getInventoryData', [], d => { allData = d; }, null);
+      callGAS('getInventoryData', [], d => { if(d) allData = d; }, null);
     }
   }, err => {
     showToast('เกิดข้อผิดพลาด: ' + err, 'error');
@@ -2343,6 +2358,16 @@ function getUnit(code) { const i = getAllItems().find(x => x.code === code); ret
 function setRemark(id, v) { document.getElementById(id).value = v; }
 function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// แปลง Google Drive URL ให้โหลดได้จากทุก origin
+function getProxyImgUrl(url) {
+  if (!url || url === '-' || url === '') return null;
+  // ถ้าเป็น Drive URL แบบ /file/d/ID/view หรือ open?id=ID → แปลงเป็น thumbnail URL
+  var m = url.match(/\/file\/d\/([^\/\?]+)/);
+  if (!m) m = url.match(/[?&]id=([^&]+)/);
+  if (m && m[1]) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w120';
+  return url;
+}
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
