@@ -2363,27 +2363,27 @@ function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 // แปลง Google Drive URL ให้โหลดได้จากทุก origin
-function getProxyImgUrl(url) {
-  if (!url || url === '-' || url === '') return null;
-  // extract Drive file ID จากหลาย format
-  var m = url.match(/\/file\/d\/([^\/\?]+)/);
-  if (!m) m = url.match(/[?&]id=([^&]+)/);
-  if (!m) m = url.match(/thumbnail\?id=([^&]+)/);
-  if (m && m[1]) {
-    // ใช้ thumbnail sz=w400 — โหลดเร็ว + ชัดพอบนมือถือ
-    return 'https://lh3.googleusercontent.com/d/' + m[1] + '=w400';
-  }
-  return url;
-}
-
-function getFullImgUrl(url) {
-  // สำหรับตอนกดดูรูปใหญ่ — ใช้ w1200
+function _extractDriveId(url) {
   if (!url || url === '-' || url === '') return null;
   var m = url.match(/\/file\/d\/([^\/\?]+)/);
   if (!m) m = url.match(/[?&]id=([^&]+)/);
   if (!m) m = url.match(/thumbnail\?id=([^&]+)/);
   if (!m) m = url.match(/\/d\/([^\/\?]+)/);
-  if (m && m[1]) return 'https://lh3.googleusercontent.com/d/' + m[1] + '=w1200';
+  return m ? m[1] : null;
+}
+
+function getProxyImgUrl(url) {
+  if (!url || url === '-' || url === '') return null;
+  var id = _extractDriveId(url);
+  // ใช้ thumbnail API — ไม่ต้อง auth token ถาวร แชร์แบบ Anyone with link
+  if (id) return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w300';
+  return url;
+}
+
+function getFullImgUrl(url) {
+  if (!url || url === '-' || url === '') return null;
+  var id = _extractDriveId(url);
+  if (id) return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1200';
   return url;
 }
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
