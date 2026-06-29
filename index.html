@@ -2310,22 +2310,20 @@ function renderMineHistory() {
     el.innerHTML = '<div class="mine-empty"><i class="fas fa-history"></i><p>ยังไม่มีประวัติการทำรายการ</p></div>';
     return;
   }
+  const typeColor = { 'เบิก':'#f59e0b','รับเข้า':'#22c55e','คืน':'#60a5fa','ปรับสต็อก':'#a78bfa' };
   el.innerHTML = list.map(h => {
-    const isBorrow = h.type === 'ยืม';
-    const badgeCls = isBorrow ? 'hist-type-borrow' : 'hist-type-withdraw';
-    const icon = isBorrow ? '🔧' : '📦';
-    return `<div class="hist-card">
-      <div class="hist-top">
-        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
-          <span style="font-size:18px">${icon}</span>
-          <div style="flex:1;min-width:0">
-            <div class="hist-name">${esc(h.itemName)}</div>
-            <div class="hist-meta">${h.itemCode} • ${h.qty} ${h.unit} • ${h.date}</div>
-            ${h.remark ? `<div class="hist-remark">${esc(h.remark)}</div>` : ''}
-          </div>
-        </div>
-        <span class="hist-type ${badgeCls}">${h.type}</span>
+    const color = typeColor[h.type] || '#888';
+    const imgHtml = h.imageUrl
+      ? `<img src="${esc(h.imageUrl)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
+      : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${h.type==='เบิก'?'📦':h.type==='รับเข้า'?'📥':h.type==='คืน'?'↩️':'🔧'}</div>`;
+    return `<div class="hist-card" style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:8px">
+      ${imgHtml}
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(h.itemName)}</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px">${esc(h.itemCode)} • ${esc(h.qty)}${h.unit?' '+esc(h.unit):''} • ${h.date}</div>
+        ${h.remark && h.remark!=='-' ? `<div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:3px">📝 ${esc(h.remark)}</div>` : ''}
       </div>
+      <span style="flex-shrink:0;font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:${color}22;color:${color};border:1px solid ${color}55">${esc(h.type)}</span>
     </div>`;
   }).join('');
 }
@@ -2340,15 +2338,18 @@ function renderMineBorrows() {
   el.innerHTML = list.map(b => {
     const days = b.daysAgo || 0;
     const isOverdue = days > 7;
-    const badgeCls = isOverdue ? 'bscard-badge-overdue' : 'bscard-badge-active';
-    const badgeText = isOverdue ? `เกิน ${days} วัน ⚠️` : `${days} วันที่แล้ว`;
-    return `<div class="borrow-status-card ${isOverdue ? 'overdue' : ''}">
-      <div class="bscard-icon">🔧</div>
-      <div class="bscard-info">
-        <div class="bscard-name">${esc(b.itemName)}</div>
-        <div class="bscard-meta">${b.itemCode} • ยืม ${b.qty} ${b.unit} • วันที่ ${b.borrowDate}</div>
+    const color = isOverdue ? '#f87171' : '#fbbf24';
+    const badgeText = isOverdue ? `⚠️ เกิน ${days} วัน` : `${days} วันที่แล้ว`;
+    const imgHtml = b.imageUrl
+      ? `<img src="${esc(b.imageUrl)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
+      : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">🔧</div>`;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid ${isOverdue?'rgba(248,113,113,.3)':'rgba(255,255,255,.08)'};border-radius:14px;margin-bottom:8px${isOverdue?';box-shadow:0 0 0 1px rgba(248,113,113,.15)':''}">
+      ${imgHtml}
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(b.itemName)}</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px">${esc(b.itemCode)} • ยืม ${esc(b.qty)}${b.unit?' '+esc(b.unit):''} • ${b.borrowDate}</div>
       </div>
-      <span class="bscard-badge ${badgeCls}">${badgeText}</span>
+      <span style="flex-shrink:0;font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:${color}22;color:${color};border:1px solid ${color}55">${badgeText}</span>
     </div>`;
   }).join('');
 }
