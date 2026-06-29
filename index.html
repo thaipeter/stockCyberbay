@@ -2015,11 +2015,13 @@ function submitNewItem() {
 
 /* ══ SUBMIT (withdraw/borrow) ══ */
 function submitCart(mode) {
+  if (submitCart._pending) return;
   const cart   = mode === 'withdraw' ? withdrawCart : borrowCart;
   const remark = document.getElementById(mode === 'withdraw' ? 'wRemark' : 'bRemark').value.trim();
   if (!cart.length) { showToast('ตะกร้าว่าง', 'error'); return; }
   const btnId = mode === 'withdraw' ? 'submitW' : 'submitB';
   const btn   = document.getElementById(btnId);
+  submitCart._pending = true;
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
   const payloads = cart.map(item => ({
@@ -2028,15 +2030,21 @@ function submitCart(mode) {
     user: me.name, uid: me.uid, remark
   }));
   callGAS('webBatchTransaction', [payloads], res => {
+    submitCart._pending = false;
     btn.disabled = false;
     btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
     closeSheet(mode === 'withdraw' ? 'sheetWithdraw' : 'sheetBorrow');
     if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
     else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
     updateCartBar(mode);
-    showToast(`สำเร็จ ${payloads.length} รายการ`, 'success');
+    if (res && res.error) {
+      showToast('⚠️ ' + res.error, 'error');
+    } else {
+      showToast(`สำเร็จ ${payloads.length} รายการ`, 'success');
+    }
     callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
   }, err => {
+    submitCart._pending = false;
     btn.disabled = false;
     btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
     showToast('เกิดข้อผิดพลาด: ' + err, 'error');
