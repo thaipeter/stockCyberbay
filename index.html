@@ -2232,19 +2232,18 @@ function loadMineData() {
     if (res && res.success !== false) {
       mineData.history = res.history || [];
       mineData.borrows = res.activeBorrows || [];
-      renderMineHistory();
-      renderMineBorrows();
-      updateMineStats();
     } else {
-      // GAS ตอบกลับมาแต่มี error
+      mineData = { history: [], borrows: [] };
       const errMsg = (res && res.error) ? res.error : 'เกิดข้อผิดพลาด';
       document.getElementById('mineHistoryList').innerHTML =
         `<div class="mine-empty"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i><p>${esc(errMsg)}</p></div>`;
       document.getElementById('mineBorrowList').innerHTML =
         `<div class="mine-empty"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i><p>${esc(errMsg)}</p></div>`;
     }
+    renderMineHistory();
+    renderMineBorrows();
+    updateMineStats();
   }, err => {
-    // GAS ไม่ตอบ / timeout / ไม่มี GAS → ใช้ demo
     mineLoading = false;
     if (icon) icon.style.animation = '';
     const isDemo = !GAS_URL && typeof google === 'undefined';
@@ -2256,7 +2255,6 @@ function loadMineData() {
         `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
       document.getElementById('mineBorrowList').innerHTML =
         `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
-      return;
     }
     renderMineHistory();
     renderMineBorrows();
@@ -2290,11 +2288,11 @@ function updateMineStats() {
   const thisYear = now.getFullYear();
   const withdrawThisMonth = mineData.history.filter(h => {
     if (h.type !== 'เบิก') return false;
-    // Try parse date dd/mm/yy
+    // date format: dd/MM/yyyy HH:mm
     const parts = (h.date || '').split('/');
-    if (parts.length < 3) return true; // can't parse, count it
+    if (parts.length < 3) return false;
     const m = parseInt(parts[1]) - 1;
-    const yy = parseInt(parts[2]); const y = yy >= 2500 ? yy - 543 : (yy > 100 ? yy : (yy > 43 ? yy + 1957 : yy + 2000));
+    const y = parseInt(parts[2].split(' ')[0]);
     return m === thisMonth && y === thisYear;
   }).length;
   document.getElementById('mineStatWithdraw').textContent = withdrawThisMonth;
