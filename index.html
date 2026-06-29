@@ -1531,18 +1531,9 @@ function renderList(mode, kw, cat) {
       ? '<img src="' + imgUrl + '" alt="' + esc(item.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'">'
         + '<span style="display:none;font-size:18px">📦</span>'
       : '<span style="font-size:18px">📦</span>';
-    return '<div class="item-card' + (inCart ? ' in-cart' : '') + '" onclick="addToCart(\'' + item.code + '\',\'' + mode + '\')">'
-      + '<div class="item-icon" style="width:46px;height:46px;overflow:hidden;border-radius:8px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center">' + iconHtml + '</div>'
-      + '<div class="item-info">'
-      + '<div class="item-name">' + esc(item.name) + '</div>'
-      + '<div class="item-code">' + item.code + '</div>'
-      + (inCart ? '<div class="in-cart-badge"><i class="fas fa-check-circle"></i> ในตะกร้า \u00d7' + inCart.qty + '</div>' : '')
-      + '</div>'
-      + '<div class="item-stock">'
-      + '<div class="stock-num ' + sc + '">' + item.stock + '</div>'
-      + '<div class="stock-unit">' + item.unit + '</div>'
-      + '</div>'
-      + '</div>';
+    const imgClickHtml = imgUrl
+      ? '<div style="width:56px;height:56px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="event.stopPropagation();viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')">'        + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:22px">📦</div></div>'      : '<div style="width:56px;height:56px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">📦</div>';
+    return '<div class="item-card' + (inCart ? ' in-cart' : '') + '" style="padding:10px 12px">'      + imgClickHtml      + '<div class="item-info" style="flex:1;min-width:0" onclick="addToCart(\'' + item.code + '\',\'' + mode + '\')">'      + '<div class="item-name">' + esc(item.name) + '</div>'      + '<div class="item-code">' + item.code + '</div>'      + (inCart ? '<div class="in-cart-badge"><i class="fas fa-check-circle"></i> ในตะกร้า ×' + inCart.qty + '</div>' : '')      + '</div>'      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">'      + '<div class="item-stock" style="text-align:right"><div class="stock-num ' + sc + '">' + item.stock + '</div><div class="stock-unit">' + item.unit + '</div></div>'      + '<button onclick="event.stopPropagation();addToCart(\'' + item.code + '\',\'' + mode + '\')" style="background:' + (inCart ? 'var(--green)' : 'var(--amber)') + ';color:#111;border:none;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;cursor:pointer">'      + (inCart ? '✓ เพิ่ม' : '+ เพิ่ม') + '</button>'      + '</div>'      + '</div>';
   }).join('');
 }
 
@@ -2232,18 +2223,19 @@ function loadMineData() {
     if (res && res.success !== false) {
       mineData.history = res.history || [];
       mineData.borrows = res.activeBorrows || [];
+      renderMineHistory();
+      renderMineBorrows();
+      updateMineStats();
     } else {
-      mineData = { history: [], borrows: [] };
+      // GAS ตอบกลับมาแต่มี error
       const errMsg = (res && res.error) ? res.error : 'เกิดข้อผิดพลาด';
       document.getElementById('mineHistoryList').innerHTML =
         `<div class="mine-empty"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i><p>${esc(errMsg)}</p></div>`;
       document.getElementById('mineBorrowList').innerHTML =
         `<div class="mine-empty"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i><p>${esc(errMsg)}</p></div>`;
     }
-    renderMineHistory();
-    renderMineBorrows();
-    updateMineStats();
   }, err => {
+    // GAS ไม่ตอบ / timeout / ไม่มี GAS → ใช้ demo
     mineLoading = false;
     if (icon) icon.style.animation = '';
     const isDemo = !GAS_URL && typeof google === 'undefined';
@@ -2255,6 +2247,7 @@ function loadMineData() {
         `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
       document.getElementById('mineBorrowList').innerHTML =
         `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
+      return;
     }
     renderMineHistory();
     renderMineBorrows();
@@ -2288,11 +2281,11 @@ function updateMineStats() {
   const thisYear = now.getFullYear();
   const withdrawThisMonth = mineData.history.filter(h => {
     if (h.type !== 'เบิก') return false;
-    // date format: dd/MM/yyyy HH:mm
+    // Try parse date dd/mm/yy
     const parts = (h.date || '').split('/');
-    if (parts.length < 3) return false;
+    if (parts.length < 3) return true; // can't parse, count it
     const m = parseInt(parts[1]) - 1;
-    const y = parseInt(parts[2].split(' ')[0]);
+    const yy = parseInt(parts[2]); const y = yy >= 2500 ? yy - 543 : (yy > 100 ? yy : (yy > 43 ? yy + 1957 : yy + 2000));
     return m === thisMonth && y === thisYear;
   }).length;
   document.getElementById('mineStatWithdraw').textContent = withdrawThisMonth;
