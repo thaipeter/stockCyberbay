@@ -1813,13 +1813,15 @@ function uploadReceiveItemImg(inputEl, idx) {
 /* ══ VIEW IMAGE FULLSCREEN ══ */
 function viewImg(url, name) {
   if (!url) return;
+  // แปลง URL เป็น full size สำหรับดูรูปใหญ่
+  url = getFullImgUrl(url) || url;
   const ov = document.createElement('div');
-  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;cursor:pointer;-webkit-tap-highlight-color:transparent';
   ov.onclick = () => ov.remove();
   ov.innerHTML = `
-    <div style="color:#fff;font-size:13px;font-weight:600;max-width:90vw;text-align:center;opacity:.8">${esc(name||'')}</div>
-    <img src="${url}" style="max-width:90vw;max-height:80vh;border-radius:12px;object-fit:contain;box-shadow:0 8px 32px rgba(0,0,0,.6)" onerror="this.src=''">
-    <div style="color:#fff;font-size:11px;opacity:.5">แตะเพื่อปิด</div>`;
+    <div style="color:#fff;font-size:14px;font-weight:600;max-width:96vw;text-align:center;opacity:.85;margin-bottom:10px;padding:0 8px">${esc(name||'')}</div>
+    <img src="${url}" style="max-width:96vw;max-height:86vh;width:96vw;border-radius:14px;object-fit:contain;box-shadow:0 12px 48px rgba(0,0,0,.8)" onerror="this.src=''">
+    <div style="color:#fff;font-size:12px;opacity:.4;margin-top:10px">แตะเพื่อปิด</div>`;
   document.body.appendChild(ov);
 }
 
@@ -2363,10 +2365,25 @@ function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 // แปลง Google Drive URL ให้โหลดได้จากทุก origin
 function getProxyImgUrl(url) {
   if (!url || url === '-' || url === '') return null;
-  // ถ้าเป็น Drive URL แบบ /file/d/ID/view หรือ open?id=ID → แปลงเป็น thumbnail URL
+  // extract Drive file ID จากหลาย format
   var m = url.match(/\/file\/d\/([^\/\?]+)/);
   if (!m) m = url.match(/[?&]id=([^&]+)/);
-  if (m && m[1]) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w120';
+  if (!m) m = url.match(/thumbnail\?id=([^&]+)/);
+  if (m && m[1]) {
+    // ใช้ thumbnail sz=w400 — โหลดเร็ว + ชัดพอบนมือถือ
+    return 'https://lh3.googleusercontent.com/d/' + m[1] + '=w400';
+  }
+  return url;
+}
+
+function getFullImgUrl(url) {
+  // สำหรับตอนกดดูรูปใหญ่ — ใช้ w1200
+  if (!url || url === '-' || url === '') return null;
+  var m = url.match(/\/file\/d\/([^\/\?]+)/);
+  if (!m) m = url.match(/[?&]id=([^&]+)/);
+  if (!m) m = url.match(/thumbnail\?id=([^&]+)/);
+  if (!m) m = url.match(/\/d\/([^\/\?]+)/);
+  if (m && m[1]) return 'https://lh3.googleusercontent.com/d/' + m[1] + '=w1200';
   return url;
 }
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
