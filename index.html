@@ -1865,33 +1865,74 @@ function niUpdateCode() {
 }
 
 function _niCalcCodeLocal(type, cat) {
-  const existingItems = [...(allData.items||[]), ...(allData.tools||[])];
-  const settings = allData.settings || {};
-  let prefix = type === 'Tools' ? (settings.prefixTool || 'TL') : (settings.prefixItem || 'IT');
-  if (settings.categories) {
-    settings.categories.split(',').forEach(p => {
-      const s = p.trim();
-      if (s.includes(':')) {
-        const [c, pref] = s.split(':');
-        if (c.trim() === cat && pref.trim()) prefix = pref.trim().toUpperCase();
+  const s = allData.settings || {};
+  const defaultPrefix = type === 'Tools' ? (s.prefixTool || 'TL') : (s.prefixItem || 'IT');
+
+  // Step 1: หา prefix จาก settings category mapping (format: "ชื่อหมวด:PREFIX")
+  let prefix = null;
+  if (s.categories && cat) {
+    const parts = s.categories.split(',');
+    for (let p of parts) {
+      const str = p.trim();
+      if (str.includes(':')) {
+        const colonIdx = str.indexOf(':');
+        const catName = str.substring(0, colonIdx).trim();
+        const catPrefix = str.substring(colonIdx + 1).trim();
+        if (catName.toLowerCase() === cat.trim().toLowerCase() && catPrefix !== '') {
+          prefix = catPrefix.toUpperCase();
+          break;
+        }
       }
-    });
+    }
   }
+
+  // Step 2: ถ้าไม่มี mapping → เดาจาก codes ที่มีอยู่จริงในหมวดนั้น (เหมือน dashboard)
+  if (!prefix && cat) {
+    const allList = (allData.items || []).concat(allData.tools || []);
+    const itemsInCat = allList.filter(i =>
+      String(i.category || '').trim().toLowerCase() === cat.trim().toLowerCase()
+    );
+    if (itemsInCat.length > 0) {
+      const prefixCount = {};
+      itemsInCat.forEach(item => {
+        const codeStr = String(item.code || '').toUpperCase().trim();
+        const match = codeStr.match(/^([A-Z]+(?:-[A-Z]+)*)-\d+$/);
+        if (match) {
+          const p = match[1];
+          prefixCount[p] = (prefixCount[p] || 0) + 1;
+        }
+      });
+      if (Object.keys(prefixCount).length > 0) {
+        prefix = Object.keys(prefixCount).sort((a, b) => prefixCount[b] - prefixCount[a])[0];
+      }
+    }
+  }
+
+  // Step 3: fallback default
+  if (!prefix) prefix = defaultPrefix;
+
+  // Step 4: หา max number จากทุก code ที่ขึ้นต้นด้วย prefix นี้
+  const candidatePrefix = prefix.replace(/-+$/, '') + '-';
+  const allList = (allData.items || []).concat(allData.tools || []);
+  const checkCodes = allList.map(i => String(i.code || '').toUpperCase());
+
   let maxNum = 0;
-  existingItems.forEach(r => {
-    if (!r.code) return;
-    const code = String(r.code).trim().toUpperCase();
-    const pfxUp = prefix.toUpperCase();
-    if (code.startsWith(pfxUp + '-') || code.startsWith(pfxUp)) {
-      const numPart = code.startsWith(pfxUp + '-') ? code.slice(pfxUp.length + 1) : code.slice(pfxUp.length);
-      const num = parseInt(numPart, 10);
-      if (!isNaN(num) && num > maxNum) maxNum = num;
+  let maxLen = 3;
+  checkCodes.forEach(codeStr => {
+    if (!codeStr.startsWith(candidatePrefix)) return;
+    const suffix = codeStr.slice(candidatePrefix.length);
+    if (!/^\d+$/.test(suffix)) return;
+    const num = parseInt(suffix, 10);
+    if (!isNaN(num)) {
+      maxNum = Math.max(maxNum, num);
+      maxLen = Math.max(maxLen, suffix.length);
     }
   });
-  const localCode = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
+
+  const localCode = `${candidatePrefix}${String(maxNum + 1).padStart(maxLen, '0')}`;
   const el = document.getElementById('niCode');
   if (el) el.value = localCode;
-  // แล้วดึงจาก GAS จริงเพื่อความแม่นยำ
+  // sync จาก GAS เพื่อความแม่นยำสุด
   _niSyncCodeFromGAS(prefix, el);
 }
 
@@ -2015,13 +2056,11 @@ function submitNewItem() {
 
 /* ══ SUBMIT (withdraw/borrow) ══ */
 function submitCart(mode) {
-  if (submitCart._pending) return;
   const cart   = mode === 'withdraw' ? withdrawCart : borrowCart;
   const remark = document.getElementById(mode === 'withdraw' ? 'wRemark' : 'bRemark').value.trim();
   if (!cart.length) { showToast('ตะกร้าว่าง', 'error'); return; }
   const btnId = mode === 'withdraw' ? 'submitW' : 'submitB';
   const btn   = document.getElementById(btnId);
-  submitCart._pending = true;
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
   const payloads = cart.map(item => ({
@@ -2030,21 +2069,15 @@ function submitCart(mode) {
     user: me.name, uid: me.uid, remark
   }));
   callGAS('webBatchTransaction', [payloads], res => {
-    submitCart._pending = false;
     btn.disabled = false;
     btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
     closeSheet(mode === 'withdraw' ? 'sheetWithdraw' : 'sheetBorrow');
     if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
     else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
     updateCartBar(mode);
-    if (res && res.error) {
-      showToast('⚠️ ' + res.error, 'error');
-    } else {
-      showToast(`สำเร็จ ${payloads.length} รายการ`, 'success');
-    }
+    showToast(`สำเร็จ ${payloads.length} รายการ`, 'success');
     callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
   }, err => {
-    submitCart._pending = false;
     btn.disabled = false;
     btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
     showToast('เกิดข้อผิดพลาด: ' + err, 'error');
