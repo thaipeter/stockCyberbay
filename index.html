@@ -2306,8 +2306,11 @@ function renderMineHistory() {
   const typeColor = { 'เบิก':'#f59e0b','รับเข้า':'#22c55e','คืน':'#60a5fa','ปรับสต็อก':'#a78bfa' };
   el.innerHTML = list.map(h => {
     const color = typeColor[h.type] || '#888';
-    const imgHtml = h.imageUrl
-      ? `<img src="${esc(h.imageUrl)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
+    const _hImgUrl = getProxyImgUrl(h.imageUrl);
+    const _hImgFull = getFullImgUrl(h.imageUrl) || _hImgUrl;
+    const imgHtml = _hImgUrl
+      ? `<img src="${_hImgUrl}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1);cursor:zoom-in" onclick="viewImg('${_hImgFull}','${esc(h.itemName)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        + `<div style="display:none;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${h.type==='เบิก'?'📦':h.type==='รับเข้า'?'📥':h.type==='คืน'?'↩️':'🔧'}</div>`
       : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${h.type==='เบิก'?'📦':h.type==='รับเข้า'?'📥':h.type==='คืน'?'↩️':'🔧'}</div>`;
     return `<div class="hist-card" style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:8px">
       ${imgHtml}
