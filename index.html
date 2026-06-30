@@ -1264,6 +1264,15 @@ function doLogin() {
 function loginSuccess(uid) {
   const u  = (allData.users || []).find(x => x.userId === uid);
   me = { uid, name: u ? u.name : 'ผู้ใช้', role: u ? u.role : 'user', photoUrl: u ? (u.photoUrl || null) : null };
+  Swal.fire({
+    icon: 'success',
+    title: 'เข้าสู่ระบบสำเร็จ',
+    text: 'ยินดีต้อนรับ ' + me.name,
+    timer: 1500,
+    showConfirmButton: false,
+    background: '#1a1f2e',
+    color: '#c0c0c0'
+  });
   hide('loginScreen');
   document.getElementById('appWrap').classList.add('visible');
   const rc = ROLE_CONFIG[me.role] || ROLE_CONFIG.user;
@@ -1747,9 +1756,22 @@ function changeQty(i, mode, d) {
 
 function setQty(i, mode, v) {
   const cart = mode === 'withdraw' ? withdrawCart : borrowCart;
-  const n    = parseInt(v);
-  if (!n || n < 1) { cart[i].qty = 1; return; }
-  if (mode !== 'borrow' && n > cart[i].stock) { cart[i].qty = cart[i].stock; return; }
+  const inp  = document.getElementById(`qi_${mode}_${i}`);
+  let n      = parseInt(v);
+  if (!n || n < 1) {
+    n = 1;
+    cart[i].qty = 1;
+    if (inp) inp.value = 1;
+    showToast('จำนวนขั้นต่ำคือ 1', 'error');
+    return;
+  }
+  if (mode !== 'borrow' && n > cart[i].stock) {
+    n = cart[i].stock;
+    cart[i].qty = n;
+    if (inp) inp.value = n;
+    showToast(`เบิกได้สูงสุด ${n} ${cart[i].unit}`, 'error');
+    return;
+  }
   cart[i].qty = n;
 }
 
