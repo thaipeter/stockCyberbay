@@ -138,8 +138,14 @@ body{display:flex;flex-direction:column}
 .reg-success{text-align:center;padding:16px 0}
 .reg-success-icon{font-size:48px;margin-bottom:12px}
 .reg-pending-spinner{width:48px;height:48px;margin:0 auto 12px;border:4px solid rgba(232,160,32,.2);border-top-color:var(--amber);border-radius:50%;animation:spin .8s linear infinite}
+.reg-pending-spinner.approved{display:none}
+.reg-success-icon.approved{display:none;font-size:48px;margin-bottom:12px;animation:popIn .35s ease}
+.reg-success-icon.approved.show{display:block}
+@keyframes popIn{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
 .reg-success-msg{font-size:14px;color:var(--text);margin-bottom:4px;font-weight:600}
+.reg-success-msg.approved{color:var(--green)}
 .reg-success-sub{font-size:12px;color:var(--text2)}
+.reg-success-sub.approved{color:var(--green)}
 
 /* ── Top bar ── */
 .topbar{height:var(--bar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0}
@@ -514,7 +520,7 @@ body{display:flex;flex-direction:column}
     <div class="reg-step active" id="regStep1">
       <div class="reg-field">
         <div class="reg-label">ชื่อ-นามสกุล <span style="color:var(--red)">*</span></div>
-        <input class="reg-input" id="regName" placeholder="เช่น สมพร ใจดี" type="text" autocomplete="off">
+        <input class="reg-input" id="regName" placeholder="เช่น สมชาย ใจดี" type="text" autocomplete="off">
       </div>
       <div class="reg-field">
         <div class="reg-label">แผนก / ตำแหน่ง</div>
@@ -557,9 +563,10 @@ body{display:flex;flex-direction:column}
     </div>
     <div class="reg-step" id="regStep3">
       <div class="reg-success">
-        <div class="reg-pending-spinner"></div>
+        <div class="reg-pending-spinner" id="regSpinner"></div>
+        <div class="reg-success-icon approved" id="regApprovedIcon">🎉</div>
         <div class="reg-success-msg" id="regSuccessMsg">ส่งคำขอเรียบร้อย!</div>
-        <div class="reg-success-sub">รอ Admin อนุมัติก่อนเข้าใช้งาน</div>
+        <div class="reg-success-sub" id="regSuccessSub">รอ Admin อนุมัติก่อนเข้าใช้งาน</div>
       </div>
       <button class="reg-submit-btn" style="width:100%;margin-top:8px" onclick="closeRegister()">ปิด</button>
     </div>
@@ -2313,6 +2320,8 @@ function callGAS(fn, args, onOk, onFail) {
 
 /* ══ REGISTER ══ */
 let regPin = '';
+let regUserId = null;
+let regPollTimer = null;
 
 function openRegister() {
   regPin = '';
@@ -2324,8 +2333,60 @@ function openRegister() {
   document.getElementById('registerModal').classList.add('open');
 }
 
-function closeRegister() { document.getElementById('registerModal').classList.remove('open'); regPin = ''; }
-function showRegStep(n) { [1,2,3].forEach(i => { document.getElementById('regStep'+i).classList.toggle('active',i===n); }); }
+function closeRegister() {
+  document.getElementById('registerModal').classList.remove('open');
+  regPin = '';
+  stopRegPoll();
+}
+function showRegStep(n) {
+  [1,2,3].forEach(i => { document.getElementById('regStep'+i).classList.toggle('active',i===n); });
+  if (n === 1) resetRegSuccessUI();
+}
+
+function resetRegSuccessUI() {
+  document.getElementById('regSpinner').style.display = 'block';
+  document.getElementById('regApprovedIcon').classList.remove('show');
+  document.getElementById('regSuccessMsg').classList.remove('approved');
+  document.getElementById('regSuccessSub').classList.remove('approved');
+}
+
+function startRegPoll(userId) {
+  regUserId = userId;
+  stopRegPoll();
+  regPollTimer = setInterval(() => {
+    callGAS('webCheckRegStatus', [userId], res => {
+      if (res && res.status === 'approved') {
+        stopRegPoll();
+        showRegApproved();
+      } else if (res && res.status === 'rejected') {
+        stopRegPoll();
+        showRegRejected();
+      }
+    }, () => {});
+  }, 4000);
+}
+
+function stopRegPoll() {
+  if (regPollTimer) { clearInterval(regPollTimer); regPollTimer = null; }
+}
+
+function showRegApproved() {
+  document.getElementById('regSpinner').style.display = 'none';
+  const icon = document.getElementById('regApprovedIcon');
+  icon.classList.add('show');
+  const msg = document.getElementById('regSuccessMsg');
+  msg.textContent = 'อนุมัติเรียบร้อยแล้ว!';
+  msg.classList.add('approved');
+  const sub = document.getElementById('regSuccessSub');
+  sub.textContent = 'เข้าใช้งานได้เลยตอนนี้ 🎉';
+  sub.classList.add('approved');
+}
+
+function showRegRejected() {
+  document.getElementById('regSpinner').style.display = 'none';
+  document.getElementById('regSuccessMsg').textContent = 'คำขอไม่ได้รับการอนุมัติ';
+  document.getElementById('regSuccessSub').textContent = 'กรุณาติดต่อ Admin';
+}
 
 function goRegStep2() {
   const name = document.getElementById('regName').value.trim();
@@ -2376,6 +2437,7 @@ function submitRegister() {
     }
     document.getElementById('regSuccessMsg').textContent = `ส่งคำขอของ "${name}" เรียบร้อย!`;
     err.style.display = 'none'; showRegStep(3);
+    if (res && res.userId) startRegPoll(res.userId);
     callGAS('getLoginUsers', [], users => { if (users && users.length) { allData.users = users; populateUsers(users); } }, () => {});
   }, e => {
     btn.textContent = 'ส่งคำขอสมัคร'; btn.disabled = false;
@@ -2598,10 +2660,10 @@ function demoData() {
       {code:'TL-003',name:'ไขควงชุด 6 ชิ้น',category:'เครื่องมือ',unit:'ชุด',stock:5,min:2},
     ],
     activeBorrows: [
-      {reqId:'BW001',itemCode:'TL-001',itemName:'ประแจปากตาย 13',qty:1,borrower:'สมพร',date:'01/06/68'},
+      {reqId:'BW001',itemCode:'TL-001',itemName:'ประแจปากตาย 13',qty:1,borrower:'สมชาย',date:'01/06/68'},
     ],
     users: [
-      {userId:'u001',name:'สมพร ใจดี',role:'user'},
+      {userId:'u001',name:'สมชาย ใจดี',role:'user'},
       {userId:'u002',name:'วิชัย เก่งงาน',role:'staff'},
       {userId:'u_admin',name:'Admin',role:'admin'},
       {userId:'u_qr',name:'QR Station',role:'qr'},
