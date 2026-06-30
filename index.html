@@ -1242,7 +1242,13 @@ function doLogin() {
   btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
   callGAS('webVerifyUserPin', [uid, pin], isValid => {
     btn.textContent = 'เข้าสู่ระบบ';
-    if (isValid) loginSuccess(uid);
+    if (isValid) {
+      // refresh ข้อมูล user ล่าสุดก่อน login (เผื่อ photoUrl/role เปลี่ยนไปจากตอนโหลดแอพครั้งแรก)
+      callGAS('getLoginUsers', [], users => {
+        if (users && users.length) allData.users = users;
+        loginSuccess(uid);
+      }, () => loginSuccess(uid));
+    }
     else { clearPin(); document.getElementById('loginError').style.display = 'block'; }
   }, () => {
     btn.textContent = 'เข้าสู่ระบบ';
@@ -1402,14 +1408,9 @@ function cpVerifyOld() {
       cpOldPin = ''; updateCpDots('old');
       err.textContent = 'PIN เก่าไม่ถูกต้อง กรุณาลองใหม่'; err.style.display = 'block';
     }
-  }, () => {
+  }, errMsg => {
     btn.textContent = 'ยืนยัน PIN เก่า →'; btn.disabled = false;
-    // demo fallback — ถ้า GAS ไม่ตอบ ให้ผ่านได้เลย (demo mode)
-    cpNewPin = ''; updateCpDots('new');
-    document.getElementById('cpSaveBtn').disabled = true;
-    document.getElementById('cpSubTitle').textContent = 'ตั้ง PIN ใหม่ของคุณ';
-    err.style.display = 'none';
-    showCpStep(2);
+    err.textContent = 'เชื่อมต่อระบบไม่สำเร็จ: ' + errMsg; err.style.display = 'block';
   });
 }
 
@@ -1432,10 +1433,9 @@ function cpSave() {
       err.textContent = res.error || 'เกิดข้อผิดพลาด'; err.style.display = 'block'; btn.disabled = false; return;
     }
     showCpStep(3);
-  }, () => {
-    btn.textContent = 'บันทึก PIN ใหม่';
-    // demo fallback
-    showCpStep(3);
+  }, errMsg => {
+    btn.disabled = false; btn.textContent = 'บันทึก PIN ใหม่';
+    err.textContent = 'เชื่อมต่อระบบไม่สำเร็จ: ' + errMsg; err.style.display = 'block';
   });
 }
 
