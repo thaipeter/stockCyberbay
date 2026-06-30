@@ -1247,17 +1247,12 @@ function doLogin() {
   callGAS('webVerifyUserPin', [uid, pin], isValid => {
     btn.textContent = 'เข้าสู่ระบบ';
     if (isValid) {
-      // refresh ข้อมูล user ล่าสุดก่อน login (เผื่อ photoUrl/role เปลี่ยนไปจากตอนโหลดแอพครั้งแรก)
-      callGAS('getLoginUsers', [], users => {
-        if (users && users.length) allData.users = users;
-        loginSuccess(uid);
-      }, () => loginSuccess(uid));
+      loginSuccess(uid);
     }
     else { clearPin(); document.getElementById('loginError').style.display = 'block'; }
   }, () => {
     btn.textContent = 'เข้าสู่ระบบ';
-    if (pin === '1234') loginSuccess(uid);
-    else { clearPin(); document.getElementById('loginError').style.display = 'block'; }
+    clearPin(); document.getElementById('loginError').style.display = 'block';
   });
 }
 
@@ -1268,7 +1263,7 @@ function loginSuccess(uid) {
     icon: 'success',
     title: 'เข้าสู่ระบบสำเร็จ',
     text: 'ยินดีต้อนรับ ' + me.name,
-    timer: 1500,
+    timer: 600,
     showConfirmButton: false,
     background: '#1a1f2e',
     color: '#c0c0c0'
@@ -2178,28 +2173,55 @@ function submitCart(mode) {
   const cart   = mode === 'withdraw' ? withdrawCart : borrowCart;
   const remark = document.getElementById(mode === 'withdraw' ? 'wRemark' : 'bRemark').value.trim();
   if (!cart.length) { showToast('ตะกร้าว่าง', 'error'); return; }
-  const btnId = mode === 'withdraw' ? 'submitW' : 'submitB';
-  const btn   = document.getElementById(btnId);
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
-  const payloads = cart.map(item => ({
-    code: item.code, qty: item.qty,
-    type: mode === 'withdraw' ? 'เบิก' : 'ยืม',
-    user: me.name, uid: me.uid, remark
-  }));
-  callGAS('webBatchTransaction', [payloads], res => {
-    btn.disabled = false;
-    btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
-    closeSheet(mode === 'withdraw' ? 'sheetWithdraw' : 'sheetBorrow');
-    if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
-    else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
-    updateCartBar(mode);
-    showToast(`สำเร็จ ${payloads.length} รายการ`, 'success');
-    callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
-  }, err => {
-    btn.disabled = false;
-    btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
-    showToast('เกิดข้อผิดพลาด: ' + err, 'error');
+  
+  const typeText = mode === 'withdraw' ? 'เบิก' : 'ยืม';
+  let itemListHtml = '<div style="max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-top: 10px; text-align: left;">';
+  cart.forEach(item => {
+    itemListHtml += `<div style="font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 6px 0; color: #fff;">
+      <span style="color: #ffca28; font-weight: bold;">${item.qty} ${item.unit}</span> - ${item.name}
+    </div>`;
+  });
+  itemListHtml += '</div>';
+
+  Swal.fire({
+    title: `ยืนยันการ${typeText}?`,
+    html: `ตรวจสอบรายการสินค้าของคุณก่อนบันทึก${itemListHtml}`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'ยืนยันทำรายการ',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#4f46e5',
+    cancelButtonColor: '#64748b',
+    background: '#1a1f2e',
+    color: '#e2e8f0'
+  }).then((result) => {
+    if (!result.isConfirmed) return;
+    
+    const btnId = mode === 'withdraw' ? 'submitW' : 'submitB';
+    const btn   = document.getElementById(btnId);
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+    
+    const payloads = cart.map(item => ({
+      code: item.code, qty: item.qty,
+      type: mode === 'withdraw' ? 'เบิก' : 'ยืม',
+      user: me.name, uid: me.uid, remark
+    }));
+    
+    callGAS('webBatchTransaction', [payloads], res => {
+      btn.disabled = false;
+      btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
+      closeSheet(mode === 'withdraw' ? 'sheetWithdraw' : 'sheetBorrow');
+      if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
+      else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
+      updateCartBar(mode);
+      showToast(`สำเร็จ ${payloads.length} รายการ`, 'success');
+      callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
+    }, err => {
+      btn.disabled = false;
+      btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
+      showToast('เกิดข้อผิดพลาด: ' + err, 'error');
+    });
   });
 }
 
