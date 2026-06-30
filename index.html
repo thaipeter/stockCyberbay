@@ -145,7 +145,7 @@ body{display:flex;flex-direction:column}
 .topbar-left{display:flex;align-items:center;gap:10px}
 .topbar-title{font-size:14px;font-weight:600;color:var(--text)}
 .topbar-sub{font-size:11px;color:var(--text2)}
-.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--amber-dim);border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--amber);cursor:pointer}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--amber-dim);border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--amber);cursor:pointer;overflow:hidden}
 .user-name{font-size:11px;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ── Tabs ── */
@@ -576,7 +576,7 @@ body{display:flex;flex-direction:column}
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <div class="user-name" id="userName"></div>
-    <div class="user-avatar" id="userAvatar" onclick="openUserMenu()">?</div>
+    <div class="user-avatar" id="userAvatar" onclick="openUserMenu()"><img id="userAvatarImg" src="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:none"><span id="userAvatarIcon">?</span></div>
   </div>
 </div>
 
@@ -944,12 +944,21 @@ body{display:flex;flex-direction:column}
   <div class="modal-box" style="padding-bottom:24px">
     <div class="modal-handle"></div>
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
-      <div style="width:48px;height:48px;border-radius:50%;background:var(--amber-dim);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:22px" id="menuAvatarIcon">?</div>
+      <div style="position:relative;cursor:pointer" onclick="triggerProfileImgPick()">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--amber-dim);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden" id="menuAvatarWrap">
+          <img id="menuAvatarImg" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+          <span id="menuAvatarIcon">?</span>
+        </div>
+        <div style="position:absolute;bottom:0;right:0;width:18px;height:18px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center">
+          <i class="fas fa-camera" style="font-size:9px;color:#000"></i>
+        </div>
+      </div>
       <div>
         <div style="font-size:15px;font-weight:700;color:var(--text)" id="menuUserName">-</div>
         <div style="font-size:11px;color:var(--text2)" id="menuUserRole">-</div>
       </div>
     </div>
+    <input type="file" id="profileImgInput" accept="image/*" style="display:none" onchange="onProfileImgPicked(event)">
     <button onclick="closeUserMenu();openChangePin()" style="
       width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);
       color:var(--text);font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;
@@ -1050,7 +1059,7 @@ body{display:flex;flex-direction:column}
 <script>
 /* ══ STATE ══ */
 let allData = {};
-let me = { uid: null, name: '', role: 'user' };
+let me = { uid: null, name: '', role: 'user', photoUrl: null };
 let withdrawCart = [];
 let borrowCart   = [];
 let receiveCart  = [];
@@ -1093,6 +1102,15 @@ function startUserPoll() {
     callGAS('getLoginUsers', [], users => {
       if (!users || !users.length) return;
       allData.users = users;
+      // sync photoUrl ของ user ที่ login อยู่
+      if (me.uid) {
+        const u = users.find(x => x.userId === me.uid);
+        if (u && u.photoUrl && u.photoUrl !== me.photoUrl) {
+          me.photoUrl = u.photoUrl;
+          const rc = ROLE_CONFIG[me.role] || ROLE_CONFIG.user;
+          _setAvatarEl(document.getElementById('userAvatarImg'), document.getElementById('userAvatarIcon'), rc.icon, me.photoUrl);
+        }
+      }
       const uid2 = document.getElementById('loginUid').value;
       if (uid2) return;
       populateUsers(users);
@@ -1235,12 +1253,12 @@ function doLogin() {
 
 function loginSuccess(uid) {
   const u  = (allData.users || []).find(x => x.userId === uid);
-  me = { uid, name: u ? u.name : 'ผู้ใช้', role: u ? u.role : 'user' };
+  me = { uid, name: u ? u.name : 'ผู้ใช้', role: u ? u.role : 'user', photoUrl: u ? (u.photoUrl || null) : null };
   hide('loginScreen');
   document.getElementById('appWrap').classList.add('visible');
   const rc = ROLE_CONFIG[me.role] || ROLE_CONFIG.user;
   document.getElementById('userName').textContent = me.name;
-  document.getElementById('userAvatar').textContent = rc.icon;
+  _setAvatarEl(document.getElementById('userAvatarImg'), document.getElementById('userAvatarIcon'), rc.icon, me.photoUrl);
   // แสดง tab รับเข้าและรายการใหม่เฉพาะ admin
   document.getElementById('tabReceive').style.display = me.role === 'admin' ? 'flex' : 'none';
   const niTab = document.getElementById('tabNewItem');
@@ -1259,11 +1277,55 @@ function loginSuccess(uid) {
 /* ══ USER MENU ══ */
 function openUserMenu() {
   const rc = ROLE_CONFIG[me.role] || ROLE_CONFIG.user;
-  document.getElementById('menuAvatarIcon').textContent = rc.icon;
+  _setAvatarEl(document.getElementById('menuAvatarImg'), document.getElementById('menuAvatarIcon'), rc.icon, me.photoUrl);
   document.getElementById('menuUserName').textContent = me.name;
   document.getElementById('menuUserRole').textContent = rc.label + ' (' + rc.badgeText + ')';
   document.getElementById('userMenuModal').classList.add('open');
 }
+function _setAvatarEl(imgEl, iconEl, icon, photoUrl) {
+  const url = photoUrl ? getProxyImgUrl(photoUrl) : null;
+  if (url) {
+    imgEl.src = url;
+    imgEl.style.display = 'block';
+    if (iconEl) iconEl.style.display = 'none';
+    imgEl.onerror = function() { this.style.display='none'; if(iconEl){iconEl.style.display='';iconEl.textContent=icon;} };
+  } else {
+    imgEl.style.display = 'none';
+    if (iconEl) { iconEl.style.display = ''; iconEl.textContent = icon; }
+  }
+}
+
+function triggerProfileImgPick() {
+  document.getElementById('profileImgInput').click();
+}
+
+function onProfileImgPicked(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('รูปใหญ่เกิน 5MB', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    const base64 = dataUrl.split(',')[1];
+    const mimeType = file.type || 'image/jpeg';
+    showToast('กำลังอัปโหลดรูปโปรไฟล์...', 'info');
+    callGAS('webSaveProfileImage', [{ uid: me.uid, base64, mimeType, userName: me.name }], res => {
+      if (res && res.success) {
+        me.photoUrl = res.photoUrl;
+        // อัปเดต avatar ทั้ง header และ menu
+        const rc = ROLE_CONFIG[me.role] || ROLE_CONFIG.user;
+        _setAvatarEl(document.getElementById('userAvatarImg'), document.getElementById('userAvatarIcon'), rc.icon, me.photoUrl);
+        _setAvatarEl(document.getElementById('menuAvatarImg'), document.getElementById('menuAvatarIcon'), rc.icon, me.photoUrl);
+        showToast('อัปโหลดรูปโปรไฟล์สำเร็จ', 'success');
+      } else {
+        showToast('อัปโหลดล้มเหลว: ' + (res ? res.error : 'Unknown'), 'error');
+      }
+    }, err => showToast('เกิดข้อผิดพลาด: ' + err, 'error'));
+    event.target.value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
 function closeUserMenu() { document.getElementById('userMenuModal').classList.remove('open'); }
 
 /* ══ CHANGE PIN ══ */
@@ -1384,7 +1446,7 @@ function confirmLogout() {
     confirmButtonColor: '#ef5350', background: '#1e1e1e', color: '#c0c0c0',
   }).then(r => {
     if (!r.isConfirmed) return;
-    me = { uid: null, name: '', role: 'user' };
+    me = { uid: null, name: '', role: 'user', photoUrl: null };
     withdrawCart = []; borrowCart = []; receiveCart = [];
     mineData = { history: [], borrows: [] };
     clearPin();
@@ -1393,7 +1455,11 @@ function confirmLogout() {
     document.getElementById('loginDropdown').style.display = 'none';
     document.getElementById('pinSection').style.display = 'none';
     document.getElementById('roleIndicator').classList.remove('show');
-    document.getElementById('userAvatar').textContent = '?';
+    document.getElementById('userAvatarImg').style.display = 'none';
+    document.getElementById('userAvatarIcon').textContent = '?';
+    document.getElementById('menuAvatarImg').style.display = 'none';
+    document.getElementById('menuAvatarIcon').style.display = '';
+    document.getElementById('menuAvatarIcon').textContent = '?';
     document.getElementById('tabReceive').style.display = 'none';
     const niTabLo = document.getElementById('tabNewItem');
     if (niTabLo) niTabLo.style.display = 'none';
