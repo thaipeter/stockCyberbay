@@ -1444,14 +1444,10 @@ function cpVerifyOld() {
       cpOldPin = ''; updateCpDots('old');
       err.textContent = 'PIN เก่าไม่ถูกต้อง กรุณาลองใหม่'; err.style.display = 'block';
     }
-  }, () => {
+  }, (errMsg) => {
     btn.textContent = 'ยืนยัน PIN เก่า →'; btn.disabled = false;
-    // demo fallback — ถ้า GAS ไม่ตอบ ให้ผ่านได้เลย (demo mode)
-    cpNewPin = ''; updateCpDots('new');
-    document.getElementById('cpSaveBtn').disabled = true;
-    document.getElementById('cpSubTitle').textContent = 'ตั้ง PIN ใหม่ของคุณ';
-    err.style.display = 'none';
-    showCpStep(2);
+    // ห้ามข้ามการตรวจ PIN เก่าแม้เรียก backend ไม่สำเร็จ — แสดง error แทนการปล่อยผ่าน
+    err.textContent = 'ตรวจสอบ PIN ไม่สำเร็จ: ' + (errMsg || 'กรุณาลองใหม่'); err.style.display = 'block';
   });
 }
 
@@ -1474,10 +1470,10 @@ function cpSave() {
       err.textContent = res.error || 'เกิดข้อผิดพลาด'; err.style.display = 'block'; btn.disabled = false; return;
     }
     showCpStep(3);
-  }, () => {
-    btn.textContent = 'บันทึก PIN ใหม่';
-    // demo fallback
-    showCpStep(3);
+  }, (errMsg) => {
+    btn.textContent = 'บันทึก PIN ใหม่'; btn.disabled = false;
+    // ห้ามแสดงว่าสำเร็จถ้า backend ไม่ยืนยันจริง
+    err.textContent = 'บันทึก PIN ไม่สำเร็จ: ' + (errMsg || 'กรุณาลองใหม่'); err.style.display = 'block';
   });
 }
 
