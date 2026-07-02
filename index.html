@@ -831,8 +831,11 @@ body{display:flex;flex-direction:column}
       <div id="stProgressBar" style="height:100%;width:0%;background:#f59e0b;transition:width .3s"></div>
     </div>
     <div class="search-wrap">
-      <i class="fas fa-search"></i>
-      <input type="text" id="stSearchInput" placeholder="ค้นหาสินค้าเพื่อนับ..." oninput="stRender(this.value)">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input class="search-input" id="stSearchInput" type="text" placeholder="ค้นหาสินค้าเพื่อนับ..." autocomplete="off" oninput="stRender(this.value)">
+      </div>
+      <button class="scan-btn" onclick="openScanner('stocktake')"><i class="fas fa-camera"></i> สแกน</button>
     </div>
   </div>
   <div id="stList" style="flex:1;overflow-y:auto;padding:8px 16px 16px"></div>
@@ -2406,6 +2409,13 @@ function closeScanner() {
 }
 
 function handleQR(code) {
+  if (scanTarget === 'stocktake') {
+    if (!stState.loaded) { showToast('กำลังโหลดข้อมูล กรุณารอสักครู่แล้วสแกนใหม่', 'error'); return; }
+    const item = stState.items.find(i => i.code === code);
+    if (!item) { showToast(`ไม่พบรหัส ${code} ในรายการนับสต็อกรอบนี้`, 'error'); return; }
+    stOpenCount(code);
+    return;
+  }
   const item = getAllItems().find(i => i.code === code);
   if (!item) { showToast(`ไม่พบรหัส ${code}`, 'error'); return; }
   addToCart(code, scanTarget);
