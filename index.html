@@ -1807,7 +1807,7 @@ function addToCart(code, mode) {
     if (mode !== 'borrow' && exist.qty >= item.stock) { showToast('สต็อกไม่พอ', 'error'); return; }
     exist.qty++;
   } else {
-    cart.push({ code: item.code, name: item.name, qty: 1, unit: item.unit, stock: item.stock });
+    cart.push({ code: item.code, name: item.name, qty: 1, unit: item.unit, stock: item.stock, imageUrl: item.imageUrl || '' });
   }
   showToast(esc(item.name) + ' +1', 'success');
   updateCartBar(mode);
@@ -1844,12 +1844,21 @@ function openSheet(id) {
   const cart = mode === 'withdraw' ? withdrawCart : borrowCart;
   if (!cart.length) { showToast('ตะกร้าว่างเปล่า', 'error'); return; }
   const bodyId = mode === 'withdraw' ? 'wCartBody' : 'bCartBody';
-  document.getElementById(bodyId).innerHTML = cart.map((item, i) => `
+  document.getElementById(bodyId).innerHTML = cart.map((item, i) => {
+    const imgUrl = getProxyImgUrl(item.imageUrl);
+    const iconHtml = imgUrl
+      ? '<img class="item-img" src="' + imgUrl + '" alt="' + esc(item.name) + '" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')" style="cursor:pointer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+        + '<div class="item-img-placeholder" style="display:none">📦</div>'
+      : '<div class="item-img-placeholder">📦</div>';
+    return `
     <div class="cart-item">
       <div class="cart-item-top">
-        <div>
-          <div class="cart-item-name">${esc(item.name)}</div>
-          <div class="cart-item-code">${item.code} • คงเหลือ ${item.stock} ${item.unit}</div>
+        <div style="display:flex;gap:10px;min-width:0">
+          ${iconHtml}
+          <div style="min-width:0">
+            <div class="cart-item-name">${esc(item.name)}</div>
+            <div class="cart-item-code">${item.code} • คงเหลือ ${item.stock} ${item.unit}</div>
+          </div>
         </div>
         <button class="cart-remove" onclick="removeCart(${i},'${mode}')"><i class="fas fa-trash-alt"></i></button>
       </div>
@@ -1860,7 +1869,8 @@ function openSheet(id) {
         <button class="qty-btn" onclick="changeQty(${i},'${mode}',1)">+</button>
         <span class="qty-unit">${item.unit}</span>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   document.getElementById(id).classList.add('open');
 }
 
