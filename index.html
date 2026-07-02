@@ -32,7 +32,7 @@ body{display:flex;flex-direction:column}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
 }
 .loading-screen.hidden{display:none}
-.spinner{width:36px;height:36px;border:3px solid transparent;border-top-color:var(--amber);border-right-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite}
+.spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:13px;color:var(--text2)}
 
@@ -2323,11 +2323,11 @@ function submitCart(mode) {
   itemListHtml += '</div>';
 
   Swal.fire({
-    title: `ยืนยันการ${typeText}?`,
-    html: `ตรวจสอบรายการสินค้าของคุณก่อนบันทึก${itemListHtml}`,
+    title: `ส่งคำขอ${typeText}?`,
+    html: `ระบบจะส่งคำขอไปให้แอดมินอนุมัติในไลน์ก่อน จึงจะตัดสต็อกจริง${itemListHtml}`,
     icon: 'question',
     showCancelButton: true,
-    confirmButtonText: 'ยืนยันทำรายการ',
+    confirmButtonText: 'ส่งคำขอ',
     cancelButtonText: 'ยกเลิก',
     confirmButtonColor: '#4f46e5',
     cancelButtonColor: '#64748b',
@@ -2354,7 +2354,14 @@ function submitCart(mode) {
       if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
       else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
       updateCartBar(mode);
-      showToast(`สำเร็จ ${payloads.length} รายการ`, 'success');
+      const pendingN = (res && res.pendingCount) || payloads.length;
+      Swal.fire({
+        icon: 'success',
+        title: 'ส่งคำขอแล้ว!',
+        text: `ส่งคำขอ${typeText} ${pendingN} รายการเรียบร้อย รอแอดมินกดอนุมัติในไลน์ก่อน ของจะถูกกันไว้ให้ระหว่างนี้`,
+        confirmButtonColor: '#4f46e5',
+        background: '#1a1f2e', color: '#e2e8f0'
+      });
       callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
     }, err => {
       btn.disabled = false;
