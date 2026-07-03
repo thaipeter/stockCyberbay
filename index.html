@@ -450,8 +450,9 @@ body{display:flex;flex-direction:column}
 
 <!-- ════ LOGIN ════ -->
 <div class="login-screen hidden" id="loginScreen">
-  <div class="login-logo">🏭</div>
-  <div class="login-title">ระบบคลังอะไหล่</div>
+  <img src="" alt="Logo" id="loginLogoImg" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:16px;margin-bottom:8px;box-shadow:0 4px 16px rgba(0,0,0,.35)">
+  <div class="login-logo" id="loginLogoEmoji">🏭</div>
+  <div class="login-title" id="loginTitleText">ระบบคลังอะไหล่</div>
   <div class="login-sub">เข้าสู่ระบบเพื่อทำรายการ</div>
   <div class="login-card">
     <!-- เลือกชื่อ -->
@@ -1122,6 +1123,7 @@ window.addEventListener('DOMContentLoaded', () => {
   show('loadingScreen');
   callGAS('getInventoryData', [], data => {
     allData = data || {};
+    applyBrandingToLoginScreen(allData.settings || {});
     hide('loadingScreen');
     show('loginScreen'); document.getElementById('appWrap').classList.remove('visible');
     populateUsers(allData.users || []);
@@ -1133,6 +1135,22 @@ window.addEventListener('DOMContentLoaded', () => {
     populateUsers(allData.users || []);
   });
 });
+
+function applyBrandingToLoginScreen(settings) {
+  try {
+    const imgEl = document.getElementById('loginLogoImg');
+    const emojiEl = document.getElementById('loginLogoEmoji');
+    if (settings.sysLogo) {
+      imgEl.src = getProxyImgUrl(settings.sysLogo) || settings.sysLogo;
+      imgEl.onload = () => { imgEl.style.display = 'block'; emojiEl.style.display = 'none'; };
+      imgEl.onerror = () => { imgEl.style.display = 'none'; emojiEl.style.display = 'block'; };
+    }
+    if (settings.sysName) {
+      const titleEl = document.getElementById('loginTitleText');
+      if (titleEl) titleEl.textContent = settings.sysName;
+    }
+  } catch (e) { /* ไม่ให้ error ตรงนี้บล็อกการเข้าสู่ระบบ */ }
+}
 
 function startUserPoll() {
   setInterval(() => {
@@ -1847,21 +1865,21 @@ function openSheet(id) {
   document.getElementById(bodyId).innerHTML = cart.map((item, i) => {
     const imgUrl = getProxyImgUrl(item.imageUrl);
     const iconHtml = imgUrl
-      ? '<div style="width:56px;height:56px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')">'
+      ? '<div style="width:68px;height:68px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')">'
         + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
-        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:22px">📦</div></div>'
-      : '<div style="width:56px;height:56px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">📦</div>';
+        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:26px">📦</div></div>'
+      : '<div style="width:68px;height:68px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px">📦</div>';
     return `
     <div class="cart-item">
-      <div class="cart-item-top">
-        <div style="display:flex;gap:10px;min-width:0">
-          ${iconHtml}
-          <div style="min-width:0">
-            <div class="cart-item-name">${esc(item.name)}</div>
-            <div class="cart-item-code">${item.code} • คงเหลือ ${item.stock} ${item.unit}</div>
-          </div>
+      <div class="cart-item-top" style="align-items:flex-start">
+        <div style="min-width:0;flex:1;padding-right:8px">
+          <div class="cart-item-name">${esc(item.name)}</div>
+          <div class="cart-item-code">${item.code} • คงเหลือ ${item.stock} ${item.unit}</div>
         </div>
-        <button class="cart-remove" onclick="removeCart(${i},'${mode}')"><i class="fas fa-trash-alt"></i></button>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+          <button class="cart-remove" onclick="removeCart(${i},'${mode}')"><i class="fas fa-trash-alt"></i></button>
+          ${iconHtml}
+        </div>
       </div>
       <div class="qty-row">
         <button class="qty-btn" onclick="changeQty(${i},'${mode}',-1)">−</button>
