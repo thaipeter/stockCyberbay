@@ -34,6 +34,11 @@ body{display:flex;flex-direction:column}
 .loading-screen.hidden{display:none}
 .spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.loading-icon{font-size:46px;color:var(--amber);animation:loadingGlow 1.6s ease-in-out infinite}
+@keyframes loadingGlow{
+  0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(0 0 6px rgba(232,160,32,.5));opacity:.8}
+  50%{transform:translateY(-8px) scale(1.1);filter:drop-shadow(0 0 22px rgba(232,160,32,.9));opacity:1}
+}
 .loading-text{font-size:13px;color:var(--text2)}
 
 /* ── Login Screen ── */
@@ -444,7 +449,7 @@ body{display:flex;flex-direction:column}
 
 <!-- ════ LOADING ════ -->
 <div class="loading-screen" id="loadingScreen">
-  <div class="spinner"></div>
+  <i class="fas fa-layer-group loading-icon"></i>
   <div class="loading-text">กำลังโหลด...</div>
 </div>
 
@@ -1865,21 +1870,21 @@ function openSheet(id) {
   document.getElementById(bodyId).innerHTML = cart.map((item, i) => {
     const imgUrl = getProxyImgUrl(item.imageUrl);
     const iconHtml = imgUrl
-      ? '<div style="width:68px;height:68px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')">'
+      ? '<div style="width:76px;height:76px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')">'
         + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
-        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:26px">📦</div></div>'
-      : '<div style="width:68px;height:68px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px">📦</div>';
+        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:28px">📦</div></div>'
+      : '<div style="width:76px;height:76px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px">📦</div>';
     return `
     <div class="cart-item">
-      <div class="cart-item-top" style="align-items:flex-start">
-        <div style="min-width:0;flex:1;padding-right:8px">
-          <div class="cart-item-name">${esc(item.name)}</div>
-          <div class="cart-item-code">${item.code} • คงเหลือ ${item.stock} ${item.unit}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-          <button class="cart-remove" onclick="removeCart(${i},'${mode}')"><i class="fas fa-trash-alt"></i></button>
+      <div class="cart-item-top" style="align-items:center;justify-content:space-between">
+        <div style="display:inline-flex;align-items:center;gap:12px;min-width:0">
+          <div style="min-width:0">
+            <div class="cart-item-name">${esc(item.name)}</div>
+            <div class="cart-item-code">${item.code} • คงเหลือ ${item.stock} ${item.unit}</div>
+          </div>
           ${iconHtml}
         </div>
+        <button class="cart-remove" onclick="removeCart(${i},'${mode}')"><i class="fas fa-trash-alt"></i></button>
       </div>
       <div class="qty-row">
         <button class="qty-btn" onclick="changeQty(${i},'${mode}',-1)">−</button>
