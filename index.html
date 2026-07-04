@@ -1293,11 +1293,18 @@ function doLogin() {
   const btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
   callGAS('webVerifyUserPin', [uid, pin], isValid => {
-    btn.textContent = 'เข้าสู่ระบบ';
     if (isValid) {
-      loginSuccess(uid);
+      // โหลดข้อมูลผู้ใช้ล่าสุดก่อนเข้าระบบ กันกรณีเพิ่งได้รับอนุมัติแต่หน้ายังแคชข้อมูลเก่าอยู่ (ไม่ต้องกดรีเฟรชหน้าเอง)
+      callGAS('getInventoryData', [], data => {
+        if (data) allData = data;
+        btn.textContent = 'เข้าสู่ระบบ';
+        loginSuccess(uid);
+      }, () => {
+        btn.textContent = 'เข้าสู่ระบบ';
+        loginSuccess(uid);
+      });
     }
-    else { clearPin(); document.getElementById('loginError').style.display = 'block'; }
+    else { btn.textContent = 'เข้าสู่ระบบ'; clearPin(); document.getElementById('loginError').style.display = 'block'; }
   }, () => {
     btn.textContent = 'เข้าสู่ระบบ';
     clearPin(); document.getElementById('loginError').style.display = 'block';
