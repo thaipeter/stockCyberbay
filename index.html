@@ -32,13 +32,18 @@ body{display:flex;flex-direction:column}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
 }
 .loading-screen.hidden{display:none}
-.spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-icon{font-size:46px;color:var(--amber);animation:loadingGlow 1.6s ease-in-out infinite}
-@keyframes loadingGlow{
-  0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(0 0 6px rgba(232,160,32,.5));opacity:.8}
-  50%{transform:translateY(-8px) scale(1.1);filter:drop-shadow(0 0 22px rgba(232,160,32,.9));opacity:1}
+.spinner{width:36px;height:36px;border:3px solid transparent;border-top-color:var(--amber);border-right-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite}
+.pulse-logo-emoji{font-size:40px;display:inline-block;animation:pulseLogoEmoji 1.4s ease-in-out infinite}
+@keyframes pulseLogoEmoji{
+  0%,100%{ transform:scale(1); opacity:.75; filter:drop-shadow(0 0 4px rgba(232,160,32,.35)); }
+  50%{ transform:scale(1.15); opacity:1; filter:drop-shadow(0 0 18px rgba(232,160,32,.85)); }
 }
+.loader-dots{display:inline-flex;gap:4px;vertical-align:middle}
+.loader-dots span{width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block;animation:loaderDotBounce 1s ease-in-out infinite}
+.loader-dots span:nth-child(2){animation-delay:.15s}
+.loader-dots span:nth-child(3){animation-delay:.3s}
+@keyframes loaderDotBounce{0%,80%,100%{opacity:.3;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:13px;color:var(--text2)}
 
 /* ── Login Screen ── */
@@ -235,7 +240,7 @@ body{display:flex;flex-direction:column}
 .qty-row{display:flex;align-items:center;gap:8px}
 .qty-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .qty-btn:active{background:var(--border2)}
-.qty-input{flex:0 0 70px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--amber);font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;text-align:center;padding:6px;outline:none}
+.qty-input{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--amber);font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;text-align:center;padding:6px;outline:none}
 .qty-unit{font-size:11px;color:var(--text2);flex-shrink:0}
 
 /* ── Form fields ── */
@@ -449,15 +454,14 @@ body{display:flex;flex-direction:column}
 
 <!-- ════ LOADING ════ -->
 <div class="loading-screen" id="loadingScreen">
-  <i class="fas fa-layer-group loading-icon"></i>
+  <div class="pulse-logo-emoji">🏭</div>
   <div class="loading-text">กำลังโหลด...</div>
 </div>
 
 <!-- ════ LOGIN ════ -->
 <div class="login-screen hidden" id="loginScreen">
-  <img src="" alt="Logo" id="loginLogoImg" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:16px;margin-bottom:8px;box-shadow:0 4px 16px rgba(0,0,0,.35)">
-  <div class="login-logo" id="loginLogoEmoji">🏭</div>
-  <div class="login-title" id="loginTitleText">ระบบคลังอะไหล่</div>
+  <div class="login-logo">🏭</div>
+  <div class="login-title">ระบบคลังอะไหล่</div>
   <div class="login-sub">เข้าสู่ระบบเพื่อทำรายการ</div>
   <div class="login-card">
     <!-- เลือกชื่อ -->
@@ -1128,7 +1132,6 @@ window.addEventListener('DOMContentLoaded', () => {
   show('loadingScreen');
   callGAS('getInventoryData', [], data => {
     allData = data || {};
-    applyBrandingToLoginScreen(allData.settings || {});
     hide('loadingScreen');
     show('loginScreen'); document.getElementById('appWrap').classList.remove('visible');
     populateUsers(allData.users || []);
@@ -1140,22 +1143,6 @@ window.addEventListener('DOMContentLoaded', () => {
     populateUsers(allData.users || []);
   });
 });
-
-function applyBrandingToLoginScreen(settings) {
-  try {
-    const imgEl = document.getElementById('loginLogoImg');
-    const emojiEl = document.getElementById('loginLogoEmoji');
-    if (settings.sysLogo) {
-      imgEl.src = getProxyImgUrl(settings.sysLogo) || settings.sysLogo;
-      imgEl.onload = () => { imgEl.style.display = 'block'; emojiEl.style.display = 'none'; };
-      imgEl.onerror = () => { imgEl.style.display = 'none'; emojiEl.style.display = 'block'; };
-    }
-    if (settings.sysName) {
-      const titleEl = document.getElementById('loginTitleText');
-      if (titleEl) titleEl.textContent = settings.sysName;
-    }
-  } catch (e) { /* ไม่ให้ error ตรงนี้บล็อกการเข้าสู่ระบบ */ }
-}
 
 function startUserPoll() {
   setInterval(() => {
@@ -1676,8 +1663,8 @@ let stState = { sessionId: null, items: [], loaded: false };
 
 function stLoad() {
   const listEl = document.getElementById('stList');
-  if (!stState.loaded) listEl.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>กำลังโหลดรายการนับสต็อก...</p></div>';
-  callGAS('webGetStockTakeProgress', [{ role: me.role, userName: me.name }], res => {
+  if (!stState.loaded) listEl.innerHTML = '<div class="empty-state"><span class="loader-dots"><span></span><span></span><span></span></span><p>กำลังโหลดรายการนับสต็อก...</p></div>';
+  callGAS('webGetStockTakeProgress', [{ role: me.role, userName: me.name, userId: me.uid }], res => {
     stState.sessionId = res.sessionId;
     stState.items = res.items || [];
     stState.loaded = true;
@@ -1686,7 +1673,7 @@ function stLoad() {
     document.getElementById('stProgressBadge').textContent = res.countedItems + '/' + res.totalItems;
     const pct = res.totalItems ? Math.round(res.countedItems / res.totalItems * 100) : 0;
     document.getElementById('stProgressBar').style.width = pct + '%';
-    document.getElementById('stCloseBar').style.display = (me.role === 'admin' && res.status !== 'closed') ? 'block' : 'none';
+    document.getElementById('stCloseBar').style.display = ((me.role === 'admin' || me.role === 'staff') && res.status !== 'closed') ? 'block' : 'none';
     stRender(document.getElementById('stSearchInput').value || '');
   }, err => {
     listEl.innerHTML = '<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><p>โหลดไม่สำเร็จ: ' + esc(String(err)) + '</p></div>';
@@ -1747,7 +1734,7 @@ function stOpenCount(code) {
 function stSaveCount(code, countedQty) {
   callGAS('webSubmitStockCount', [{
     sessionId: stState.sessionId, itemCode: code, countedQty: countedQty,
-    role: me.role, userName: me.name, source: 'scan'
+    role: me.role, userName: me.name, source: 'scan', userId: me.uid
   }], res => {
     showToast(res.diff === 0 ? 'ยอดตรง บันทึกแล้ว' : ('ปรับยอด ' + (res.diff > 0 ? '+' : '') + res.diff + ' แล้ว'), 'success');
     stLoad();
@@ -1766,7 +1753,7 @@ function stCloseSession() {
     background: '#1a1f2e', color: '#e0e0e0', confirmButtonColor: '#f59e0b'
   }).then(r => {
     if (!r.isConfirmed) return;
-    callGAS('webCloseStockTake', [{ sessionId: stState.sessionId, role: me.role, userName: me.name }], () => {
+    callGAS('webCloseStockTake', [{ sessionId: stState.sessionId, role: me.role, userName: me.name, userId: me.uid }], () => {
       showToast('ปิดรอบนับสต็อกแล้ว', 'success');
       stLoad();
     }, err => Swal.fire({ icon: 'error', title: 'ปิดรอบไม่สำเร็จ', text: String(err), background: '#1a1f2e', color: '#e0e0e0' }));
@@ -1830,7 +1817,7 @@ function addToCart(code, mode) {
     if (mode !== 'borrow' && exist.qty >= item.stock) { showToast('สต็อกไม่พอ', 'error'); return; }
     exist.qty++;
   } else {
-    cart.push({ code: item.code, name: item.name, qty: 1, unit: item.unit, stock: item.stock, imageUrl: item.imageUrl || '' });
+    cart.push({ code: item.code, name: item.name, qty: 1, unit: item.unit, stock: item.stock });
   }
   showToast(esc(item.name) + ' +1', 'success');
   updateCartBar(mode);
@@ -1867,29 +1854,23 @@ function openSheet(id) {
   const cart = mode === 'withdraw' ? withdrawCart : borrowCart;
   if (!cart.length) { showToast('ตะกร้าว่างเปล่า', 'error'); return; }
   const bodyId = mode === 'withdraw' ? 'wCartBody' : 'bCartBody';
-  document.getElementById(bodyId).innerHTML = cart.map((item, i) => {
-    const imgUrl = getProxyImgUrl(item.imageUrl);
-    const iconHtml = imgUrl
-      ? '<div style="width:48px;height:48px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--amber);box-shadow:0 0 10px rgba(232,160,32,.35);flex-shrink:0;cursor:zoom-in" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')">'
-        + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:9px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
-        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:20px">📦</div></div>'
-      : '<div style="width:48px;height:48px;border-radius:10px;background:var(--surface);border:1px solid var(--amber);box-shadow:0 0 10px rgba(232,160,32,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">📦</div>';
-    return `
-    <div class="cart-item" style="display:flex;align-items:center;gap:10px">
-      <div style="min-width:0;flex:1;overflow:hidden">
-        <div class="cart-item-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(item.name)}</div>
-        <div class="cart-item-code" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.code} • คงเหลือ ${item.stock} ${item.unit}</div>
+  document.getElementById(bodyId).innerHTML = cart.map((item, i) => `
+    <div class="cart-item">
+      <div class="cart-item-top">
+        <div>
+          <div class="cart-item-name">${esc(item.name)}</div>
+          <div class="cart-item-code">${item.code} • คงเหลือ ${item.stock} ${item.unit}</div>
+        </div>
+        <button class="cart-remove" onclick="removeCart(${i},'${mode}')"><i class="fas fa-trash-alt"></i></button>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-        <button class="qty-btn" style="width:30px;height:30px" onclick="changeQty(${i},'${mode}',-1)">−</button>
-        <input class="qty-input" style="flex:0 0 34px;font-size:15px;padding:4px" type="number" min="1" value="${item.qty}"
+      <div class="qty-row">
+        <button class="qty-btn" onclick="changeQty(${i},'${mode}',-1)">−</button>
+        <input class="qty-input" type="number" min="1" value="${item.qty}"
           onchange="setQty(${i},'${mode}',this.value)" id="qi_${mode}_${i}">
-        <button class="qty-btn" style="width:30px;height:30px" onclick="changeQty(${i},'${mode}',1)">+</button>
+        <button class="qty-btn" onclick="changeQty(${i},'${mode}',1)">+</button>
+        <span class="qty-unit">${item.unit}</span>
       </div>
-      ${iconHtml}
-      <button class="cart-remove" onclick="removeCart(${i},'${mode}')"><i class="fas fa-trash-alt"></i></button>
-    </div>`;
-  }).join('');
+    </div>`).join('');
   document.getElementById(id).classList.add('open');
 }
 
@@ -2035,7 +2016,7 @@ function submitReceive() {
   const remark  = document.getElementById('receiveRemark').value.trim();
   const btn     = document.getElementById('receiveSubmitBtn');
   btn.disabled  = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+  btn.innerHTML = '<span class="loader-dots"><span></span><span></span><span></span></span> กำลังบันทึก...';
   const payloads = receiveCart.map(item => ({
     code: item.code, qty: item.qty,
     type: 'รับเข้า', user: me.name, uid: me.uid,
@@ -2299,7 +2280,7 @@ function submitNewItem() {
   if (!unit) { showToast('กรุณากรอกหน่วย', 'error'); return; }
 
   const btn = document.getElementById('niSubmitBtn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loader-dots"><span></span><span></span><span></span></span> กำลังบันทึก...'; }
 
   const payload = [{ type, category: cat, code, name, unit, min, qty, location, remark, user: me.name, userId: me.uid }];
 
@@ -2352,11 +2333,11 @@ function submitCart(mode) {
   itemListHtml += '</div>';
 
   Swal.fire({
-    title: `ส่งคำขอ${typeText}?`,
-    html: `ระบบจะส่งคำขอไปให้แอดมินอนุมัติในไลน์ก่อน จึงจะตัดสต็อกจริง${itemListHtml}`,
+    title: `ยืนยันการ${typeText}?`,
+    html: `ตรวจสอบรายการสินค้าของคุณก่อนบันทึก${itemListHtml}`,
     icon: 'question',
     showCancelButton: true,
-    confirmButtonText: 'ส่งคำขอ',
+    confirmButtonText: 'ยืนยันทำรายการ',
     cancelButtonText: 'ยกเลิก',
     confirmButtonColor: '#4f46e5',
     cancelButtonColor: '#64748b',
@@ -2368,7 +2349,7 @@ function submitCart(mode) {
     const btnId = mode === 'withdraw' ? 'submitW' : 'submitB';
     const btn   = document.getElementById(btnId);
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+    btn.innerHTML = '<span class="loader-dots"><span></span><span></span><span></span></span> กำลังบันทึก...';
     
     const payloads = cart.map(item => ({
       code: item.code, qty: item.qty,
@@ -2383,14 +2364,11 @@ function submitCart(mode) {
       if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
       else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
       updateCartBar(mode);
-      const pendingN = (res && res.pendingCount) || payloads.length;
-      Swal.fire({
-        icon: 'success',
-        title: 'ส่งคำขอแล้ว!',
-        text: `ส่งคำขอ${typeText} ${pendingN} รายการเรียบร้อย รอแอดมินกดอนุมัติในไลน์ก่อน ของจะถูกกันไว้ให้ระหว่างนี้`,
-        confirmButtonColor: '#4f46e5',
-        background: '#1a1f2e', color: '#e2e8f0'
-      });
+      if (mode === 'withdraw' && res && res.pending) {
+        showToast(`ส่งคำขอเบิก ${payloads.length} รายการ รออนุมัติจาก admin`, 'success');
+      } else {
+        showToast(`สำเร็จ ${payloads.length} รายการ`, 'success');
+      }
       callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
     }, err => {
       btn.disabled = false;
@@ -2643,8 +2621,8 @@ function loadMineData() {
   if (icon) icon.style.animation = 'spin .7s linear infinite';
 
   // แสดง loading
-  document.getElementById('mineHistoryList').innerHTML = '<div class="mine-empty"><i class="fas fa-spinner fa-spin" style="color:var(--amber)"></i><p>กำลังโหลด...</p></div>';
-  document.getElementById('mineBorrowList').innerHTML  = '<div class="mine-empty"><i class="fas fa-spinner fa-spin" style="color:var(--amber)"></i><p>กำลังโหลด...</p></div>';
+  document.getElementById('mineHistoryList').innerHTML = '<div class="mine-empty"><span class="loader-dots"><span></span><span></span><span></span></span><p>กำลังโหลด...</p></div>';
+  document.getElementById('mineBorrowList').innerHTML  = '<div class="mine-empty"><span class="loader-dots"><span></span><span></span><span></span></span><p>กำลังโหลด...</p></div>';
 
   callGAS('getUserHistory', [me.uid], res => {
     mineLoading = false;
