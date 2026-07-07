@@ -1568,6 +1568,61 @@ function initApp() {
   renderCats('borrow');
   renderReturnList();
   renderReceiveCart();
+  startStockPoll();
+}
+
+/* ══ REAL-TIME STOCK POLLING (ทุก 3 วิ) ══ */
+let _stockPollTimer = null;
+let _stockPollInFlight = false;
+
+function startStockPoll() {
+  stopStockPoll();
+  _stockPollTimer = setInterval(() => {
+    if (_stockPollInFlight) return; // กันยิงซ้อนถ้ารอบก่อนหน้ายังไม่เสร็จ
+    if (document.querySelector('.sheet.open')) return; // อย่ารีเฟรชทับตอนกำลังดูตะกร้า/ยืนยันรายการ
+    _stockPollInFlight = true;
+    // ใช้ endpoint เบา ๆ ที่ดึงแค่รหัส+ยอดสต็อก แทนการโหลด inventory ทั้งชุดทุก 3 วิ
+    callGAS('webGetStockLevels', [], res => {
+      _stockPollInFlight = false;
+      if (!res || !res.success) return;
+      applyStockLevels(res.items || [], res.tools || []);
+      refreshVisibleStock();
+    }, () => { _stockPollInFlight = false; });
+  }, 3000); // อัปเดตยอดสต็อกทุก 3 วินาที
+}
+
+function stopStockPoll() {
+  if (_stockPollTimer) { clearInterval(_stockPollTimer); _stockPollTimer = null; }
+}
+
+// อัปเดตแค่ตัวเลขสต็อกลงใน allData เดิม (ไม่แตะชื่อ/รูป/หมวดหมู่ ที่โหลดไว้แล้ว)
+function applyStockLevels(itemLevels, toolLevels) {
+  const applyTo = (list, levels) => {
+    if (!list || !list.length) return;
+    const map = {};
+    levels.forEach(l => { map[l.code] = l.stock; });
+    list.forEach(it => { if (map.hasOwnProperty(it.code)) it.stock = map[it.code]; });
+  };
+  applyTo(allData.items, itemLevels);
+  applyTo(allData.tools, toolLevels);
+  // sync ยอดสต็อกในตะกร้าที่ยังไม่ยืนยันด้วย เผื่อผู้ใช้เปิดตะกร้าค้างไว้
+  [withdrawCart, borrowCart].forEach(cart => {
+    (cart || []).forEach(ci => {
+      const src = getAllItems().find(i => i.code === ci.code);
+      if (src) ci.stock = src.stock;
+    });
+  });
+}
+
+function refreshVisibleStock() {
+  ['withdraw', 'borrow'].forEach(mode => {
+    renderCats(mode);
+    const state = _viewState[mode];
+    if (state && !state.onCatScreen) {
+      renderList(mode, state.kw || '', state.cat || '__all__');
+    }
+  });
+  renderReturnList();
 }
 
 const CAT_ICON = {
@@ -1606,6 +1661,12 @@ function renderCats(mode) {
     </div>`).join('');
 }
 
+// เก็บ state หมวด/คำค้นหาปัจจุบันของแต่ละโหมด ไว้ให้ stock poll เรียก renderList ซ้ำได้ถูกต้อง
+let _viewState = {
+  withdraw: { cat: '__all__', kw: '', onCatScreen: true },
+  borrow:   { cat: '__all__', kw: '', onCatScreen: true }
+};
+
 function selectCat(mode, cat) {
   const catScreen = document.getElementById(mode === 'withdraw' ? 'wCatScreen' : 'bCatScreen');
   const backRow   = document.getElementById(mode === 'withdraw' ? 'wBackRow' : 'bBackRow');
@@ -1615,6 +1676,7 @@ function selectCat(mode, cat) {
   backRow.classList.remove('hidden');
   listEl.classList.remove('hidden');
   labelEl.textContent = cat === '__all__' ? 'ทั้งหมด' : cat;
+  _viewState[mode] = { cat: cat, kw: '' };
   renderList(mode, '', cat);
 }
 
@@ -1627,6 +1689,7 @@ function backToCat(mode) {
   backRow.classList.add('hidden');
   listEl.classList.add('hidden');
   if (searchEl) searchEl.value = '';
+  _viewState[mode] = { cat: '__all__', kw: '', onCatScreen: true };
 }
 
 function onSearchInput(kw, mode) {
@@ -1639,6 +1702,7 @@ function onSearchInput(kw, mode) {
     backRow.classList.remove('hidden');
     listEl.classList.remove('hidden');
     labelEl.textContent = `"${kw.trim()}"`;
+    _viewState[mode] = { cat: '__all__', kw: kw.toLowerCase().trim() };
     renderList(mode, kw.toLowerCase().trim(), '__all__');
   } else {
     backToCat(mode);
