@@ -1101,6 +1101,24 @@ body{display:flex;flex-direction:column}
   </div>
 </div>
 
+<!-- ════ SIGNATURE MODAL ════ -->
+<div class="modal-overlay" id="signatureModal" onclick="if(event.target===this)closeSignatureModal()">
+  <div class="modal-box" style="max-width:420px; padding: 20px;">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px;">✍️ เซ็นชื่อเพื่อยืนยันใบเบิก</div>
+    <div class="modal-sub" style="font-size: 12px; color: var(--text2); margin-bottom: 12px;">กรุณาใช้นิ้วลากลายเซ็นลงบนพื้นที่กระดาษขาวด้านล่าง</div>
+    
+    <div style="background: #ffffff; border-radius: var(--radius); border: 2px solid var(--border2); position: relative; width: 100%; height: 220px; overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);">
+      <canvas id="sigCanvas" style="width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; background: #ffffff;"></canvas>
+    </div>
+    
+    <div class="reg-btn-row" style="display: flex; gap: 10px; margin-top: 15px;">
+      <button class="reg-cancel-btn" style="flex: 1; padding: 12px; font-size: 14px;" onclick="clearSignatureCanvas()"><i class="fas fa-eraser me-1"></i> เขียนใหม่</button>
+      <button class="reg-submit-btn" style="flex: 2; padding: 12px; font-size: 14px; background: var(--green); border-color: var(--green); color: #000; font-weight: 700;" onclick="submitCartWithSignature()"><i class="fas fa-paper-plane me-1"></i> ยืนยันส่งใบเบิก</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /appWrap -->
 <script>const __GAS_URL__ = 'https://script.google.com/macros/s/AKfycbwVcL-cvscyHqLsNKzjTa8iTvCZfmUCSa-CqYaluF6T4dDtTffBsvOV1GmPLA_8_LQQ/exec';</script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -2428,40 +2446,48 @@ function submitCart(mode) {
     color: '#e2e8f0'
   }).then((result) => {
     if (!result.isConfirmed) return;
-    
-    const btnId = mode === 'withdraw' ? 'submitW' : 'submitB';
-    const btn   = document.getElementById(btnId);
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
-    
-    const payloads = cart.map(item => ({
-      code: item.code, qty: item.qty,
-      type: mode === 'withdraw' ? 'เบิก' : 'ยืม',
-      user: me.name, uid: me.uid, remark
-    }));
-    
-    callGAS('webBatchTransaction', [payloads], res => {
-      btn.disabled = false;
-      btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
-      closeSheet(mode === 'withdraw' ? 'sheetWithdraw' : 'sheetBorrow');
-      if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
-      else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
-      updateCartBar(mode);
-      const pendingN = (res && res.pendingCount) || payloads.length;
-      Swal.fire({
-        icon: 'success',
-        title: 'ส่งคำขอแล้ว!',
-        text: `ส่งคำขอ${typeText} ${pendingN} รายการเรียบร้อย รอแอดมินกดอนุมัติในไลน์ก่อน ของจะถูกกันไว้ให้ระหว่างนี้`,
-        confirmButtonColor: '#4f46e5',
-        background: '#1a1f2e', color: '#e2e8f0'
-      });
-      callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
-    }, err => {
-      btn.disabled = false;
-      btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
-      showToast('เกิดข้อผิดพลาด: ' + err, 'error');
-    });
+    openSignatureModal(mode);
   });
+}
+
+function executeSubmitCart(mode, signatureBase64) {
+  const cart   = mode === 'withdraw' ? withdrawCart : borrowCart;
+  const remark = document.getElementById(mode === 'withdraw' ? 'wRemark' : 'bRemark').value.trim();
+  const typeText = mode === 'withdraw' ? 'เบิก' : 'ยืม';
+  
+  const btnId = mode === 'withdraw' ? 'submitW' : 'submitB';
+  const btn   = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+  
+  const payloads = cart.map(item => ({
+    code: item.code, qty: item.qty,
+    type: mode === 'withdraw' ? 'เบิก' : 'ยืม',
+    user: me.name, uid: me.uid, remark
+  }));
+  
+  callGAS('webBatchTransaction', [payloads, signatureBase64], res => {
+    btn.disabled = false;
+    btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
+    closeSheet(mode === 'withdraw' ? 'sheetWithdraw' : 'sheetBorrow');
+    if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
+    else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
+    updateCartBar(mode);
+    const pendingN = (res && res.pendingCount) || payloads.length;
+    Swal.fire({
+      icon: 'success',
+      title: 'ส่งคำขอแล้ว!',
+      text: `ส่งคำขอ${typeText} ${pendingN} รายการเรียบร้อย รอแอดมินกดอนุมัติในไลน์ก่อน ของจะถูกกันไว้ให้ระหว่างนี้`,
+      confirmButtonColor: '#4f46e5',
+      background: '#1a1f2e', color: '#e2e8f0'
+    });
+    callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
+  }, err => {
+    btn.disabled = false;
+    btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
+    showToast('เกิดข้อผิดพลาด: ' + err, 'error');
+  });
+}
 }
 
 function doReturn(reqId, name, qty) {
@@ -2909,6 +2935,121 @@ function demoData() {
     ],
     settings: {}
   };
+}
+
+/* ══ SIGNATURE PAD LOGIC ══ */
+let sigCanvas, sigCtx;
+let isDrawing = false;
+let sigMode = 'withdraw';
+let isCanvasClean = true;
+
+function initSignaturePad() {
+  sigCanvas = document.getElementById('sigCanvas');
+  if (!sigCanvas) return;
+  sigCtx = sigCanvas.getContext('2d');
+  
+  // ปรับขนาด canvas ให้เหมาะสมกับ DPI หน้าจอ
+  const ratio = window.devicePixelRatio || 1;
+  sigCanvas.width = sigCanvas.offsetWidth * ratio;
+  sigCanvas.height = sigCanvas.offsetHeight * ratio;
+  sigCtx.scale(ratio, ratio);
+  
+  sigCtx.strokeStyle = '#000000';
+  sigCtx.lineWidth = 3;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+
+  clearSignatureCanvas();
+
+  // เหตุการณ์เมาส์
+  sigCanvas.removeEventListener('mousedown', startDrawing);
+  sigCanvas.removeEventListener('mousemove', draw);
+  sigCanvas.removeEventListener('mouseup', stopDrawing);
+  sigCanvas.removeEventListener('mouseleave', stopDrawing);
+  sigCanvas.addEventListener('mousedown', startDrawing);
+  sigCanvas.addEventListener('mousemove', draw);
+  sigCanvas.addEventListener('mouseup', stopDrawing);
+  sigCanvas.addEventListener('mouseleave', stopDrawing);
+
+  // เหตุการณ์สัมผัส (มือถือ)
+  sigCanvas.removeEventListener('touchstart', startDrawing);
+  sigCanvas.removeEventListener('touchmove', draw);
+  sigCanvas.removeEventListener('touchend', stopDrawing);
+  sigCanvas.addEventListener('touchstart', startDrawing, { passive: false });
+  sigCanvas.addEventListener('touchmove', draw, { passive: false });
+  sigCanvas.addEventListener('touchend', stopDrawing);
+}
+
+function getCoords(e) {
+  const rect = sigCanvas.getBoundingClientRect();
+  if (e.touches && e.touches.length > 0) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
+  }
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
+}
+
+function startDrawing(e) {
+  e.preventDefault();
+  isDrawing = true;
+  isCanvasClean = false;
+  const coords = getCoords(e);
+  sigCtx.beginPath();
+  sigCtx.moveTo(coords.x, coords.y);
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  e.preventDefault();
+  const coords = getCoords(e);
+  sigCtx.lineTo(coords.x, coords.y);
+  sigCtx.stroke();
+}
+
+function stopDrawing() {
+  isDrawing = false;
+}
+
+function clearSignatureCanvas() {
+  if (!sigCtx) return;
+  sigCtx.fillStyle = '#ffffff';
+  sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+  isCanvasClean = true;
+}
+
+function openSignatureModal(mode) {
+  sigMode = mode;
+  document.getElementById('signatureModal').classList.add('open');
+  setTimeout(initSignaturePad, 200);
+}
+
+function closeSignatureModal() {
+  document.getElementById('signatureModal').classList.remove('open');
+}
+
+function submitCartWithSignature() {
+  if (isCanvasClean) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'กรุณาเซ็นลายเซ็น',
+      text: 'จำเป็นต้องลงลายเซ็นก่อนส่งคำขอครับ',
+      confirmButtonColor: '#ffca28',
+      background: '#1a1f2e',
+      color: '#e2e8f0'
+    });
+    return;
+  }
+  
+  const dataURL = sigCanvas.toDataURL('image/png');
+  const base64 = dataURL.split(',')[1];
+  
+  closeSignatureModal();
+  executeSubmitCart(sigMode, base64);
 }
 </script>
 </body>
