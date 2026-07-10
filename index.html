@@ -3296,6 +3296,11 @@ function getCoords(e) {
 
 function startDrawing(e) {
   e.preventDefault();
+  if (isCanvasClean) {
+    // ลบลายน้ำ "ลงลายมือชื่อที่นี่" ออกก่อนเริ่มเซ็นจริง
+    sigCtx.fillStyle = '#ffffff';
+    sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+  }
   isDrawing = true;
   isCanvasClean = false;
   const coords = getCoords(e);
@@ -3315,10 +3320,25 @@ function stopDrawing() {
   isDrawing = false;
 }
 
+function drawSignatureWatermark() {
+  if (!sigCtx) return;
+  const ratio = window.devicePixelRatio || 1;
+  const w = sigCanvas.width / ratio;
+  const h = sigCanvas.height / ratio;
+  sigCtx.save();
+  sigCtx.fillStyle = 'rgba(148, 163, 184, 0.45)';
+  sigCtx.font = '600 15px Kanit, Arial, sans-serif';
+  sigCtx.textAlign = 'center';
+  sigCtx.textBaseline = 'middle';
+  sigCtx.fillText('ลงลายมือชื่อที่นี่', w / 2, h / 2);
+  sigCtx.restore();
+}
+
 function clearSignatureCanvas() {
   if (!sigCtx) return;
   sigCtx.fillStyle = '#ffffff';
   sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+  drawSignatureWatermark();
   isCanvasClean = true;
 }
 
