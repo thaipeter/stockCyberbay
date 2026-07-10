@@ -591,6 +591,10 @@ body{display:flex;flex-direction:column}
   </div>
   <div style="display:flex;align-items:center;gap:8px">
     <div class="user-name" id="userName"></div>
+    <div style="position:relative;cursor:pointer;width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);display:none;align-items:center;justify-content:center" id="retroBellBtn" onclick="openRetroPendingModal()">
+      <i class="fas fa-bell" style="color:var(--amber);font-size:14px"></i>
+      <span id="retroBellBadge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:999px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 3px">0</span>
+    </div>
     <div class="user-avatar" id="userAvatar" onclick="openUserMenu()"><img id="userAvatarImg" src="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:none"><span id="userAvatarIcon">?</span></div>
   </div>
 </div>
@@ -983,6 +987,21 @@ body{display:flex;flex-direction:column}
 </div>
 
 <div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ════ แจ้งเตือน: รายการตกเบิกที่ถูกมอบหมายให้ยืนยันเอง ════ -->
+<div class="modal-overlay" id="retroPendingModal" onclick="if(event.target===this)closeRetroPendingModal()">
+  <div class="modal-box" style="padding-bottom:24px;max-height:80vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="width:40px;height:40px;border-radius:12px;background:rgba(248,113,113,.15);display:flex;align-items:center;justify-content:center"><i class="fas fa-exclamation-triangle" style="color:#f87171"></i></div>
+      <div>
+        <div style="font-weight:700;color:#fff;font-size:1rem">รายการตกเบิกที่ต้องยืนยัน</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.4)">ระบุจำนวน + เหตุผล ให้ครบทุกรายการ</div>
+      </div>
+    </div>
+    <div id="retroPendingList"></div>
+  </div>
+</div>
 
 <!-- ════ USER MENU ════ -->
 <div class="modal-overlay" id="userMenuModal" onclick="if(event.target===this)closeUserMenu()">
@@ -1663,6 +1682,104 @@ function initApp() {
   renderReturnList();
   renderReceiveCart();
   startStockPoll();
+  checkMyPendingRetroWithdraws();
+}
+
+/* ══ แจ้งเตือน "ตกเบิก" ที่แอดมินมอบหมายให้มายืนยันเอง (เช็คตอน login) ══ */
+let _retroPendingQueue = [];
+
+function checkMyPendingRetroWithdraws() {
+  if (!me || !me.uid) return;
+  callGAS('webGetMyPendingRetroWithdraws', [{ userId: me.uid }], res => {
+    if (!res || !res.success || !res.items || !res.items.length) return;
+    _retroPendingQueue = res.items.slice();
+    _updateRetroBellBadge();
+    showRetroPendingBanner();
+  }, () => {});
+}
+
+function _updateRetroBellBadge() {
+  const btn = document.getElementById('retroBellBtn');
+  const badge = document.getElementById('retroBellBadge');
+  if (!btn || !badge) return;
+  const n = _retroPendingQueue.length;
+  btn.style.display = n > 0 ? 'flex' : 'none';
+  badge.textContent = n;
+}
+
+function showRetroPendingBanner() {
+  if (!_retroPendingQueue.length) return;
+  const n = _retroPendingQueue.length;
+  Swal.fire({
+    icon: 'warning',
+    title: 'มีรายการตกเบิกที่ต้องยืนยัน',
+    html: `คุณถูกมอบหมายให้ยืนยัน <b>${n}</b> รายการ ที่นับสต็อกแล้วพบว่าขาดหาย กรุณาระบุเหตุผลการเบิกย้อนหลัง`,
+    confirmButtonText: 'ไปยืนยันตอนนี้',
+    showCancelButton: true,
+    cancelButtonText: 'ไว้ทีหลัง',
+    background: '#1a1f2e',
+    color: '#c0c0c0'
+  }).then(r => {
+    if (r.isConfirmed) openRetroPendingModal();
+  });
+}
+
+function openRetroPendingModal() {
+  if (!_retroPendingQueue.length) return;
+  renderRetroPendingList();
+  document.getElementById('retroPendingModal').classList.add('open');
+}
+
+function closeRetroPendingModal() {
+  document.getElementById('retroPendingModal').classList.remove('open');
+}
+
+function renderRetroPendingList() {
+  const wrap = document.getElementById('retroPendingList');
+  if (!wrap) return;
+  if (!_retroPendingQueue.length) {
+    wrap.innerHTML = '<div class="mine-empty"><i class="fas fa-check-circle" style="color:var(--green)"></i><p>ไม่มีรายการค้างแล้ว 🎉</p></div>';
+    return;
+  }
+  wrap.innerHTML = _retroPendingQueue.map((it, idx) => {
+    const diffTxt = it.diff < 0 ? `ขาด ${Math.abs(it.diff)}` : `เกิน ${it.diff}`;
+    return `<div style="padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(248,113,113,.3);border-radius:14px;margin-bottom:10px">
+      <div style="font-weight:700;color:#fff;font-size:.9rem">${esc(it.itemName)}</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-bottom:8px">${esc(it.itemCode)} • ${diffTxt} ${esc(it.unit || '')}${it.assignedRemark ? ' • หมายเหตุจากแอดมิน: ' + esc(it.assignedRemark) : ''}</div>
+      <label style="font-size:.72rem;color:rgba(255,255,255,.4);display:block;margin-bottom:3px">จำนวนที่เบิกย้อนหลัง</label>
+      <input type="number" id="retroPendQty_${idx}" value="${it.assignedQty}" min="1" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:#fff;margin-bottom:8px">
+      <label style="font-size:.72rem;color:rgba(255,255,255,.4);display:block;margin-bottom:3px">เหตุผล / สาเหตุที่ขาด</label>
+      <textarea id="retroPendRemark_${idx}" rows="2" placeholder="เช่น ใช้ซ่อม Line 2 แล้วลืมบันทึกเบิก" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:#fff;margin-bottom:8px"></textarea>
+      <button onclick="submitRetroPendingItem(${idx})" style="width:100%;padding:9px;border:none;border-radius:10px;background:var(--amber);color:#111;font-weight:700;cursor:pointer"><i class="fas fa-check me-1"></i> ยืนยันเบิกย้อนหลัง</button>
+    </div>`;
+  }).join('');
+}
+
+function submitRetroPendingItem(idx) {
+  const it = _retroPendingQueue[idx];
+  if (!it) return;
+  const qty = Number(document.getElementById('retroPendQty_' + idx).value);
+  const remark = document.getElementById('retroPendRemark_' + idx).value.trim();
+  if (!qty || qty <= 0) { showToast('กรุณาระบุจำนวนให้ถูกต้อง', 'error'); return; }
+  if (!remark) { showToast('กรุณาระบุเหตุผล', 'error'); return; }
+  callGAS('webSubmitRetroWithdrawByUser', [{
+    sessionId: it.sessionId,
+    itemCode: it.itemCode,
+    qty: qty,
+    remark: remark,
+    userId: me.uid,
+    userName: me.name
+  }], res => {
+    if (res && res.success) {
+      showToast('บันทึกเบิกย้อนหลังเรียบร้อย', 'success');
+      _retroPendingQueue.splice(idx, 1);
+      _updateRetroBellBadge();
+      renderRetroPendingList();
+      if (!_retroPendingQueue.length) setTimeout(closeRetroPendingModal, 900);
+    } else {
+      showToast('บันทึกไม่สำเร็จ: ' + ((res && res.error) || ''), 'error');
+    }
+  }, () => { showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error'); });
 }
 
 /* ══ REAL-TIME STOCK POLLING (ทุก 3 วิ) ══ */
