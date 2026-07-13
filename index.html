@@ -595,6 +595,10 @@ body{display:flex;flex-direction:column}
       <i class="fas fa-bell" style="color:var(--amber);font-size:14px"></i>
       <span id="retroBellBadge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:999px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 3px">0</span>
     </div>
+    <div style="position:relative;cursor:pointer;width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);display:none;align-items:center;justify-content:center" id="approvalBellBtn" onclick="switchTab('mine'); switchMineSub('approval')" title="รายการที่ยื่นไปแล้วรอแอดมินอนุมัติ">
+      <i class="fas fa-hourglass-half" style="color:#60a5fa;font-size:13px"></i>
+      <span id="approvalBellBadge" style="position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:999px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 3px">0</span>
+    </div>
     <div class="user-avatar" id="userAvatar" onclick="openUserMenu()"><img id="userAvatarImg" src="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:none"><span id="userAvatarIcon">?</span></div>
   </div>
 </div>
@@ -887,6 +891,9 @@ body{display:flex;flex-direction:column}
     <button class="mine-sub-tab" id="mineSubRetro" onclick="switchMineSub('retro')">
       <i class="fas fa-exclamation-circle"></i> รายการตกเบิก (<span id="mineRetroCount">0</span>)
     </button>
+    <button class="mine-sub-tab" id="mineSubApproval" onclick="switchMineSub('approval')">
+      <i class="fas fa-hourglass-half"></i> รอแอดมินอนุมัติ (<span id="mineApprovalCount">0</span>)
+    </button>
   </div>
   <!-- History section -->
   <div class="mine-section active" id="mineSectionHistory">
@@ -904,6 +911,12 @@ body{display:flex;flex-direction:column}
   <div class="mine-section" id="mineSectionRetro">
     <div class="mine-list" id="mineRetroList">
       <div class="mine-empty"><i class="fas fa-exclamation-circle"></i><p>กำลังโหลด...</p></div>
+    </div>
+  </div>
+  <!-- Pending approval section (รายการรออนุมัติของฉัน) -->
+  <div class="mine-section" id="mineSectionApproval">
+    <div class="mine-list" id="mineApprovalList">
+      <div class="mine-empty"><i class="fas fa-hourglass-half"></i><p>กำลังโหลด...</p></div>
     </div>
   </div>
 </div>
@@ -1713,6 +1726,7 @@ function initApp() {
   renderReceiveCart();
   startStockPoll();
   checkMyPendingRetroWithdraws();
+  loadMineApproval();
 }
 
 /* ══ แจ้งเตือน "ตกเบิก" ที่แอดมินมอบหมายให้มายืนยันเอง (เช็คตอน login) ══ */
@@ -1816,6 +1830,8 @@ function submitRetroPendingItem(idx) {
 let _stockPollTimer = null;
 let _stockPollInFlight = false;
 
+let _stockPollTickCount = 0;
+
 function startStockPoll() {
   stopStockPoll();
   _stockPollTimer = setInterval(() => {
@@ -1829,6 +1845,12 @@ function startStockPoll() {
       applyStockLevels(res.items || [], res.tools || []);
       refreshVisibleStock();
     }, () => { _stockPollInFlight = false; });
+    // ทุก ๆ 10 รอบ (~30 วิ) เช็คด้วยว่ารายการรออนุมัติของ user คนนี้ถูกอนุมัติไปหรือยัง
+    // เพื่อให้ badge หายไปเองโดยไม่ต้องรอ refresh หน้าใหม่
+    _stockPollTickCount++;
+    if (_stockPollTickCount % 10 === 0 && me && me.uid) {
+      loadMineApproval();
+    }
   }, 3000); // อัปเดตยอดสต็อกทุก 3 วินาที
 }
 
@@ -2682,6 +2704,7 @@ function executeSubmitCart(mode, signatureBase64) {
       background: '#1a1f2e', color: '#e2e8f0'
     });
     callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
+    loadMineApproval();
   }, err => {
     btn.disabled = false;
     btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
@@ -2921,11 +2944,11 @@ function submitRegister() {
 }
 
 /* ══ MINE TAB ══ */
-let mineData = { history: [], borrows: [], retro: [], retroPending: [] };
+let mineData = { history: [], borrows: [], retro: [], retroPending: [], pendingApproval: [] };
 let mineLoading = false;
 
 function switchMineSub(sub) {
-  ['history','borrow','retro'].forEach(s => {
+  ['history','borrow','retro','approval'].forEach(s => {
     document.getElementById('mineSection' + cap(s)).classList.toggle('active', s === sub);
     document.getElementById('mineSub' + cap(s)).classList.toggle('active', s === sub);
   });
@@ -2942,6 +2965,7 @@ function loadMineData() {
   document.getElementById('mineBorrowList').innerHTML  = '<div class="mine-empty"><i class="fas fa-spinner fa-spin" style="color:var(--amber)"></i><p>กำลังโหลด...</p></div>';
 
   loadMineRetro();
+  loadMineApproval();
 
   callGAS('getUserHistory', [me.uid], res => {
     mineLoading = false;
@@ -2998,6 +3022,50 @@ function loadMineRetro() {
     mineData.retro = (res && res.success) ? (res.items || []) : [];
     checkDone();
   }, () => { checkDone(); });
+}
+
+/* ══ รายการที่ยื่นไปแล้ว แต่ยังรอแอดมินกดอนุมัติ (ของฉัน) ══ */
+function loadMineApproval() {
+  callGAS('webGetMyPendingRequests', [{ userId: me.uid }], res => {
+    mineData.pendingApproval = (res && res.success) ? (res.items || []) : [];
+    renderMineApproval();
+    _updateApprovalBellBadge();
+  }, () => { renderMineApproval(); });
+}
+
+function renderMineApproval() {
+  const list = document.getElementById('mineApprovalList');
+  if (!list) return;
+  const items = mineData.pendingApproval || [];
+  const countEl = document.getElementById('mineApprovalCount');
+  if (countEl) countEl.textContent = items.length;
+
+  if (!items.length) {
+    list.innerHTML = '<div class="mine-empty"><i class="fas fa-check-circle" style="color:var(--green)"></i><p>ไม่มีรายการค้างรออนุมัติ 🎉</p></div>';
+    return;
+  }
+  list.innerHTML = items.map(it => {
+    const typeIcon = it.type === 'ยืม' ? '🤝' : '📦';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(251,191,36,.3);border-radius:14px;margin-bottom:8px">
+      <div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.itemName)}</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px">${esc(it.itemCode)} • ${esc(it.qty)} • ${esc(it.date)}</div>
+        ${it.remark ? `<div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:3px">📝 ${esc(it.remark)}</div>` : ''}
+      </div>
+      <span style="flex-shrink:0;font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2455">รออนุมัติ</span>
+    </div>`;
+  }).join('');
+}
+
+/* ══ Badge บนกระดิ่ง แสดงจำนวนรายการค้างรออนุมัติของตัวเอง ══ */
+function _updateApprovalBellBadge() {
+  const btn = document.getElementById('approvalBellBtn');
+  const badge = document.getElementById('approvalBellBadge');
+  if (!btn || !badge) return;
+  const n = (mineData.pendingApproval || []).length;
+  btn.style.display = n > 0 ? 'flex' : 'none';
+  badge.textContent = n;
 }
 
 function submitMyRetroWithdraw(sessionId, itemCode, suggestedQty) {
