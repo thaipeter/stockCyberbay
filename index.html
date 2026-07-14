@@ -3026,10 +3026,29 @@ function loadMineRetro() {
 
 /* ══ รายการที่ยื่นไปแล้ว แต่ยังรอแอดมินกดอนุมัติ (ของฉัน) ══ */
 function loadMineApproval() {
+  const prevIds = (mineData.pendingApproval || []).map(it => it.reqId);
   callGAS('webGetMyPendingRequests', [{ userId: me.uid }], res => {
     mineData.pendingApproval = (res && res.success) ? (res.items || []) : [];
     renderMineApproval();
     _updateApprovalBellBadge();
+    // ถ้ามีรายการที่หายไปจากลิสต์ (เมื่อเทียบกับรอบก่อน) แปลว่าแอดมินเพิ่งอนุมัติ/ปฏิเสธไป — เช็คผลแล้วแจ้งเตือนในแอปทันที (ไม่เปลืองโควต้า LINE)
+    const newIds = (mineData.pendingApproval || []).map(it => it.reqId);
+    const disappeared = prevIds.filter(id => !newIds.includes(id));
+    if (disappeared.length && me && me.uid) {
+      callGAS('webGetMyRecentDecisions', [{ userId: me.uid }], dres => {
+        if (!dres || !dres.success || !dres.items) return;
+        dres.items.forEach(d => {
+          if (!disappeared.includes(d.reqId)) return;
+          if (d.status === 'approved') {
+            Swal.fire({icon:'success', title:'✅ อนุมัติแล้ว', text:`"${d.itemName}" x${d.qty} ได้รับการอนุมัติแล้วครับ`, timer:3500, showConfirmButton:false, background:'#1a1f2e', color:'#c0c0c0'});
+            // โหลดรายการยืม/ประวัติใหม่ทันที ไม่งั้นของที่เพิ่งอนุมัติจะไม่ขึ้นในแท็บ "คนยืม" จนกว่าจะรีเฟรชเอง
+            loadMineData();
+          } else if (d.status === 'rejected') {
+            Swal.fire({icon:'error', title:'❌ ถูกปฏิเสธ', text:`"${d.itemName}" x${d.qty} ถูกปฏิเสธครับ`, timer:3500, showConfirmButton:false, background:'#1a1f2e', color:'#c0c0c0'});
+          }
+        });
+      }, () => {});
+    }
   }, () => { renderMineApproval(); });
 }
 
@@ -3046,16 +3065,44 @@ function renderMineApproval() {
   }
   list.innerHTML = items.map(it => {
     const typeIcon = it.type === 'ยืม' ? '🤝' : '📦';
+    const imgTag = it.imageUrl
+      ? `<img src="${it.imageUrl}" alt="${esc(it.itemName)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+         <div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:none;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`
+      : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`;
     return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(251,191,36,.3);border-radius:14px;margin-bottom:8px">
-      <div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>
+      ${imgTag}
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.itemName)}</div>
         <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px">${esc(it.itemCode)} • ${esc(it.qty)} • ${esc(it.date)}</div>
         ${it.remark ? `<div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:3px">📝 ${esc(it.remark)}</div>` : ''}
       </div>
-      <span style="flex-shrink:0;font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2455">รออนุมัติ</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+        <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2455">รออนุมัติ</span>
+        <button onclick="cancelMyPendingRequest('${it.reqId}')" style="font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:14px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.35);cursor:pointer">ยกเลิก</button>
+      </div>
     </div>`;
   }).join('');
+}
+
+// ผู้ใช้ยกเลิกคำขอของตัวเองที่ยังรออนุมัติอยู่
+function cancelMyPendingRequest(reqId) {
+  Swal.fire({
+    title: 'ยกเลิกคำขอนี้?', text: 'ของที่กันไว้ให้จะถูกปล่อยคืนทันที',
+    icon: 'warning', showCancelButton: true, confirmButtonText: 'ยกเลิกคำขอ', cancelButtonText: 'ไม่ยกเลิก',
+    confirmButtonColor: '#ef4444', background: '#1a1f2e', color: '#c0c0c0'
+  }).then(r => {
+    if (!r.isConfirmed) return;
+    callGAS('webCancelMyPendingRequest', [{ reqId: reqId, userId: me.uid }], res => {
+      if (res && res.success) {
+        Swal.fire({icon: 'success', title: 'ยกเลิกแล้ว', timer: 1300, showConfirmButton: false, background: '#1a1f2e', color: '#c0c0c0'});
+        loadMineApproval();
+      } else {
+        Swal.fire({icon: 'error', title: 'ยกเลิกไม่สำเร็จ', text: (res && res.error) || '', background: '#1a1f2e', color: '#c0c0c0'});
+      }
+    }, err => {
+      Swal.fire({icon: 'error', title: 'เกิดข้อผิดพลาด', text: String(err), background: '#1a1f2e', color: '#c0c0c0'});
+    });
+  });
 }
 
 /* ══ Badge บนกระดิ่ง แสดงจำนวนรายการค้างรออนุมัติของตัวเอง ══ */
