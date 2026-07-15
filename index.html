@@ -3066,7 +3066,7 @@ function renderMineApproval() {
   list.innerHTML = items.map(it => {
     const typeIcon = it.type === 'ยืม' ? '🤝' : '📦';
     const imgTag = it.imageUrl
-      ? `<img src="${it.imageUrl}" alt="${esc(it.itemName)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+      ? `<img src="${getProxyImgUrl(it.imageUrl)}" alt="${esc(it.itemName)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
          <div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:none;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`
       : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`;
     return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(251,191,36,.3);border-radius:14px;margin-bottom:8px">
@@ -3269,7 +3269,7 @@ function renderMineBorrows() {
     const color = isOverdue ? '#f87171' : '#fbbf24';
     const badgeText = isOverdue ? `⚠️ เกิน ${days} วัน` : `${days} วันที่แล้ว`;
     const imgHtml = b.imageUrl
-      ? `<img src="${esc(b.imageUrl)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
+      ? `<img src="${getProxyImgUrl(b.imageUrl)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
       : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">🔧</div>`;
     return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid ${isOverdue?'rgba(248,113,113,.3)':'rgba(255,255,255,.08)'};border-radius:14px;margin-bottom:8px${isOverdue?';box-shadow:0 0 0 1px rgba(248,113,113,.15)':''}">
       ${imgHtml}
@@ -3307,7 +3307,15 @@ function _extractDriveId(url) {
   return m ? m[1] : null;
 }
 
+// เก็บได้สูงสุด 3 รูปคั่นด้วย , ในคอลัมน์เดียว — จุดที่แสดงรูปเดียว (thumbnail, การ์ด, ประวัติ) ใช้แค่รูปแรกเสมอ
+function firstImg(url) {
+  if (!url) return url;
+  var s = String(url).split(',')[0].trim();
+  return s;
+}
+
 function getProxyImgUrl(url) {
+  url = firstImg(url);
   if (!url || url === '-' || url === '') return null;
   var id = _extractDriveId(url);
   // ใช้ thumbnail API — ไม่ต้อง auth token ถาวร แชร์แบบ Anyone with link
@@ -3316,6 +3324,7 @@ function getProxyImgUrl(url) {
 }
 
 function getFullImgUrl(url) {
+  url = firstImg(url);
   if (!url || url === '-' || url === '') return null;
   var id = _extractDriveId(url);
   if (id) return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1200';
