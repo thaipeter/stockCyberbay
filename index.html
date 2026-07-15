@@ -580,6 +580,52 @@ body{display:flex;flex-direction:column}
   </div>
 </div>
 
+<!-- ════ ITEM MANAGE MODAL (Admin: แก้ไข/ลบ/รูปภาพ) ════ -->
+<div class="modal-overlay" id="itemManageModal" onclick="if(event.target===this)closeItemManage()">
+  <div class="modal-box" style="max-height:88vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><i class="fas fa-box"></i> จัดการรายการ</div>
+    <div class="modal-sub" id="imCodeLabel">รหัส: -</div>
+
+    <div class="reg-field">
+      <div class="reg-label">รูปภาพ (สูงสุด 3 รูป)</div>
+      <div id="imImagesRow" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      <input type="file" id="imImgFileInput" accept="image/*" style="display:none" onchange="imHandleImgFile(this)">
+    </div>
+
+    <div class="reg-field">
+      <div class="reg-label">ชื่อรายการ</div>
+      <input type="text" class="reg-input" id="imName">
+    </div>
+    <div class="reg-field">
+      <div class="reg-label">หมวดหมู่</div>
+      <input type="text" class="reg-input" id="imCategory">
+    </div>
+    <div class="reg-field">
+      <div class="reg-label">ตำแหน่งจัดเก็บ</div>
+      <input type="text" class="reg-input" id="imLocation">
+    </div>
+    <div style="display:flex;gap:10px">
+      <div class="reg-field" style="flex:1">
+        <div class="reg-label">หน่วยนับ</div>
+        <input type="text" class="reg-input" id="imUnit">
+      </div>
+      <div class="reg-field" style="flex:1">
+        <div class="reg-label">Min Stock</div>
+        <input type="number" class="reg-input" id="imMin">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <button class="reg-cancel-btn" style="flex:1" onclick="closeItemManage()">ยกเลิก</button>
+      <button class="reg-submit-btn" style="flex:1" onclick="imSaveItem()">บันทึก</button>
+    </div>
+    <button style="width:100%;margin-top:10px;background:none;border:1px solid var(--red);color:var(--red);border-radius:var(--radius-sm);padding:11px;font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;cursor:pointer" onclick="imDeleteItem()">
+      <i class="fas fa-trash"></i> ลบรายการนี้ออกจากระบบ
+    </button>
+  </div>
+</div>
+
 <!-- ════ MAIN APP ════ -->
 <div id="appWrap">
 <div class="topbar">
@@ -2122,8 +2168,9 @@ function renderList(mode, kw, cat) {
         + '<span style="display:none;font-size:18px">📦</span>'
       : '<span style="font-size:18px">📦</span>';
     const imgClickHtml = imgUrl
-      ? '<div style="width:56px;height:56px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="event.stopPropagation();viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')">'        + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:22px">📦</div></div>'      : '<div style="width:56px;height:56px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">📦</div>';
-    return '<div class="item-card' + (inCart ? ' in-cart' : '') + '" style="padding:10px 12px">'      + imgClickHtml      + '<div class="item-info" style="flex:1;min-width:0" onclick="addToCart(\'' + item.code + '\',\'' + mode + '\')">'      + '<div class="item-name">' + esc(item.name) + '</div>'      + '<div class="item-code">' + item.code + '</div>'      + (inCart ? '<div class="in-cart-badge"><i class="fas fa-check-circle"></i> ในตะกร้า ×' + inCart.qty + '</div>' : '')      + '</div>'      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">'      + '<div class="item-stock" style="text-align:right"><div class="stock-num ' + sc + '">' + item.stock + '</div><div class="stock-unit">' + item.unit + '</div></div>'      + '<button onclick="event.stopPropagation();addToCart(\'' + item.code + '\',\'' + mode + '\')" style="background:' + (inCart ? 'var(--green)' : 'var(--amber)') + ';color:#111;border:none;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;cursor:pointer">'      + (inCart ? '✓ เพิ่ม' : '+ เพิ่ม') + '</button>'      + '</div>'      + '</div>';
+      ? '<div style="position:relative;width:56px;height:56px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="event.stopPropagation();showItemGallery(\'' + item.code + '\',\'' + esc(item.name) + '\')">'        + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'        + (item.images && item.images.length > 1 ? '<div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:1px 4px;border-radius:6px">' + item.images.length + '</div>' : '')        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:22px">📦</div></div>'      : '<div style="width:56px;height:56px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">📦</div>';
+    const imAdminBtn = (me.role === 'admin') ? ('<button onclick="event.stopPropagation();openItemManage(\'' + item.code + '\')" title="แก้ไข/ลบ/รูปภาพ" style="background:var(--surface);border:1px solid var(--border2);color:var(--text2);border-radius:8px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;margin-top:4px"><i class="fas fa-ellipsis-h"></i></button>') : '';
+    return '<div class="item-card' + (inCart ? ' in-cart' : '') + '" style="padding:10px 12px">'      + imgClickHtml      + '<div class="item-info" style="flex:1;min-width:0" onclick="addToCart(\'' + item.code + '\',\'' + mode + '\')">'      + '<div class="item-name">' + esc(item.name) + '</div>'      + '<div class="item-code">' + item.code + '</div>'      + (inCart ? '<div class="in-cart-badge"><i class="fas fa-check-circle"></i> ในตะกร้า ×' + inCart.qty + '</div>' : '')      + '</div>'      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">'      + '<div class="item-stock" style="text-align:right"><div class="stock-num ' + sc + '">' + item.stock + '</div><div class="stock-unit">' + item.unit + '</div></div>'      + '<button onclick="event.stopPropagation();addToCart(\'' + item.code + '\',\'' + mode + '\')" style="background:' + (inCart ? 'var(--green)' : 'var(--amber)') + ';color:#111;border:none;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;cursor:pointer">'      + (inCart ? '✓ เพิ่ม' : '+ เพิ่ม') + '</button>'      + imAdminBtn      + '</div>'      + '</div>';
   }).join('');
 }
 
@@ -2197,7 +2244,7 @@ function openSheet(id) {
   document.getElementById(bodyId).innerHTML = cart.map((item, i) => {
     const imgUrl = getProxyImgUrl(item.imageUrl);
     const iconHtml = imgUrl
-      ? '<div style="width:48px;height:48px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--amber);box-shadow:0 0 10px rgba(232,160,32,.35);flex-shrink:0;cursor:zoom-in" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')">'
+      ? '<div style="width:48px;height:48px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--amber);box-shadow:0 0 10px rgba(232,160,32,.35);flex-shrink:0;cursor:zoom-in" onclick="showItemGallery(\'' + item.code + '\',\'' + esc(item.name) + '\')">'
         + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:9px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:20px">📦</div></div>'
       : '<div style="width:48px;height:48px;border-radius:10px;background:var(--surface);border:1px solid var(--amber);box-shadow:0 0 10px rgba(232,160,32,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">📦</div>';
@@ -2322,13 +2369,13 @@ function renderReceiveCart() {
   el.innerHTML = receiveCart.map((item, i) => {
     const imgUrl = getProxyImgUrl(item.imageUrl);
     const iconHtml = imgUrl
-      ? '<img class="item-img" src="' + imgUrl + '" alt="' + esc(item.name) + '" onclick="viewImg(\'' + imgUrl + '\',\'' + esc(item.name) + '\')" style="cursor:pointer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+      ? '<img class="item-img" src="' + imgUrl + '" alt="' + esc(item.name) + '" onclick="showItemGallery(\'' + item.code + '\',\'' + esc(item.name) + '\')" style="cursor:pointer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
         + '<div class="item-img-placeholder" style="display:none">📦</div>'
       : '<div class="item-img-placeholder">📦</div>';
     const uploadedBadge = item._newImg ? `<span style="font-size:9px;color:var(--green);font-weight:700"><i class="fas fa-check-circle"></i> มีรูป</span>` : '';
     return `
     <div class="receive-item-row" id="rcRow_${i}">
-      <div style="cursor:pointer;flex-shrink:0" onclick="item.imageUrl&&viewImg(item.imageUrl,item.name)">${iconHtml}</div>
+      <div style="cursor:pointer;flex-shrink:0" onclick="item.imageUrl&&showItemGallery(item.code,item.name)">${iconHtml}</div>
       <div class="item-info" style="flex:1;min-width:0">
         <div class="item-name">${esc(item.name)}</div>
         <div class="item-code">${item.code}</div>
@@ -2422,18 +2469,178 @@ function uploadReceiveItemImg(inputEl, idx) {
 }
 
 /* ══ VIEW IMAGE FULLSCREEN ══ */
-function viewImg(url, name) {
-  if (!url) return;
-  // แปลง URL เป็น full size สำหรับดูรูปใหญ่
-  url = getFullImgUrl(url) || url;
+function viewImg(urlOrList, name) {
+  // รองรับทั้งการเรียกแบบเดิม (URL เดี่ยว) และแบบใหม่ (อาร์เรย์รูป 2-3 รูป)
+  const list = (Array.isArray(urlOrList) ? urlOrList : [urlOrList]).filter(Boolean);
+  if (!list.length) return;
+  let idx = 0;
+
   const ov = document.createElement('div');
-  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;cursor:pointer;-webkit-tap-highlight-color:transparent';
-  ov.onclick = () => ov.remove();
-  ov.innerHTML = `
-    <div style="color:#fff;font-size:14px;font-weight:600;max-width:96vw;text-align:center;opacity:.85;margin-bottom:10px;padding:0 8px">${esc(name||'')}</div>
-    <img src="${url}" style="max-width:96vw;max-height:86vh;width:96vw;border-radius:14px;object-fit:contain;box-shadow:0 12px 48px rgba(0,0,0,.8)" onerror="this.src=''">
-    <div style="color:#fff;font-size:12px;opacity:.4;margin-top:10px">แตะเพื่อปิด</div>`;
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;-webkit-tap-highlight-color:transparent';
+  ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+
+  const closeBtn = document.createElement('div');
+  closeBtn.textContent = '✕';
+  closeBtn.style.cssText = 'position:absolute;top:16px;right:16px;color:#fff;font-size:18px;cursor:pointer;background:rgba(255,255,255,.14);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:2';
+  closeBtn.onclick = () => ov.remove();
+  ov.appendChild(closeBtn);
+
+  const title = document.createElement('div');
+  title.style.cssText = 'color:#fff;font-size:14px;font-weight:600;max-width:96vw;text-align:center;opacity:.85;margin-bottom:10px;padding:0 8px';
+  title.textContent = name || '';
+  ov.appendChild(title);
+
+  const imgWrap = document.createElement('div');
+  imgWrap.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;width:96vw;max-width:96vw;';
+  ov.appendChild(imgWrap);
+
+  const imgEl = document.createElement('img');
+  imgEl.style.cssText = 'max-width:96vw;max-height:78vh;width:96vw;border-radius:14px;object-fit:contain;box-shadow:0 12px 48px rgba(0,0,0,.8)';
+  imgEl.onerror = () => { imgEl.src = ''; };
+  imgWrap.appendChild(imgEl);
+
+  if (list.length > 1) {
+    const prevBtn = document.createElement('div');
+    prevBtn.innerHTML = '‹';
+    prevBtn.style.cssText = 'position:absolute;left:6px;top:50%;transform:translateY(-50%);color:#fff;font-size:28px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.14);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center';
+    prevBtn.onclick = (e) => { e.stopPropagation(); idx = (idx - 1 + list.length) % list.length; render(); };
+    imgWrap.appendChild(prevBtn);
+
+    const nextBtn = document.createElement('div');
+    nextBtn.innerHTML = '›';
+    nextBtn.style.cssText = 'position:absolute;right:6px;top:50%;transform:translateY(-50%);color:#fff;font-size:28px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.14);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center';
+    nextBtn.onclick = (e) => { e.stopPropagation(); idx = (idx + 1) % list.length; render(); };
+    imgWrap.appendChild(nextBtn);
+  }
+
+  const dots = document.createElement('div');
+  dots.style.cssText = 'display:flex;gap:6px;margin-top:12px';
+  ov.appendChild(dots);
+
+  const hint = document.createElement('div');
+  hint.style.cssText = 'color:#fff;font-size:12px;opacity:.4;margin-top:8px';
+  hint.textContent = 'แตะพื้นหลังเพื่อปิด';
+  ov.appendChild(hint);
+
+  function render() {
+    imgEl.src = getFullImgUrl(list[idx]) || list[idx];
+    dots.innerHTML = list.map((_, i) => `<span style="width:7px;height:7px;border-radius:50%;background:${i === idx ? '#fff' : 'rgba(255,255,255,.3)'}"></span>`).join('');
+  }
+  render();
   document.body.appendChild(ov);
+}
+
+// เรียกดูรูปทั้งหมดของสินค้า (2-3 รูป) โดยหาจาก code ใน allData แทนการฝัง URL ลง HTML โดยตรง
+function showItemGallery(code, name) {
+  const item = getAllItems().find(i => i.code === code);
+  if (!item) return;
+  const list = (item.images && item.images.length) ? item.images : (item.imageUrl ? [item.imageUrl] : []);
+  if (!list.length) return;
+  viewImg(list.map(getProxyImgUrl), name || item.name);
+}
+
+/* ══ ITEM MANAGE (Admin: แก้ไข / ลบ / รูปภาพ) ══ */
+let imState = { code: null, type: null };
+
+function openItemManage(code) {
+  if (me.role !== 'admin') return;
+  const item = getAllItems().find(i => i.code === code);
+  if (!item) return;
+  imState.code = item.code;
+  imState.type = (allData.tools || []).some(t => t.code === item.code) ? 'tool' : 'item';
+  document.getElementById('imCodeLabel').textContent = 'รหัส: ' + item.code;
+  document.getElementById('imName').value = item.name || '';
+  document.getElementById('imCategory').value = item.category || '';
+  document.getElementById('imLocation').value = item.location || '';
+  document.getElementById('imUnit').value = item.unit || '';
+  document.getElementById('imMin').value = item.min || 0;
+  imRenderImages();
+  document.getElementById('itemManageModal').classList.add('open');
+}
+
+function closeItemManage() {
+  document.getElementById('itemManageModal').classList.remove('open');
+}
+
+function imRenderImages() {
+  const item = getAllItems().find(i => i.code === imState.code);
+  const list = (item && item.images && item.images.length) ? item.images : ((item && item.imageUrl) ? [item.imageUrl] : []);
+  const row = document.getElementById('imImagesRow');
+  let html = list.map((url, i) => (
+    '<div style="position:relative;width:64px;height:64px">' +
+      '<img src="' + getProxyImgUrl(url) + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid var(--border2)">' +
+      '<div onclick="imDeleteImage(' + i + ')" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer">✕</div>' +
+    '</div>'
+  )).join('');
+  if (list.length < 3) {
+    html += '<div onclick="document.getElementById(\'imImgFileInput\').click()" style="width:64px;height:64px;border-radius:10px;border:2px dashed var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)"><i class="fas fa-camera"></i></div>';
+  }
+  row.innerHTML = html || '<div style="font-size:12px;color:var(--text2)">ยังไม่มีรูปภาพ</div>';
+}
+
+function imHandleImgFile(inputEl) {
+  const file = inputEl.files[0];
+  inputEl.value = '';
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { showToast('ไฟล์ใหญ่เกิน 10MB', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const base64 = e.target.result.split(',')[1];
+    const mimeType = file.type || 'image/jpeg';
+    showToast('กำลังอัปโหลดรูป...', 'info');
+    callGAS('webSaveItemImage', [{ code: imState.code, type: imState.type, base64, mimeType, userName: me.name, userId: me.uid }], (res) => {
+      const arr = imState.type === 'tool' ? allData.tools : allData.items;
+      const found = arr.find(i => i.code === imState.code);
+      if (found) { found.images = res.images || (found.images || []).concat([res.imageUrl]); found.imageUrl = found.images[0] || res.imageUrl; }
+      imRenderImages();
+      renderList('withdraw'); renderList('receive'); renderReturnList();
+      showToast('อัปโหลดรูปสำเร็จ', 'success');
+    }, (err) => showToast('อัปโหลดล้มเหลว: ' + err, 'error'));
+  };
+  reader.readAsDataURL(file);
+}
+
+function imDeleteImage(index) {
+  callGAS('webDeleteItemImage', [{ code: imState.code, type: imState.type, imageIndex: index, userName: me.name, userId: me.uid }], (res) => {
+    const arr = imState.type === 'tool' ? allData.tools : allData.items;
+    const found = arr.find(i => i.code === imState.code);
+    if (found) { found.images = res.images || []; found.imageUrl = found.images[0] || ''; }
+    imRenderImages();
+    renderList('withdraw'); renderList('receive'); renderReturnList();
+  }, (err) => showToast('ลบรูปไม่สำเร็จ: ' + err, 'error'));
+}
+
+function imSaveItem() {
+  const payload = {
+    code: imState.code,
+    type: imState.type,
+    name: document.getElementById('imName').value.trim(),
+    category: document.getElementById('imCategory').value.trim(),
+    location: document.getElementById('imLocation').value.trim(),
+    unit: document.getElementById('imUnit').value.trim(),
+    min: parseFloat(document.getElementById('imMin').value) || 0,
+    userName: me.name, userId: me.uid
+  };
+  if (!payload.name || !payload.category || !payload.unit) { showToast('กรุณากรอกข้อมูลให้ครบ', 'error'); return; }
+  callGAS('webEditItem', [payload], () => {
+    const arr = payload.type === 'tool' ? allData.tools : allData.items;
+    const found = arr.find(i => i.code === payload.code);
+    if (found) { found.name = payload.name; found.category = payload.category; found.location = payload.location; found.unit = payload.unit; found.min = payload.min; }
+    closeItemManage();
+    renderList('withdraw'); renderList('receive'); renderReturnList();
+    showToast('บันทึกสำเร็จ', 'success');
+  }, (err) => showToast('บันทึกล้มเหลว: ' + err, 'error'));
+}
+
+function imDeleteItem() {
+  if (!confirm('ยืนยันลบรายการนี้ออกจากระบบถาวร? การกระทำนี้ไม่สามารถย้อนกลับได้')) return;
+  callGAS('webDeleteItem', [{ code: imState.code, type: imState.type, userName: me.name, userId: me.uid }], () => {
+    allData.items = (allData.items || []).filter(i => i.code !== imState.code);
+    allData.tools = (allData.tools || []).filter(i => i.code !== imState.code);
+    closeItemManage();
+    renderList('withdraw'); renderList('receive'); renderReturnList();
+    showToast('ลบรายการสำเร็จ', 'success');
+  }, (err) => showToast('ลบรายการล้มเหลว: ' + err, 'error'));
 }
 
 /* ══ NEW ITEM TAB ══ */
@@ -3066,7 +3273,7 @@ function renderMineApproval() {
   list.innerHTML = items.map(it => {
     const typeIcon = it.type === 'ยืม' ? '🤝' : '📦';
     const imgTag = it.imageUrl
-      ? `<img src="${getProxyImgUrl(it.imageUrl)}" alt="${esc(it.itemName)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+      ? `<img src="${it.imageUrl}" alt="${esc(it.itemName)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
          <div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:none;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`
       : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`;
     return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(251,191,36,.3);border-radius:14px;margin-bottom:8px">
@@ -3269,7 +3476,7 @@ function renderMineBorrows() {
     const color = isOverdue ? '#f87171' : '#fbbf24';
     const badgeText = isOverdue ? `⚠️ เกิน ${days} วัน` : `${days} วันที่แล้ว`;
     const imgHtml = b.imageUrl
-      ? `<img src="${getProxyImgUrl(b.imageUrl)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
+      ? `<img src="${esc(b.imageUrl)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
       : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">🔧</div>`;
     return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid ${isOverdue?'rgba(248,113,113,.3)':'rgba(255,255,255,.08)'};border-radius:14px;margin-bottom:8px${isOverdue?';box-shadow:0 0 0 1px rgba(248,113,113,.15)':''}">
       ${imgHtml}
@@ -3307,15 +3514,7 @@ function _extractDriveId(url) {
   return m ? m[1] : null;
 }
 
-// เก็บได้สูงสุด 3 รูปคั่นด้วย , ในคอลัมน์เดียว — จุดที่แสดงรูปเดียว (thumbnail, การ์ด, ประวัติ) ใช้แค่รูปแรกเสมอ
-function firstImg(url) {
-  if (!url) return url;
-  var s = String(url).split(',')[0].trim();
-  return s;
-}
-
 function getProxyImgUrl(url) {
-  url = firstImg(url);
   if (!url || url === '-' || url === '') return null;
   var id = _extractDriveId(url);
   // ใช้ thumbnail API — ไม่ต้อง auth token ถาวร แชร์แบบ Anyone with link
@@ -3324,7 +3523,6 @@ function getProxyImgUrl(url) {
 }
 
 function getFullImgUrl(url) {
-  url = firstImg(url);
   if (!url || url === '-' || url === '') return null;
   var id = _extractDriveId(url);
   if (id) return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1200';
