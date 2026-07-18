@@ -24,7 +24,9 @@
 html,body{height:100%;margin:0;background:var(--bg);font-family:'Prompt',sans-serif;color:var(--text);overscroll-behavior:none}
 body{display:flex;flex-direction:column}
 #appWrap{display:none;flex-direction:column;height:100vh;height:100dvh;width:100%;max-width:100%;overflow:hidden;position:relative}
-#appWrap.visible{display:flex}
+#appWrap.visible{display:flex;animation:pageFadeIn .35s ease}
+@keyframes pageFadeIn{from{opacity:0}to{opacity:1}}
+*:focus{outline:none}
 
 /* ── Loading ── */
 .loading-screen{
@@ -1842,8 +1844,20 @@ function startStockPoll() {
     callGAS('webGetStockLevels', [], res => {
       _stockPollInFlight = false;
       if (!res || !res.success) return;
-      applyStockLevels(res.items || [], res.tools || []);
-      refreshVisibleStock();
+      const hasNewItems = _detectNewCodes(res.items || [], res.tools || []);
+      if (hasNewItems) {
+        // เจอรายการใหม่ที่ยังไม่มีในเครื่อง -> ดึงข้อมูลเต็มมาเติมให้ครบ (ชื่อ/รูป/หมวดหมู่ ฯลฯ)
+        callGAS('getInventoryData', [], data => {
+          if (data) {
+            allData.items = data.items || allData.items;
+            allData.tools = data.tools || allData.tools;
+            refreshVisibleStock();
+          }
+        }, () => {});
+      } else {
+        applyStockLevels(res.items || [], res.tools || []);
+        refreshVisibleStock();
+      }
     }, () => { _stockPollInFlight = false; });
     // ทุก ๆ 10 รอบ (~30 วิ) เช็คด้วยว่ารายการรออนุมัติของ user คนนี้ถูกอนุมัติไปหรือยัง
     // เพื่อให้ badge หายไปเองโดยไม่ต้องรอ refresh หน้าใหม่
@@ -1856,6 +1870,15 @@ function startStockPoll() {
 
 function stopStockPoll() {
   if (_stockPollTimer) { clearInterval(_stockPollTimer); _stockPollTimer = null; }
+}
+
+// เช็คว่ามีรหัสสินค้า/เครื่องมือใหม่ที่ยังไม่มีในเครื่อง (เพิ่งถูกเพิ่มเข้าระบบจากที่อื่น) หรือไม่
+function _detectNewCodes(itemLevels, toolLevels) {
+  const knownItemCodes = new Set((allData.items || []).map(i => i.code));
+  const knownToolCodes = new Set((allData.tools || []).map(i => i.code));
+  const hasNewItem = (itemLevels || []).some(l => !knownItemCodes.has(l.code));
+  const hasNewTool = (toolLevels || []).some(l => !knownToolCodes.has(l.code));
+  return hasNewItem || hasNewTool;
 }
 
 // อัปเดตแค่ตัวเลขสต็อกลงใน allData เดิม (ไม่แตะชื่อ/รูป/หมวดหมู่ ที่โหลดไว้แล้ว)
