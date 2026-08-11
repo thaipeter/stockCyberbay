@@ -433,6 +433,206 @@ body{display:flex;flex-direction:column}
   /* Mobile: 3 คอลัมน์ */
   .cat-grid{grid-template-columns:repeat(3,1fr)}
 }
+
+/* ── SweetAlert2 Custom Styling Overrides ── */
+:root {
+  --swal2-success-line-color: var(--green) !important;
+  --swal2-success-ring-color: rgba(102, 187, 106, 0.2) !important;
+  --swal2-error-line-color: var(--red) !important;
+  --swal2-error-ring-color: rgba(239, 83, 80, 0.2) !important;
+  --swal2-warning-color: var(--amber) !important;
+  --swal2-info-color: var(--blue) !important;
+  --swal2-question-color: var(--blue) !important;
+}
+.swal2-container {
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+.swal2-popup {
+  background: rgba(22, 25, 34, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6) !important;
+  font-family: 'Sarabun', sans-serif !important;
+  padding: 24px 20px !important;
+}
+.swal2-title {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  font-family: 'Sarabun', sans-serif !important;
+  margin-bottom: 8px !important;
+}
+.swal2-html-container {
+  color: var(--text) !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 13px !important;
+  margin: 12px 0 0 0 !important;
+  line-height: 1.5 !important;
+}
+.swal2-input, .swal2-textarea, .swal2-select {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 14px !important;
+  padding: 12px !important;
+  margin: 10px 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: auto !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+.swal2-input:focus, .swal2-textarea:focus, .swal2-select:focus {
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 12px rgba(232, 160, 32, 0.25) !important;
+}
+.swal2-actions {
+  margin-top: 20px !important;
+  gap: 10px !important;
+}
+.swal2-confirm, .swal2-styled.swal2-confirm {
+  background: linear-gradient(135deg, var(--amber), #f59e0b) !important;
+  color: #000 !important;
+  font-weight: 800 !important;
+  border-radius: 12px !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 13px !important;
+  padding: 10px 20px !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(232, 160, 32, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+.swal2-confirm:hover, .swal2-styled.swal2-confirm:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(232, 160, 32, 0.45) !important;
+}
+.swal2-confirm:active, .swal2-styled.swal2-confirm:active {
+  transform: scale(0.96) !important;
+}
+
+/* Custom background styles for confirm buttons to support red, blue, green, and indigo types */
+.swal2-styled.swal2-confirm[style*="background-color: rgb(239, 68, 68)"],
+.swal2-styled.swal2-confirm[style*="background-color: #ef4444"],
+.swal2-styled.swal2-confirm[style*="background-color: rgb(239, 83, 80)"],
+.swal2-styled.swal2-confirm[style*="background-color: #ef5350"] {
+  background: linear-gradient(135deg, var(--red), #dc2626) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(239, 83, 80, 0.3) !important;
+}
+.swal2-styled.swal2-confirm[style*="background-color: rgb(239, 68, 68)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #ef4444"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: rgb(239, 83, 80)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #ef5350"]:hover {
+  box-shadow: 0 6px 16px rgba(239, 83, 80, 0.45) !important;
+}
+
+.swal2-styled.swal2-confirm[style*="background-color: rgb(59, 130, 246)"],
+.swal2-styled.swal2-confirm[style*="background-color: #3b82f6"],
+.swal2-styled.swal2-confirm[style*="background-color: rgb(66, 165, 245)"],
+.swal2-styled.swal2-confirm[style*="background-color: #42a5f5"] {
+  background: linear-gradient(135deg, var(--blue), #2563eb) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3) !important;
+}
+.swal2-styled.swal2-confirm[style*="background-color: rgb(59, 130, 246)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #3b82f6"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: rgb(66, 165, 245)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #42a5f5"]:hover {
+  box-shadow: 0 6px 16px rgba(66, 165, 245, 0.45) !important;
+}
+
+.swal2-styled.swal2-confirm[style*="background-color: rgb(79, 70, 229)"],
+.swal2-styled.swal2-confirm[style*="background-color: #4f46e5"] {
+  background: linear-gradient(135deg, #4f46e5, #3730a3) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+}
+.swal2-styled.swal2-confirm[style*="background-color: rgb(79, 70, 229)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #4f46e5"]:hover {
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.45) !important;
+}
+
+.swal2-styled.swal2-confirm[style*="background-color: rgb(102, 187, 106)"],
+.swal2-styled.swal2-confirm[style*="background-color: #66bb6a"] {
+  background: linear-gradient(135deg, var(--green), #4caf50) !important;
+  color: #000 !important;
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3) !important;
+}
+.swal2-styled.swal2-confirm[style*="background-color: rgb(102, 187, 106)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #66bb6a"]:hover {
+  box-shadow: 0 6px 16px rgba(102, 187, 106, 0.45) !important;
+}
+
+.swal2-cancel, .swal2-styled.swal2-cancel {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text) !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 13px !important;
+  padding: 10px 20px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+}
+.swal2-cancel:hover, .swal2-styled.swal2-cancel:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+.swal2-cancel:active, .swal2-styled.swal2-cancel:active {
+  transform: scale(0.96) !important;
+}
+.swal2-validation-message {
+  background: rgba(239, 83, 80, 0.1) !important;
+  color: #ef5350 !important;
+  border: 1px solid rgba(239, 83, 80, 0.2) !important;
+  border-radius: 10px !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 12px !important;
+  padding: 8px 12px !important;
+  margin-top: 10px !important;
+}
+.swal2-close {
+  color: var(--text2) !important;
+  font-family: sans-serif !important;
+}
+.swal2-close:hover {
+  color: #fff !important;
+}
+.swal2-icon.swal2-success {
+  border-color: var(--green) !important;
+}
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: var(--green) !important;
+}
+.swal2-icon.swal2-success .swal2-success-ring {
+  border: .25em solid rgba(102, 187, 106, 0.2) !important;
+}
+.swal2-icon.swal2-error {
+  border-color: var(--red) !important;
+}
+.swal2-icon.swal2-error [class^='swal2-error-line'] {
+  background-color: var(--red) !important;
+}
+.swal2-icon.swal2-warning {
+  border-color: var(--amber) !important;
+  color: var(--amber) !important;
+}
+.swal2-icon.swal2-info {
+  border-color: var(--blue) !important;
+  color: var(--blue) !important;
+}
+.swal2-icon.swal2-question {
+  border-color: var(--blue) !important;
+  color: var(--blue) !important;
+}
 </style>
 </head>
 <body>
@@ -1215,6 +1415,10 @@ body{display:flex;flex-direction:column}
         <i class="fas fa-exclamation-triangle me-1"></i> แจ้งชำรุด
       </button>
     </div>
+    <div id="hsAlreadyDoneMsg" style="margin-top: 12px; display: none; text-align:center;">
+      <span style="background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;display:inline-block"><i class="fas fa-check-circle me-1"></i> คืน/แจ้งชำรุดครบแล้ว</span>
+    </div>
+    <div id="hsBreakdown" style="margin-top: 8px; display: none; text-align:center; font-size:11px; color:#94a3b8;"></div>
 
     <div style="margin-top: 10px;">
       <button class="reg-cancel-btn" style="width: 100%; padding: 12px; font-size: 14px;" onclick="closeHistorySlipModal()">ปิดหน้าต่าง</button>
@@ -2603,9 +2807,10 @@ function submitReceive() {
   const payloads = receiveCart.map(item => ({
     code: item.code, qty: item.qty,
     type: 'รับเข้า', user: me.name, uid: me.uid,
-    remark: [poNo, supplier, remark].filter(Boolean).join(' | ')
+    remark: [poNo, supplier, remark].filter(Boolean).join(' | '),
+    deviceInfo: getDeviceInfoString()
   }));
-  callGAS('webBatchTransaction', [payloads], res => {
+  callGASQueued('webBatchTransaction', [payloads], res => {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-check-circle"></i> ยืนยันรับเข้า';
     receiveCart = [];
@@ -2992,6 +3197,17 @@ function submitCart(mode) {
 }
 
 function executeSubmitCart(mode, signatureBase64) {
+  // ★ แก้บั๊ก: เดิมเรียก Swal.fire({...}) เนื้อหาเดียวกันซ้ำ 2 ครั้งติดกัน (copy-paste ซ้ำ) ทำให้ popup loading เด้งซ้อน/กระตุกโดยไม่จำเป็น เหลือแค่ครั้งเดียว
+  Swal.fire({
+    title: 'กำลังส่งคำขอ...',
+    text: 'กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูลและส่งใบเบิก',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
   const cart   = mode === 'withdraw' ? withdrawCart : borrowCart;
   const remark = document.getElementById(mode === 'withdraw' ? 'wRemark' : 'bRemark').value.trim();
   const typeText = mode === 'withdraw' ? 'เบิก' : 'ยืม';
@@ -3004,7 +3220,8 @@ function executeSubmitCart(mode, signatureBase64) {
   const payloads = cart.map(item => ({
     code: item.code, qty: item.qty,
     type: mode === 'withdraw' ? 'เบิก' : 'ยืม',
-    user: me.name, uid: me.uid, remark
+    user: me.name, uid: me.uid, remark,
+    deviceInfo: getDeviceInfoString() // 🆕 แนบข้อมูลอุปกรณ์ไว้เผื่อสืบย้อนความรับผิดชอบ (ไม่กระทบ payload เดิม)
   }));
   
   const handleSuccess = (pendingN) => {
@@ -3026,7 +3243,7 @@ function executeSubmitCart(mode, signatureBase64) {
     renderMineApproval();
   };
 
-  callGAS('webBatchTransaction', [payloads, signatureBase64], res => {
+  callGASQueued('webBatchTransaction', [payloads, signatureBase64], res => {
     handleSuccess((res && res.pendingCount) || payloads.length);
     callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
     loadMineApproval();
@@ -3085,10 +3302,31 @@ function doReturn(reqId, name, qty) {
     confirmButtonColor: '#66bb6a', background: '#1e1e1e', color: '#c0c0c0',
   }).then(r => {
     if (!r.isConfirmed) return;
+    Swal.fire({
+      title: 'กำลังทำรายการ...',
+      text: 'กำลังบันทึกรายการคืนอะไหล่',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     callGAS('webReturnItem', [reqId, me.name, me.uid], () => {
-      showToast('คืนเรียบร้อย!', 'success');
+      Swal.fire({
+        icon: 'success',
+        title: 'คืนเรียบร้อย!',
+        timer: 1500,
+        showConfirmButton: false
+      });
       callGAS('getInventoryData', [], d => { allData = d; renderReturnList(); }, null);
-    }, e => showToast('เกิดข้อผิดพลาด: ' + e, 'error'));
+    }, e => {
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: String(e)
+      });
+    });
   });
 }
 
@@ -3137,6 +3375,93 @@ function handleQR(code) {
 // 🚨 วาง URL ของ Web App หลังบ้าน (Google Apps Script) ที่นี่
 const MY_GAS_URL = "วาง_URL_ของ_Web_App_หลังบ้านที่นี่";
 const GAS_URL = (MY_GAS_URL && MY_GAS_URL.indexOf("วาง_URL") === -1) ? MY_GAS_URL : ((typeof __GAS_URL__ !== 'undefined') ? __GAS_URL__ : '');
+
+// 🆕 ═══════════════════════════════════════════════════
+//  OFFLINE DETECTION + RETRY QUEUE (เพิ่มใหม่ ไม่แตะ logic เดิมของ callGAS)
+//  แสดง banner ตอนเน็ตหลุด และเก็บรายการที่ยังไม่ได้ส่งไว้ใน localStorage
+//  แล้ว auto-retry ให้เองทันทีที่เน็ตกลับมา กันข้อมูลตะกร้าหายตอนกดยืนยันแล้วเน็ตหลุดพอดี
+// ═══════════════════════════════════════════════════
+const OFFLINE_QUEUE_KEY = 'pendingOfflineQueue_v1';
+
+function getDeviceInfoString() {
+  try {
+    const ua = navigator.userAgent || 'unknown';
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua);
+    return (isMobile ? '📱 มือถือ' : '💻 คอมพิวเตอร์') + ' | ' + ua;
+  } catch (e) { return 'ไม่ทราบอุปกรณ์'; }
+}
+
+function _offlineQueueRead() {
+  try { return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+function _offlineQueueWrite(list) {
+  try { localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(list)); } catch (e) {}
+}
+
+function _ensureOfflineBanner() {
+  let el = document.getElementById('offlineBanner');
+  if (el) return el;
+  el = document.createElement('div');
+  el.id = 'offlineBanner';
+  el.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;z-index:99999;'
+    + 'background:#7c2d12;color:#fed7aa;text-align:center;font-size:13px;'
+    + 'padding:8px 12px;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+  document.body.appendChild(el);
+  return el;
+}
+
+function _renderOfflineBanner() {
+  const el = _ensureOfflineBanner();
+  const queued = _offlineQueueRead();
+  if (!navigator.onLine) {
+    el.style.display = 'block';
+    el.innerHTML = '📡 ขาดการเชื่อมต่ออินเทอร์เน็ต — รายการที่ทำระหว่างนี้จะถูกเก็บไว้และส่งอัตโนมัติเมื่อเน็ตกลับมา'
+      + (queued.length ? ` (ค้างอยู่ ${queued.length} รายการ)` : '');
+  } else if (queued.length) {
+    el.style.display = 'block';
+    el.innerHTML = `🔄 กำลังส่งรายการที่ค้างไว้ตอนเน็ตหลุด (${queued.length} รายการ)...`;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// เรียกฟังก์ชันเดิม (fn/args) ซ้ำสำหรับรายการที่ค้างอยู่ในคิว ทีละรายการ
+function _flushOfflineQueue() {
+  const queued = _offlineQueueRead();
+  if (!queued.length || !navigator.onLine) { _renderOfflineBanner(); return; }
+  const item = queued[0];
+  callGAS(item.fn, item.args, () => {
+    const rest = _offlineQueueRead().slice(1);
+    _offlineQueueWrite(rest);
+    showToast(`ส่งรายการที่ค้างไว้สำเร็จแล้ว (เหลืออีก ${rest.length})`, 'success');
+    _renderOfflineBanner();
+    if (rest.length) setTimeout(_flushOfflineQueue, 800);
+    else callGAS('getInventoryData', [], d => { allData = d; }, null);
+  }, () => {
+    // ยังส่งไม่สำเร็จ (อาจเน็ตหลุดอีก) รอลองใหม่ในอีก 5 วิ ไม่ลบออกจากคิว กันข้อมูลหาย
+    setTimeout(_flushOfflineQueue, 5000);
+  });
+  _renderOfflineBanner();
+}
+
+window.addEventListener('online', () => { _renderOfflineBanner(); _flushOfflineQueue(); });
+window.addEventListener('offline', () => { _renderOfflineBanner(); });
+document.addEventListener('DOMContentLoaded', () => { _renderOfflineBanner(); if (navigator.onLine) _flushOfflineQueue(); });
+
+// เรียกใช้แทน callGAS ตรงๆ เฉพาะจุดที่เป็นการ "ส่งคำขอ/ยืนยันรายการ" ที่ห้ามให้ข้อมูลหายตอนเน็ตหลุด
+// ถ้าออนไลน์อยู่ ทำงานเหมือน callGAS ทุกประการ ถ้าออฟไลน์ จะเก็บลงคิวแทนการยิง error ทันที
+function callGASQueued(fn, args, onOk, onFail) {
+  if (!navigator.onLine) {
+    const queued = _offlineQueueRead();
+    queued.push({ fn, args, ts: Date.now() });
+    _offlineQueueWrite(queued);
+    _renderOfflineBanner();
+    if (onFail) onFail('ขณะนี้ไม่มีอินเทอร์เน็ต ระบบได้เก็บรายการนี้ไว้แล้ว จะส่งอัตโนมัติทันทีที่เน็ตกลับมา');
+    return;
+  }
+  callGAS(fn, args, onOk, onFail);
+}
 
 function callGAS(fn, args, onOk, onFail) {
   // 1. ถ้ารันอยู่บน Google Apps Script Web App (มี google.script.run) ให้ใช้ช่องทางหลักเสมอ เพื่อเลี่ยงปัญหา CORS
@@ -3452,8 +3777,10 @@ function renderMineApproval() {
   const list = document.getElementById('mineApprovalList');
   if (!list) return;
   const items = mineData.pendingApproval || [];
+  // ★ นับเฉพาะที่ยัง "รออนุมัติ" จริงๆ สำหรับ badge ตัวเลข — รายการที่ถูกปฏิเสธไปแล้วไม่นับ (ไม่ใช่รายการที่ต้องรออะไรอีก แค่โชว์เป็นประวัติ)
+  const pendingOnlyCount = items.filter(it => it.status !== 'rejected').length;
   const countEl = document.getElementById('mineApprovalCount');
-  if (countEl) countEl.textContent = items.length;
+  if (countEl) countEl.textContent = pendingOnlyCount;
 
   if (!items.length) {
     list.innerHTML = '<div class="mine-empty"><i class="fas fa-check-circle" style="color:var(--green)"></i><p>ไม่มีรายการค้างรออนุมัติ 🎉</p></div>';
@@ -3461,20 +3788,32 @@ function renderMineApproval() {
   }
   list.innerHTML = items.map(it => {
     const typeIcon = it.type === 'ยืม' ? '🤝' : '📦';
+    // ★ เพิ่ม: แสดงรายการที่ถูกแอดมินปฏิเสธด้วย (เดิมพอถูกปฏิเสธจะหายไปเงียบๆ จากลิสต์นี้ ผู้ใช้ไม่รู้ว่าเกิดอะไรขึ้นถ้าพลาดป๊อปอัพตอนนั้น)
+    const isRejected = it.status === 'rejected';
     const imgTag = it.imageUrl
-      ? `<img src="${it.imageUrl}" alt="${esc(it.itemName)}" style="width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+      ? `<img src="${it.imageUrl}" alt="${esc(it.itemName)}" style="width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0${isRejected ? ';filter:grayscale(60%);opacity:.75' : ''}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
          <div style="width:64px;height:64px;border-radius:10px;background:rgba(251,191,36,.12);display:none;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`
-      : `<div style="width:64px;height:64px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`;
-    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(251,191,36,.3);border-radius:14px;margin-bottom:8px">
+      : `<div style="width:64px;height:64px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px${isRejected ? ';filter:grayscale(60%);opacity:.75' : ''}">${typeIcon}</div>`;
+    const statusBadge = isRejected
+      ? `<span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#ef444422;color:#f87171;border:1px solid #ef444455">ถูกปฏิเสธ</span>`
+      : `<span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2455">รออนุมัติ</span>`;
+    const actionBtn = isRejected
+      ? '' // ปฏิเสธไปแล้ว ไม่มีอะไรให้ยกเลิกอีก
+      : `<button onclick="cancelMyPendingRequest('${it.reqId}')" style="font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:14px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.35);cursor:pointer">ยกเลิก</button>`;
+    const rejectedInfo = isRejected && (it.rejectedBy || it.rejectedAt)
+      ? `<div style="font-size:.68rem;color:#f87171;margin-top:3px">✗ ปฏิเสธโดย ${esc(it.rejectedBy || 'แอดมิน')}${it.rejectedAt ? ' • ' + esc(it.rejectedAt) : ''}</div>`
+      : '';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid ${isRejected ? 'rgba(239,68,68,.3)' : 'rgba(251,191,36,.3)'};border-radius:14px;margin-bottom:8px${isRejected ? ';opacity:.85' : ''}">
       ${imgTag}
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.itemName)}</div>
         <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px">${esc(it.itemCode)} • ${esc(it.qty)} • ${esc(it.date)}</div>
         ${it.remark ? `<div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:3px">📝 ${esc(it.remark)}</div>` : ''}
+        ${rejectedInfo}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-        <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2455">รออนุมัติ</span>
-        <button onclick="cancelMyPendingRequest('${it.reqId}')" style="font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:14px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.35);cursor:pointer">ยกเลิก</button>
+        ${statusBadge}
+        ${actionBtn}
       </div>
     </div>`;
   }).join('');
@@ -3488,6 +3827,16 @@ function cancelMyPendingRequest(reqId) {
     confirmButtonColor: '#ef4444', background: '#1a1f2e', color: '#c0c0c0'
   }).then(r => {
     if (!r.isConfirmed) return;
+    Swal.fire({
+      title: 'กำลังยกเลิกคำขอ...',
+      text: 'กรุณารอสักครู่ ระบบกำลังลบรายการคำขอ',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     callGAS('webCancelMyPendingRequest', [{ reqId: reqId, userId: me.uid }], res => {
       if (res && res.success) {
         Swal.fire({icon: 'success', title: 'ยกเลิกแล้ว', timer: 1300, showConfirmButton: false, background: '#1a1f2e', color: '#c0c0c0'});
@@ -3520,7 +3869,8 @@ function _updateApprovalBellBadge() {
   const btn = document.getElementById('approvalBellBtn');
   const badge = document.getElementById('approvalBellBadge');
   if (!btn || !badge) return;
-  const n = (mineData.pendingApproval || []).length;
+  // ★ นับเฉพาะ "pending" จริงๆ เหมือนกับ mineApprovalCount — รายการที่ถูกปฏิเสธไปแล้วไม่ต้องรอผู้ใช้ทำอะไรอีก ไม่ควรทำให้กระดิ่งเด้ง
+  const n = (mineData.pendingApproval || []).filter(it => it.status !== 'rejected').length;
   btn.style.display = n > 0 ? 'flex' : 'none';
   badge.textContent = n;
 }
@@ -3529,6 +3879,16 @@ function submitMyRetroWithdraw(sessionId, itemCode, suggestedQty) {
   const remarkEl = document.getElementById('retroReason_' + itemCode);
   const remark = remarkEl ? remarkEl.value.trim() : '';
   if (!remark) { Swal.fire({icon:'warning', title:'กรุณาระบุเหตุผล', background:'#1a1f2e', color:'#c0c0c0'}); return; }
+  Swal.fire({
+    title: 'กำลังส่งข้อมูล...',
+    text: 'กรุณารอสักครู่ ระบบกำลังบันทึกเหตุผลตกเบิก',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
   callGAS('webSubmitRetroWithdrawByUser', [{
     sessionId: sessionId, itemCode: itemCode, qty: suggestedQty, remark: remark, userId: me.uid
   }], res => {
@@ -3667,13 +4027,37 @@ function renderMineHistory() {
     const escImg = esc(h.imageUrl || '').replace(/'/g, "\\'");
     
     const isWithdraw = (h.type === 'เบิก');
-    const actionsHtml = isWithdraw ? `
+    // ★ ปรับปรุง: ใช้ h.canReturn ที่คำนวณฝั่ง server แล้ว (เช็คทั้งยอดคงเหลือ + เกิน 7 วันหรือยัง)
+    // แทนที่จะเช็คแค่ remainingQty เฉยๆ เหมือนเดิม กันปัญหา parse วันที่ผิดพลาดฝั่ง client ด้วย
+    const hasRemaining = (h.remainingQty === null || h.remainingQty === undefined) ? true : h.remainingQty > 0;
+    const canReturn = (h.canReturn === null || h.canReturn === undefined) ? hasRemaining : h.canReturn;
+    const isExpired = hasRemaining && !canReturn; // เหลืออยู่จริง แต่เกิน 7 วันแล้ว กดคืนไม่ได้แล้ว
+    const returnMaxQty = (h.remainingQty !== null && h.remainingQty !== undefined) ? Math.min(h.qty, h.remainingQty) : h.qty;
+    const returnedQty = h.returnedQty || 0;
+    const damagedQty = h.damagedQty || 0;
+    const totalWithdrawnQty = h.totalWithdrawnQty || h.qty;
+    // 🆕 สรุปให้เห็นว่าเบิกไปทั้งหมด/คืนแล้ว/แจ้งชำรุดแล้วกี่ชิ้น เฉพาะตอนมีการคืน/แจ้งชำรุดไปแล้วบางส่วน(หรือครบ)
+    const breakdownParts = [];
+    if (returnedQty > 0) breakdownParts.push(`คืนแล้ว ${returnedQty}`);
+    if (damagedQty > 0) breakdownParts.push(`แจ้งชำรุด ${damagedQty}`);
+    const breakdownHtml = breakdownParts.length
+      ? `<div style="font-size:10px;color:#94a3b8;margin-top:4px">เบิกทั้งหมด ${totalWithdrawnQty} • ${breakdownParts.join(' • ')}${hasRemaining ? ' • เหลือ ' + (h.remainingQty || 0) : ''}</div>`
+      : '';
+    const actionsHtml = isWithdraw
+      ? (canReturn ? `
       <div style="display:flex;gap:6px;margin-top:6px" onclick="event.stopPropagation()">
-        <button onclick="openReturnItemModal('${escCode}','${escName}',${h.qty})" style="background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer"><i class="fas fa-undo me-1"></i> คืนเข้าคลัง</button>
-        <button onclick="openReportDamageModal('${escCode}','${escName}',${h.qty})" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer"><i class="fas fa-exclamation-triangle me-1"></i> แจ้งชำรุด</button>
-      </div>` : '';
+        <button onclick="openReturnItemModal('${escCode}','${escName}',${returnMaxQty},${h.ts})" style="background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer"><i class="fas fa-undo me-1"></i> คืนเข้าคลัง</button>
+        <button onclick="openReportDamageModal('${escCode}','${escName}',${returnMaxQty},${h.ts})" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer"><i class="fas fa-exclamation-triangle me-1"></i> แจ้งชำรุด</button>
+      </div>${breakdownHtml}` : isExpired ? `
+      <div style="margin-top:6px" onclick="event.stopPropagation()">
+        <span style="background:rgba(148,163,184,.12);color:#94a3b8;border:1px solid rgba(148,163,184,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600"><i class="fas fa-clock me-1"></i> เกิน 7 วัน ไม่สามารถคืน/แจ้งชำรุดได้แล้ว</span>
+      </div>${breakdownHtml}` : `
+      <div style="margin-top:6px" onclick="event.stopPropagation()">
+        <span style="background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600"><i class="fas fa-check-circle me-1"></i> ${damagedQty > 0 && returnedQty === 0 ? 'แจ้งชำรุดครบแล้ว' : returnedQty > 0 && damagedQty === 0 ? 'คืนเข้าคลังครบแล้ว' : 'คืน/แจ้งชำรุดครบแล้ว'}</span>
+      </div>${breakdownHtml}`)
+      : '';
 
-    return `<div class="hist-card" style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:8px;cursor:pointer" onclick="openHistorySlip('${escName}', '${escCode}', '${escQty}', '${escUnit}', '${h.date}', '${esc(h.type)}', '${escRemark}', '${escImg}', '${escSig}')">
+    return `<div class="hist-card" style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:8px;cursor:pointer" onclick="openHistorySlip('${escName}', '${escCode}', '${escQty}', '${escUnit}', '${h.date}', '${esc(h.type)}', '${escRemark}', '${escImg}', '${escSig}', ${h.remainingQty === null || h.remainingQty === undefined ? 'null' : Number(h.remainingQty)}, ${h.canReturn === null || h.canReturn === undefined ? 'null' : !!h.canReturn}, ${returnedQty}, ${damagedQty}, ${totalWithdrawnQty}, ${h.ts})">
       ${imgHtml}
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(h.itemName)}</div>
@@ -3687,7 +4071,7 @@ function renderMineHistory() {
 }
 
 /* ══ MODAL แจ้งอะไหล่ชำรุด / คืนอะไหล่ ══ */
-function openReportDamageModal(code, name, maxQty) {
+function openReportDamageModal(code, name, maxQty, sourceRef) {
   const defaultQty = maxQty || 1;
   Swal.fire({
     title: '⚠️ แจ้งอะไหล่ชำรุด / เสีย',
@@ -3697,7 +4081,7 @@ function openReportDamageModal(code, name, maxQty) {
         <div style="color:#a0aec0;font-size:11px;margin-bottom:10px">รหัส: ${esc(code)}</div>
         
         <label style="display:block;margin-bottom:4px;font-weight:600">จำนวนที่ชำรุด/ใช้ไม่ได้ <span style="color:#ef4444">*</span></label>
-        <input id="swalDamageQty" type="number" min="1" max="${defaultQty}" value="${defaultQty}" class="swal2-input" style="width:100%;margin:0 0 10px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px">
+        <input id="swalDamageQty" type="number" min="1" max="${defaultQty}" value="${defaultQty}" class="swal2-input" style="width:100%;margin:0 0 10px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px" oninput="if(Number(this.value)>${defaultQty})this.value=${defaultQty}; if(Number(this.value)<1 && this.value!=='')this.value=1;">
 
         <label style="display:block;margin-bottom:4px;font-weight:600">ระบุอาการชำรุด / สาเหตุ <span style="color:#ef4444">*</span></label>
         <textarea id="swalDamageRemark" class="swal2-textarea" rows="2" placeholder="เช่น แตกหักจากการใช้งาน, เกลียวหวาน, ใช้งานไม่ได้..." style="width:100%;margin:0 0 8px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px;padding:8px"></textarea>
@@ -3713,16 +4097,37 @@ function openReportDamageModal(code, name, maxQty) {
       const qty = Number(document.getElementById('swalDamageQty').value);
       const remark = document.getElementById('swalDamageRemark').value.trim();
       if (!qty || qty <= 0) { Swal.showValidationMessage('กรุณาระบุจำนวนที่ถูกต้อง'); return false; }
+      // ★ แก้บั๊กเดียวกับ openReturnItemModal: attribute max ไม่ได้บังคับจริง ต้องเช็คซ้ำก่อนส่ง
+      if (qty > defaultQty) { Swal.showValidationMessage(`แจ้งชำรุดได้ไม่เกิน ${defaultQty} ชิ้น (จำนวนที่เบิกไป/ยังไม่ได้คืน)`); return false; }
       if (!remark) { Swal.showValidationMessage('กรุณาระบุอาการชำรุด/สาเหตุ'); return false; }
       return { qty, remark };
     }
   }).then(res => {
     if (!res.isConfirmed || !res.value) return;
     const { qty, remark } = res.value;
-    const payload = [{ code, qty, type: 'แจ้งชำรุด', user: me.name, uid: me.uid, remark: 'แจ้งชำรุด: ' + remark }];
+    // 🆕 ถ้ากดมาจากใบเบิกใบใดใบหนึ่งโดยเฉพาะ (มี sourceRef) ให้ฝัง [ref:xxx] ไว้ใน remark (มองไม่เห็นในหน้าจอ)
+    // เพื่อให้ backend (getUserHistory) ผูกการแจ้งชำรุดครั้งนี้กลับไปยังใบเบิกใบนั้นแบบ 1:1 แทนการหาร FIFO เฉลี่ยรวม
+    const finalRemark = 'แจ้งชำรุด: ' + remark + (sourceRef ? ` [ref:${sourceRef}]` : '');
+    const payload = [{ code, qty, type: 'แจ้งชำรุด', user: me.name, uid: me.uid, remark: finalRemark }];
 
-    callGAS('webBatchTransaction', [payload, ''], r => {
-      showToast('แจ้งชำรุดเรียบร้อย', 'success');
+    Swal.fire({
+      title: 'กำลังส่งข้อมูล...',
+      text: 'กรุณารอสักครู่ ระบบกำลังบันทึกรายการแจ้งชำรุด',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    callGASQueued('webBatchTransaction', [payload, ''], r => {
+      Swal.fire({
+        icon: 'success',
+        title: 'แจ้งชำรุดเรียบร้อย!',
+        timer: 1500,
+        showConfirmButton: false
+      });
       loadMineData();
       callGAS('getInventoryData', [], d => { allData = d; }, null);
     }, err => {
@@ -3734,13 +4139,18 @@ function openReportDamageModal(code, name, maxQty) {
         code: code, itemCode: code, itemName: name, qty: qty, amount: '-' + qty,
         user: me.name, remark: 'แจ้งชำรุด: ' + remark
       });
-      showToast('แจ้งชำรุดเรียบร้อย (Demo)', 'success');
+      Swal.fire({
+        icon: 'success',
+        title: 'แจ้งชำรุดเรียบร้อย (Demo)',
+        timer: 1500,
+        showConfirmButton: false
+      });
       renderMineHistory();
     });
   });
 }
 
-function openReturnItemModal(code, name, maxQty) {
+function openReturnItemModal(code, name, maxQty, sourceRef) {
   const defaultQty = maxQty || 1;
   Swal.fire({
     title: '↩️ ขอส่งคืนอะไหล่เข้าคลัง',
@@ -3750,7 +4160,7 @@ function openReturnItemModal(code, name, maxQty) {
         <div style="color:#a0aec0;font-size:11px;margin-bottom:10px">รหัส: ${esc(code)}</div>
         
         <label style="display:block;margin-bottom:4px;font-weight:600">จำนวนที่ต้องการคืน <span style="color:#22c55e">*</span></label>
-        <input id="swalReturnQty" type="number" min="1" max="${defaultQty}" value="${defaultQty}" class="swal2-input" style="width:100%;margin:0 0 10px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px">
+        <input id="swalReturnQty" type="number" min="1" max="${defaultQty}" value="${defaultQty}" class="swal2-input" style="width:100%;margin:0 0 10px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px" oninput="if(Number(this.value)>${defaultQty})this.value=${defaultQty}; if(Number(this.value)<1 && this.value!=='')this.value=1;">
 
         <label style="display:block;margin-bottom:4px;font-weight:600">เหตุผลการคืน / หมายเหตุ</label>
         <textarea id="swalReturnRemark" class="swal2-textarea" rows="2" placeholder="เช่น ใช้ไม่หมด, เบิกเกิน, เบิกผิดรายการ..." style="width:100%;margin:0 0 8px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px;padding:8px"></textarea>
@@ -3767,14 +4177,29 @@ function openReturnItemModal(code, name, maxQty) {
       const qty = Number(document.getElementById('swalReturnQty').value);
       const remark = document.getElementById('swalReturnRemark').value.trim();
       if (!qty || qty <= 0) { Swal.showValidationMessage('กรุณาระบุจำนวนที่ถูกต้อง'); return false; }
+      // ★ แก้บั๊ก: attribute max="${defaultQty}" บน input เป็นแค่ hint ให้เบราว์เซอร์ ไม่ได้บังคับจริง — พิมพ์เกินจำนวนที่เบิกไปได้เฉยๆ ต้องเช็คซ้ำใน JS ก่อนส่ง
+      if (qty > defaultQty) { Swal.showValidationMessage(`คืนได้ไม่เกิน ${defaultQty} ชิ้น (จำนวนที่เบิกไป/ยังไม่ได้คืน)`); return false; }
       return { qty, remark: remark || 'ขอคืนอะไหล่ที่เบิกไป' };
     }
   }).then(res => {
     if (!res.isConfirmed || !res.value) return;
     const { qty, remark } = res.value;
-    const payload = [{ code, qty, type: 'คืน', user: me.name, uid: me.uid, remark: 'ขอคืนอะไหล่: ' + remark }];
+    // 🆕 ผูกกลับไปยังใบเบิกต้นทางแบบ 1:1 ผ่าน [ref:xxx] เหมือนกับ openReportDamageModal (ดูคอมเมนต์ที่นั่น)
+    const finalRemark = 'ขอคืนอะไหล่: ' + remark + (sourceRef ? ` [ref:${sourceRef}]` : '');
+    const payload = [{ code, qty, type: 'คืน', user: me.name, uid: me.uid, remark: finalRemark }];
 
-    callGAS('webBatchTransaction', [payload, ''], r => {
+    Swal.fire({
+      title: 'กำลังส่งข้อมูล...',
+      text: 'กรุณารอสักครู่ ระบบกำลังบันทึกคำขอคืนอะไหล่',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    callGASQueued('webBatchTransaction', [payload, ''], r => {
       Swal.fire({
         icon: 'success',
         title: 'ส่งคำขอคืนแล้ว!',
@@ -4064,7 +4489,7 @@ function closeSignatureModal() {
 }
 
 /* ══ HISTORY SLIP MODAL LOGIC ══ */
-function openHistorySlip(itemName, itemCode, qty, unit, date, type, remark, imageUrl, signatureUrl) {
+function openHistorySlip(itemName, itemCode, qty, unit, date, type, remark, imageUrl, signatureUrl, remainingQty, canReturnParam, returnedQty, damagedQty, totalWithdrawnQty, sourceTs) {
   document.getElementById('hsItemName').textContent = itemName;
   document.getElementById('hsItemCode').textContent = itemCode;
   document.getElementById('hsQty').textContent = qty + ' ' + unit;
@@ -4094,21 +4519,56 @@ function openHistorySlip(itemName, itemCode, qty, unit, date, type, remark, imag
     sigContainer.innerHTML = `<span style="font-style: italic; color: #94a3b8; font-size: 12px;">ไม่มีลายเซ็น</span>`;
   }
   
-  // โหลดปุ่มจัดการสำหรับรายการเบิก
+  // ★ ปรับปรุง: ใช้ canReturn ที่คำนวณฝั่ง server (เช็คทั้งยอดคงเหลือ + เกิน 7 วันหรือยัง) แทน remainingQty เฉยๆ
+  // และแสดง breakdown คืนแล้ว/แจ้งชำรุดแล้วกี่ชิ้น เหมือนกับใน list การ์ดด้านนอก ให้สอดคล้องกัน
   const actionBtns = document.getElementById('hsActionBtns');
+  const alreadyDoneMsg = document.getElementById('hsAlreadyDoneMsg');
+  const breakdownEl = document.getElementById('hsBreakdown');
+  const hasRemaining = (remainingQty === null || remainingQty === undefined) ? true : remainingQty > 0;
+  const canReturn = (canReturnParam === null || canReturnParam === undefined) ? hasRemaining : canReturnParam;
+  const isExpired = hasRemaining && !canReturn;
+  const maxQty = (remainingQty !== null && remainingQty !== undefined) ? Math.min(Number(qty), remainingQty) : Number(qty);
+
+  if (breakdownEl) {
+    const parts = [];
+    if (returnedQty > 0) parts.push(`คืนแล้ว ${returnedQty}`);
+    if (damagedQty > 0) parts.push(`แจ้งชำรุด ${damagedQty}`);
+    if (parts.length) {
+      breakdownEl.style.display = 'block';
+      breakdownEl.textContent = `เบิกทั้งหมด ${totalWithdrawnQty || qty} • ${parts.join(' • ')}${hasRemaining ? ' • เหลือ ' + remainingQty : ''}`;
+    } else {
+      breakdownEl.style.display = 'none';
+    }
+  }
+
   if (actionBtns) {
-    if (type === 'เบิก') {
+    if (type === 'เบิก' && canReturn) {
       actionBtns.style.display = 'flex';
+      if (alreadyDoneMsg) alreadyDoneMsg.style.display = 'none';
       document.getElementById('hsBtnReturn').onclick = function() {
         closeHistorySlipModal();
-        openReturnItemModal(itemCode, itemName, Number(qty));
+        openReturnItemModal(itemCode, itemName, maxQty, sourceTs);
       };
       document.getElementById('hsBtnDamage').onclick = function() {
         closeHistorySlipModal();
-        openReportDamageModal(itemCode, itemName, Number(qty));
+        openReportDamageModal(itemCode, itemName, maxQty, sourceTs);
       };
+    } else if (type === 'เบิก' && isExpired) {
+      actionBtns.style.display = 'none';
+      if (alreadyDoneMsg) {
+        alreadyDoneMsg.style.display = 'block';
+        alreadyDoneMsg.innerHTML = '<span style="background:rgba(148,163,184,.12);color:#94a3b8;border:1px solid rgba(148,163,184,.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;display:inline-block"><i class="fas fa-clock me-1"></i> เกิน 7 วัน ไม่สามารถคืน/แจ้งชำรุดได้แล้ว</span>';
+      }
+    } else if (type === 'เบิก' && !hasRemaining) {
+      actionBtns.style.display = 'none';
+      if (alreadyDoneMsg) {
+        alreadyDoneMsg.style.display = 'block';
+        const label = damagedQty > 0 && returnedQty === 0 ? 'แจ้งชำรุดครบแล้ว' : returnedQty > 0 && damagedQty === 0 ? 'คืนเข้าคลังครบแล้ว' : 'คืน/แจ้งชำรุดครบแล้ว';
+        alreadyDoneMsg.innerHTML = `<span style="background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;display:inline-block"><i class="fas fa-check-circle me-1"></i> ${label}</span>`;
+      }
     } else {
       actionBtns.style.display = 'none';
+      if (alreadyDoneMsg) alreadyDoneMsg.style.display = 'none';
     }
   }
 
