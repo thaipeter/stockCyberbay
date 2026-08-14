@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="./manifest.json">
 <title>ทำรายการ</title>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
@@ -21,7 +22,7 @@
   --tab-h:52px; --bar-h:56px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0;background:var(--bg);font-family:'Prompt',sans-serif;color:var(--text);overscroll-behavior:none}
+html,body{height:100%;margin:0;background:var(--bg);font-family:'Sarabun',sans-serif;color:var(--text);overscroll-behavior:none}
 body{display:flex;flex-direction:column}
 #appWrap{display:none;flex-direction:column;height:100vh;height:100dvh;width:100%;max-width:100%;overflow:hidden;position:relative}
 #appWrap.visible{display:flex;animation:pageFadeIn .35s ease}
@@ -45,99 +46,100 @@ body{display:flex;flex-direction:column}
 
 /* ── Login Screen ── */
 .login-screen{
-  position:fixed;inset:0;background:var(--bg);z-index:998;
+  position:fixed;inset:0;background:radial-gradient(circle at 50% 30%, rgba(232,160,32,.12), transparent 70%), var(--bg)!important;z-index:998;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:24px;
 }
 .login-screen.hidden{display:none}
-.login-logo{font-size:40px;margin-bottom:8px}
-.login-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:1px;margin-bottom:4px}
-.login-sub{font-size:12px;color:var(--text2);margin-bottom:32px}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:100%;max-width:360px}
+.login-logo{font-size:48px;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(232,160,32,.5))}
+.login-title{font-size:20px;font-weight:800;color:#fff;letter-spacing:1px;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:28px;font-weight:500}
+.login-card{background:rgba(22, 25, 34, 0.85)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1)!important;box-shadow:0 12px 40px rgba(0,0,0,0.5)!important;border-radius:20px!important;padding:28px 24px;width:100%;max-width:380px}
 .login-field{margin-bottom:16px}
-.login-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);margin-bottom:6px}
+.login-label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
 
 /* role badges legend */
-.role-legend{display:flex;gap:12px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
+.role-legend{display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
 .role-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
 .role-badge .rb-icon{font-size:14px}
 .role-badge .rb-label{font-size:10px;color:var(--text3)}
 
 .login-select,.login-input{
-  width:100%;background:var(--bg);border:1px solid var(--border2);
-  border-radius:var(--radius-sm);color:var(--text);
-  font-family:'Prompt',sans-serif;font-size:14px;padding:12px;outline:none;
-  transition:border-color .2s;appearance:none;-webkit-appearance:none;
+  width:100%;background:rgba(0,0,0,.4)!important;border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;color:#fff;
+  font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;padding:12px;outline:none;
+  transition:all .2s;appearance:none;-webkit-appearance:none;
 }
-.login-select:focus,.login-input:focus{border-color:var(--amber)}
-.login-select option{background:var(--surface2)}
+.login-select:focus,.login-input:focus{border-color:var(--amber);box-shadow:0 0 15px rgba(232,160,32,0.25)}
+.login-select option{background:var(--surface2);color:#fff}
 
 /* selected user role indicator */
 .selected-role-indicator{
   display:none;align-items:center;gap:8px;
-  background:var(--surface2);border:1px solid var(--border2);
-  border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:10px 14px;margin-top:10px;
 }
 .selected-role-indicator.show{display:flex}
-.sri-icon{font-size:20px}
+.sri-icon{font-size:22px}
 .sri-info{flex:1}
-.sri-name{font-size:13px;font-weight:600;color:var(--text)}
+.sri-name{font-size:14px;font-weight:700;color:#fff}
 .sri-role{font-size:11px;color:var(--text2)}
-.sri-role-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px}
-.sri-role-badge.admin{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)}
-.sri-role-badge.user{background:var(--green-dim);color:var(--green);border:1px solid var(--green)}
-.sri-role-badge.qr{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue)}
-.sri-role-badge.staff{background:var(--purple-dim);color:var(--purple);border:1px solid var(--purple)}
+.sri-role-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:999px;letter-spacing:0.5px}
+.sri-role-badge.admin{background:rgba(232,160,32,.2);color:var(--amber);border:1px solid var(--amber)}
+.sri-role-badge.user{background:rgba(102,187,106,.2);color:var(--green);border:1px solid var(--green)}
+.sri-role-badge.qr{background:rgba(66,165,245,.2);color:var(--blue);border:1px solid var(--blue)}
+.sri-role-badge.staff{background:rgba(171,71,188,.2);color:var(--purple);border:1px solid var(--purple)}
 
-.pin-display{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
-.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:all .15s}
-.pin-dot.filled{background:var(--amber);border-color:var(--amber)}
-.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.pin-display{display:flex;gap:12px;justify-content:center;margin-bottom:22px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.2);background:transparent;transition:all .2s ease}
+.pin-dot.filled{background:var(--amber);border-color:var(--amber);box-shadow:0 0 12px rgba(232,160,32,0.8);transform:scale(1.1)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .num-btn{
-  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
-  color:var(--text);font-family:'Prompt',sans-serif;font-size:20px;font-weight:500;
-  padding:16px;cursor:pointer;transition:all .1s;text-align:center;
+  background:rgba(255,255,255,.03)!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:14px!important;
+  color:#fff!important;font-family:'Sarabun',sans-serif;font-size:22px!important;font-weight:700!important;
+  padding:10px 14px!important;font-size:20px!important;cursor:pointer;transition:all .15s ease!important;text-align:center;
   -webkit-user-select:none;user-select:none;
 }
-.num-btn:active{background:var(--amber-dim);border-color:var(--amber);transform:scale(.95)}
-.num-btn.del{font-size:16px;color:var(--text2)}
-.num-btn.empty{background:transparent;border:none;cursor:default}
+.num-btn:active{background:rgba(232,160,32,.25)!important;border-color:var(--amber)!important;transform:scale(.92)!important;box-shadow:0 0 15px rgba(232,160,32,.3)}
+.num-btn.del{font-size:16px!important;color:var(--text2)!important}
+.num-btn.empty{background:transparent!important;border:none!important;cursor:default}
 .login-btn{
-  width:100%;border:none;border-radius:var(--radius);
-  background:var(--amber);color:#000;
-  font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;
-  padding:13px;cursor:pointer;transition:opacity .2s;letter-spacing:.5px;
+  width:100%;border:none;border-radius:14px;
+  background:linear-gradient(135deg, var(--amber), #f59e0b);color:#000;
+  font-family:'Sarabun',sans-serif;font-size:15px;font-weight:800;
+  padding:14px;cursor:pointer;transition:all .2s ease;letter-spacing:.5px;box-shadow:0 4px 18px rgba(232,160,32,0.3);
 }
-.login-btn:disabled{opacity:.4;cursor:not-allowed}
-.login-error{font-size:12px;color:var(--red);text-align:center;margin-top:8px;display:none}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(232,160,32,0.4)}
+.login-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.login-error{font-size:12px;color:var(--red);text-align:center;margin-top:8px;display:none;font-weight:600}
 
 /* ── Register link ── */
 .register-link{margin-top:20px;text-align:center;font-size:12px;color:var(--text2)}
-.register-link a{color:var(--amber);text-decoration:none;font-weight:600;cursor:pointer}
+.register-link a{color:var(--amber);text-decoration:none;font-weight:700;cursor:pointer}
 
 /* ── Register Modal ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:999;display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:24px 24px 32px;animation:slideUp .25s ease}
-.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
-.modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+.modal-box{background:rgba(22, 25, 34, 0.95)!important;border:1px solid rgba(255,255,255,.1);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px 32px;animation:slideUp .25s ease;box-shadow:0 -10px 40px rgba(0,0,0,0.6)}
+.modal-handle{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:18px;font-weight:800;color:#fff;margin-bottom:4px}
 .modal-sub{font-size:12px;color:var(--text2);margin-bottom:20px}
 .reg-field{margin-bottom:14px}
-.reg-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);margin-bottom:6px}
-.reg-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'Prompt',sans-serif;font-size:14px;padding:12px;outline:none;transition:border-color .2s}
+.reg-label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.reg-input{width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-family:'Sarabun',sans-serif;font-size:14px;padding:12px;outline:none;transition:border-color .2s}
 .reg-input:focus{border-color:var(--amber)}
 .reg-pin-row{display:flex;gap:10px;justify-content:center;margin-bottom:6px}
-.reg-pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:transparent;transition:all .15s}
+.reg-pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.2);background:transparent;transition:all .15s}
 .reg-pin-dot.filled{background:var(--amber);border-color:var(--amber)}
 .reg-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.reg-num-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Prompt',sans-serif;font-size:18px;font-weight:500;padding:14px;cursor:pointer;transition:all .1s;text-align:center;-webkit-user-select:none;user-select:none}
-.reg-num-btn:active{background:var(--amber-dim);border-color:var(--amber);transform:scale(.95)}
+.reg-num-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;color:#fff;font-family:'Sarabun',sans-serif;font-size:18px;font-weight:700;padding:14px;cursor:pointer;transition:all .1s;text-align:center;-webkit-user-select:none;user-select:none}
+.reg-num-btn:active{background:rgba(232,160,32,.25);border-color:var(--amber);transform:scale(.95)}
 .reg-num-btn.del{font-size:14px;color:var(--text2)}
 .reg-num-btn.empty{background:transparent;border:none;cursor:default}
 .reg-hint{font-size:11px;color:var(--text3);text-align:center;margin-bottom:12px}
-.reg-btn-row{display:flex;gap:8px}
-.reg-cancel-btn{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-family:'Prompt',sans-serif;font-size:13px;font-weight:600;padding:12px;cursor:pointer}
-.reg-submit-btn{flex:2;background:var(--amber);border:none;border-radius:var(--radius-sm);color:#000;font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;padding:12px;cursor:pointer;transition:opacity .2s}
+.reg-btn-row{display:flex;gap:10px}
+.reg-cancel-btn{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;padding:12px;cursor:pointer}
+.reg-submit-btn{flex:2;background:linear-gradient(135deg, var(--amber), #f59e0b);border:none;border-radius:12px;color:#000;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:800;padding:12px;cursor:pointer;transition:opacity .2s}
 .reg-submit-btn:disabled{opacity:.4;cursor:not-allowed}
 .reg-error{font-size:12px;color:var(--red);text-align:center;margin-bottom:10px;display:none}
 .reg-step{display:none}
@@ -155,22 +157,23 @@ body{display:flex;flex-direction:column}
 .reg-success-sub.approved{color:var(--green)}
 
 /* ── Top bar ── */
-.topbar{height:var(--bar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0}
+.topbar{height:60px;background:rgba(18, 20, 29, 0.85)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;position:sticky;top:0;z-index:800;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
 .topbar-left{display:flex;align-items:center;gap:10px}
-.topbar-title{font-size:14px;font-weight:600;color:var(--text)}
-.topbar-sub{font-size:11px;color:var(--text2)}
-.user-avatar{width:38px;height:38px;border-radius:50%;background:var(--amber-dim);border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--amber);cursor:pointer;overflow:hidden}
-.user-name{font-size:11px;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar-title{font-size:15px;font-weight:800;color:#fff;letter-spacing:0.5px}
+.topbar-sub{font-size:11px;color:var(--amber);font-weight:700}
+.user-avatar{width:38px;height:38px;border-radius:50%;background:rgba(232,160,32,.15);border:1.5px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--amber);cursor:pointer;overflow:hidden;box-shadow:0 0 12px rgba(232,160,32,0.3)}
+.user-name{font-size:11px;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 
 /* ── Tabs ── */
-.tabs{height:var(--tab-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-shrink:0}
-.tab-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Prompt',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--text3);cursor:pointer;transition:all .2s}
+.tabs{height:54px;background:rgba(18, 20, 29, 0.95)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08);display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0;position:sticky;top:60px;z-index:800;padding:6px 12px;gap:8px}
+.tabs::-webkit-scrollbar{display:none!important}
+.tab-btn{flex-shrink:0!important;white-space:nowrap!important;display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:13px!important;font-weight:700!important;letter-spacing:.3px;color:var(--text3);padding:8px 16px!important;cursor:pointer;transition:all .25s ease}
 .tab-btn i{font-size:14px}
-.tab-btn.active-withdraw{color:var(--red);border-bottom-color:var(--red);background:var(--red-dim)}
-.tab-btn.active-borrow{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-dim)}
-.tab-btn.active-receive{color:var(--green);border-bottom-color:var(--green);background:var(--green-dim)}
-.tab-btn.active-newitem{color:#8b5cf6;border-bottom-color:#8b5cf6;background:rgba(139,92,246,.12)}
-.tab-btn.active-stocktake{color:#f59e0b;border-bottom-color:#f59e0b;background:rgba(245,158,11,.12)}
+.tab-btn.active-withdraw{color:var(--red)!important;background:rgba(239,83,80,.15)!important;box-shadow:0 2px 10px rgba(239,83,80,.25)}
+.tab-btn.active-borrow{color:var(--blue)!important;background:rgba(66,165,245,.15)!important;box-shadow:0 2px 10px rgba(66,165,245,.25)}
+.tab-btn.active-receive{color:var(--green)!important;background:rgba(102,187,106,.15)!important;box-shadow:0 2px 10px rgba(102,187,106,.25)}
+.tab-btn.active-newitem{color:#a78bfa!important;background:rgba(167,139,250,.15)!important;box-shadow:0 2px 10px rgba(167,139,250,.25)}
+.tab-btn.active-stocktake{color:#f59e0b!important;background:rgba(245,158,11,.15)!important;box-shadow:0 2px 10px rgba(245,158,11,.25)}
 
 /* ── Content ── */
 .content{flex:1;display:none;flex-direction:column;min-height:0;overflow:hidden;position:relative}
@@ -180,25 +183,27 @@ body{display:flex;flex-direction:column}
 .search-area{padding:12px 12px 8px;flex-shrink:0}
 .search-wrap{display:flex;gap:8px}
 .search-input-wrap{flex:1;position:relative}
-.search-input-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none}
-.search-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Prompt',sans-serif;font-size:14px;padding:10px 12px 10px 34px;outline:none;transition:border-color .2s}
-.search-input:focus{border-color:var(--amber)}
-.scan-btn{background:var(--amber);border:none;border-radius:var(--radius-sm);color:#000;padding:0 16px;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap;font-family:'Prompt',sans-serif}
+.search-input-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+.search-input{width:100%;background:rgba(26,29,41,0.8);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#fff;font-family:'Sarabun',sans-serif;font-size:14px;padding:10px 12px 10px 36px;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--amber);box-shadow:0 0 15px rgba(232,160,32,0.2)}
+.scan-btn{background:linear-gradient(135deg, var(--amber), #f59e0b)!important;border:none;border-radius:12px!important;color:#000!important;padding:0 18px;font-size:14px;font-weight:800!important;cursor:pointer;flex-shrink:0;display:flex;align-items:center;gap:6px;transition:all .2s ease;white-space:nowrap;font-family:'Sarabun',sans-serif;box-shadow:0 4px 15px rgba(232,160,32,0.3)}
+.scan-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,160,32,0.45)}
 .scan-btn:active{opacity:.8;transform:scale(.96)}
 
 /* ── Item list ── */
 .item-list{flex:1;overflow-y:auto;padding:0 12px 8px;min-height:0}.item-list.hidden{display:none!important}
-.item-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;-webkit-user-select:none;user-select:none}
-.item-card:active{transform:scale(.98)}
-.item-card.in-cart{border-color:var(--green);background:var(--green-dim)}
-.item-icon{width:38px;height:38px;border-radius:var(--radius-sm);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--surface);border:1px solid var(--border2);overflow:hidden}
-.item-icon img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm)}
+.item-card{background:rgba(26,29,41,0.75)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.07)!important;border-radius:14px!important;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .25s ease;display:flex;align-items:center;gap:12px;-webkit-user-select:none;user-select:none;box-shadow:0 4px 12px rgba(0,0,0,0.25)}
+.item-card:hover{border-color:rgba(232,160,32,0.4)!important;transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.4)!important}
+.item-card:active{transform:scale(.97)}
+.item-card.in-cart{border-color:var(--green)!important;background:rgba(102,187,106,0.15)!important;box-shadow:0 0 15px rgba(102,187,106,0.25)!important}
+.item-icon{width:42px;height:42px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);overflow:hidden}
+.item-icon img{width:100%;height:100%;object-fit:cover;border-radius:10px}
 .item-info{flex:1;min-width:0}
-.item-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.item-code{font-size:11px;color:var(--text2);font-family:monospace}
-.in-cart-badge{font-size:10px;font-weight:600;color:var(--green);margin-top:2px}
+.item-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-code{font-size:11px;color:var(--text2);font-weight:600}
+.in-cart-badge{font-size:10px;font-weight:700;color:var(--green);margin-top:2px;font-family:'Outfit',sans-serif}
 .item-stock{text-align:right;flex-shrink:0}
-.stock-num{font-size:15px;font-weight:700}
+.stock-num{font-size:16px;font-weight:800;font-family:'Outfit',sans-serif}
 .stock-unit{font-size:10px;color:var(--text2)}
 .stock-ok{color:var(--green)} .stock-low{color:#ff9800} .stock-zero{color:var(--red)}
 .empty-state{text-align:center;padding:40px 20px;color:var(--text3)}
@@ -206,144 +211,111 @@ body{display:flex;flex-direction:column}
 .empty-state p{font-size:13px}
 
 /* ── Cart bar ── */
-.cart-bar{background:var(--surface);border-top:1px solid var(--border2);padding:10px 12px;flex-shrink:0;display:none!important;gap:8px;align-items:center}.cart-bar.active{display:flex!important}
+.cart-bar, .receive-cart-bar{padding:10px 16px!important;min-height:62px!important;background:rgba(18, 20, 29, 0.95)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,0.1);padding:12px 16px;flex-shrink:0;display:none!important;gap:12px;align-items:center;box-shadow:0 -6px 25px rgba(0,0,0,0.5)}
+.cart-bar.active, .receive-cart-bar.active{display:flex!important;animation:slideUp .2s ease}
 .cart-count-info{flex:1}
-.cart-count{font-size:12px;color:var(--text2)}
-.cart-count span{color:var(--amber);font-weight:700}
-.cart-btn{flex:2;border:none;border-radius:var(--radius-sm);font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-.cart-btn:disabled{background:var(--surface2);color:var(--text3);cursor:not-allowed}
-.cart-btn.withdraw{background:var(--red);color:#fff}
-.cart-btn.borrow{background:var(--blue);color:#fff}
-.cart-btn.receive{background:var(--green);color:#fff}
+.cart-count{font-size:13px;color:var(--text2);font-weight:600}
+.cart-count span{color:var(--amber);font-weight:800;font-size:15px}
+.cart-btn{flex:2;border:none;border-radius:12px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:800;padding:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all .2s ease}
+.cart-btn:disabled{background:rgba(255,255,255,0.05);color:var(--text3);cursor:not-allowed;box-shadow:none}
+.cart-btn.withdraw{background:linear-gradient(135deg, var(--red), #d32f2f);color:#fff}
+.cart-btn.borrow{background:linear-gradient(135deg, var(--blue), #1976d2);color:#fff}
+.cart-btn.receive{background:linear-gradient(135deg, var(--green), #388e3c);color:#fff}
 
 /* ── Sheet ── */
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:none;align-items:flex-end}
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;display:none;align-items:flex-end}
 .sheet-overlay.open{display:flex}
-.sheet{background:var(--surface);width:100%;border-radius:20px 20px 0 0;border-top:1px solid var(--border2);max-height:92vh;display:flex;flex-direction:column;animation:slideUp .25s ease}
+.sheet{background:rgba(22, 25, 34, 0.95)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);width:100%;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,0.1);max-height:92vh;display:flex;flex-direction:column;animation:slideUp .25s ease;box-shadow:0 -10px 40px rgba(0,0,0,0.6)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:10px auto 4px;flex-shrink:0}
-.sheet-header{padding:8px 16px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
-.sheet-title{font-size:15px;font-weight:600}
-.sheet-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px}
-.sheet-body{flex:1;overflow-y:auto;padding:12px 16px}
-.sheet-footer{padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.sheet-handle{width:40px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:12px auto 4px;flex-shrink:0}
+.sheet-header{padding:10px 18px 14px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.sheet-title{font-size:16px;font-weight:800;color:#fff}
+.sheet-close{background:rgba(255,255,255,0.05);border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:6px;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.sheet-body{flex:1;overflow-y:auto;padding:14px 18px}
+.sheet-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0}
 
 /* ── Cart items ── */
-.cart-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px}
+.cart-item{background:rgba(26,29,41,0.75)!important;border:1px solid rgba(255,255,255,0.08)!important;border-radius:14px!important;padding:12px 14px;margin-bottom:10px}
 .cart-item-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
-.cart-item-name{font-size:13px;font-weight:500;color:var(--text)}
+.cart-item-name{font-size:14px;font-weight:700;color:#fff}
 .cart-item-code{font-size:11px;color:var(--text2);font-family:monospace;margin-top:2px}
-.cart-remove{background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:2px 6px;flex-shrink:0}
-.qty-row{display:flex;align-items:center;gap:8px}
-.qty-btn{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.qty-btn:active{background:var(--border2)}
-.qty-input{flex:0 0 70px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--amber);font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;text-align:center;padding:6px;outline:none}
-.qty-unit{font-size:11px;color:var(--text2);flex-shrink:0}
+.cart-remove{background:rgba(239,83,80,0.15);border:none;color:var(--red);font-size:14px;cursor:pointer;padding:6px 10px;border-radius:8px;flex-shrink:0}
+.qty-row{display:flex;align-items:center;gap:10px}
+.qty-btn{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qty-btn:active{background:rgba(232,160,32,0.2);border-color:var(--amber)}
+.qty-input{flex:0 0 75px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--amber);font-family:'Sarabun',sans-serif;font-size:18px;font-weight:800;text-align:center;padding:6px;outline:none}
+.qty-unit{font-size:12px;color:var(--text2);flex-shrink:0;font-weight:600}
 
 /* ── Form fields ── */
-.field{margin-bottom:12px}
-.field-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text2);margin-bottom:6px}
-.field-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Prompt',sans-serif;font-size:14px;padding:10px 12px;outline:none;transition:border-color .2s}
-.field-input:focus{border-color:var(--amber)}
-.remark-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.remark-chip{background:var(--surface2);border:1px solid var(--border2);border-radius:999px;color:var(--text2);font-size:11px;padding:4px 10px;cursor:pointer;transition:all .15s}
-.remark-chip:active{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
+.field{margin-bottom:14px}
+.field-label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.field-input{width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-family:'Sarabun',sans-serif;font-size:14px;padding:10px 12px;outline:none;transition:border-color .2s}
+.field-input:focus{border-color:var(--amber);box-shadow:0 0 12px rgba(232,160,32,0.2)}
+.remark-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.remark-chip{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:999px;color:var(--text2);font-size:11px;font-weight:600;padding:5px 12px;cursor:pointer;transition:all .15s}
+.remark-chip:active{background:rgba(232,160,32,0.2);border-color:var(--amber);color:var(--amber)}
 
 /* ── Submit btn ── */
-.submit-btn{width:100%;border:none;border-radius:var(--radius);font-family:'Prompt',sans-serif;font-size:15px;font-weight:700;padding:14px;cursor:pointer;transition:opacity .2s;letter-spacing:.5px}
-.submit-btn:disabled{opacity:.4;cursor:not-allowed}
-.submit-withdraw{background:var(--red);color:#fff}
-.submit-borrow{background:var(--blue);color:#fff}
-.submit-receive{background:var(--green);color:#000}
+.submit-btn{width:100%;border:none;border-radius:12px;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:800;padding:14px;cursor:pointer;transition:all .2s ease;letter-spacing:.5px;box-shadow:0 4px 15px rgba(0,0,0,0.3)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.submit-withdraw{background:linear-gradient(135deg, var(--red), #d32f2f);color:#fff}
+.submit-borrow{background:linear-gradient(135deg, var(--blue), #1976d2);color:#fff}
+.submit-receive{background:linear-gradient(135deg, var(--green), #388e3c);color:#fff}
 
 /* ── Borrow sub tabs ── */
-.borrow-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;margin:0 12px}
-.borrow-tab{flex:1;padding:10px;font-family:'Prompt',sans-serif;font-size:12px;font-weight:600;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;transition:all .2s}
-.borrow-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.borrow-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;margin:0 12px;gap:8px;padding-bottom:4px}
+.borrow-tab{flex:1;padding:10px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;background:none;border:none;color:var(--text3);border-radius:10px;cursor:pointer;transition:all .2s}
+.borrow-tab.active{color:var(--blue);background:rgba(66,165,245,0.15)}
 .borrow-section{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
 .borrow-section.active{display:flex}
 
 /* ── Return cards ── */
-.return-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.return-card{background:rgba(26,29,41,0.75)!important;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.07)!important;border-radius:14px!important;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
 .return-info{flex:1;min-width:0}
-.return-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.return-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
 .return-meta{font-size:11px;color:var(--text2)}
-.return-btn{background:var(--green-dim);border:1px solid var(--green);border-radius:var(--radius-sm);color:var(--green);font-family:'Prompt',sans-serif;font-size:11px;font-weight:600;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.return-btn{background:rgba(102,187,106,0.15);border:1px solid var(--green);border-radius:10px;color:var(--green);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;cursor:pointer;white-space:nowrap}
 
 /* ── New item tab ── */
 .newitem-form{padding:12px 16px;flex:1;overflow-y:auto}
-.ni-section-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-.ni-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 14px 10px;margin-bottom:10px;position:relative}
-.ni-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.ni-row{display:flex;gap:8px;margin-bottom:8px}
+.ni-section-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.ni-card{background:rgba(26,29,41,0.75)!important;border:1px solid rgba(255,255,255,0.08)!important;border-radius:16px!important;padding:16px;margin-bottom:12px;position:relative}
+.ni-card-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ni-row{display:flex;gap:10px;margin-bottom:10px}
 .ni-field{flex:1;display:flex;flex-direction:column;gap:4px}
 .ni-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3)}
-.ni-input{background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Prompt',sans-serif;font-size:13px;padding:8px 10px;width:100%;outline:none;transition:border-color .2s}
+.ni-input{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-family:'Sarabun',sans-serif;font-size:14px;padding:9px 12px;width:100%;outline:none;transition:border-color .2s}
 .ni-input:focus{border-color:var(--amber)}
 .ni-input[readonly]{opacity:.6;cursor:not-allowed}
 /* รูปภาพ upload */
-.ni-img-box{width:100%;aspect-ratio:16/9;border-radius:10px;border:2px dashed var(--border2);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;overflow:hidden;position:relative}
-.ni-img-box:hover{border-color:var(--amber);background:var(--amber-dim)}
-.ni-img-box img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.ni-img-box{width:100%;aspect-ratio:16/9;border-radius:12px;border:2px dashed rgba(255,255,255,0.15);background:rgba(0,0,0,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;overflow:hidden;position:relative}
+.ni-img-box:hover{border-color:var(--amber);background:rgba(232,160,32,0.1)}
+.ni-img-box img{width:100%;height:100%;object-fit:cover;border-radius:10px}
 .ni-img-box .ni-img-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text3);pointer-events:none}
-.ni-img-box .ni-img-placeholder i{font-size:28px}
-.ni-img-box .ni-img-placeholder span{font-size:11px;font-weight:600}
-.ni-img-remove{position:absolute;top:6px;right:6px;background:rgba(239,68,68,.85);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.ni-img-box .ni-img-placeholder i{font-size:32px}
+.ni-img-box .ni-img-placeholder span{font-size:12px;font-weight:700}
+.ni-img-remove{position:absolute;top:8px;right:8px;background:rgba(239,68,68,.9);color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
 .ni-img-remove.show{display:flex}
-.ni-upload-bar{display:flex;gap:8px;margin-top:8px}
-.ni-upload-btn{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-family:'Prompt',sans-serif;font-size:12px;font-weight:600;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+.ni-upload-bar{display:flex;gap:8px;margin-top:10px}
+.ni-upload-btn{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
 .ni-upload-btn:hover{border-color:var(--amber);color:var(--amber)}
-/* item card image */
-.item-img{width:40px;height:40px;object-fit:cover;border-radius:8px;border:1px solid var(--border2);flex-shrink:0}
-.item-img-placeholder{width:40px;height:40px;border-radius:8px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-/* upload img inline btn */
-.upload-img-btn{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;color:var(--text3);font-family:'Prompt',sans-serif;font-size:11px;font-weight:600;padding:3px 8px;cursor:pointer;transition:all .2s;white-space:nowrap}
-.upload-img-btn:hover{border-color:var(--amber);color:var(--amber)}
-.receive-section-title{font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-.receive-item-row{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
-.receive-item-row .item-icon{width:32px;height:32px;font-size:14px}
-.add-item-btn{width:100%;background:var(--surface2);border:2px dashed var(--border2);border-radius:var(--radius);color:var(--text2);font-family:'Prompt',sans-serif;font-size:13px;padding:12px;cursor:pointer;transition:all .2s;margin-top:4px}
-.add-item-btn:active{border-color:var(--green);color:var(--green)}
-.receive-cart-bar{background:var(--surface);border-top:1px solid var(--border2);padding:10px 16px;flex-shrink:0;display:flex;gap:8px}
-.receive-total{font-size:12px;color:var(--text2);flex:1;display:flex;align-items:center}
-.receive-total span{color:var(--green);font-weight:700}
 
-/* ── QR Scanner ── */
-.scanner-overlay{position:fixed;inset:0;background:#000;z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center}
-.scanner-overlay.open{display:flex}
-.scanner-frame{width:260px;height:260px;position:relative}
-.scanner-frame video{width:100%;height:100%;object-fit:cover;border-radius:var(--radius)}
-.scanner-corners{position:absolute;inset:0;pointer-events:none}
-.corner{position:absolute;width:24px;height:24px;border-color:var(--amber);border-style:solid}
-.corner.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
-.corner.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
-.corner.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
-.corner.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
-.scanner-line{position:absolute;left:6px;right:6px;height:2px;background:var(--amber);animation:scan 2s linear infinite;opacity:.8}
-@keyframes scan{0%{top:6px}100%{top:calc(100% - 8px)}}
-.scanner-label{color:#fff;font-size:13px;margin-top:20px;opacity:.7}
-.scanner-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer}
-
-/* ═══════════════════════════════════
-   CATEGORY GRID — เต็ม 3 คอลัมน์
-═══════════════════════════════════ */
+/* === 3 คอลัมน์หมวดหมู่ === */
 .cat-screen{flex:1;overflow-y:auto;padding:12px;min-height:0;background:var(--bg);display:flex;flex-direction:column}
 .cat-screen.hidden{display:none!important}
-.cat-header{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;padding:0 2px}
-
-/* === 3 คอลัมน์เสมอ ไม่มี all-card span full === */
+.cat-header{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--amber);margin-bottom:12px;padding:0 2px}
 .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start}
-
 .cat-card{
-  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
-  padding:14px 10px;cursor:pointer;transition:all .15s;
+  background:rgba(26,29,41,0.75)!important;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.07)!important;border-radius:14px!important;
+  padding:16px 10px;cursor:pointer;transition:all .2s ease;
   display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
-  -webkit-user-select:none;user-select:none;
+  -webkit-user-select:none;user-select:none;box-shadow:0 4px 12px rgba(0,0,0,0.25);
 }
-.cat-card:active{transform:scale(.96);border-color:var(--amber);background:var(--amber-dim)}
-.cat-icon{font-size:26px;line-height:1}
-.cat-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.3}
-.cat-count{font-size:10px;color:var(--text2)}
+.cat-card:hover{border-color:var(--amber)!important;transform:translateY(-2px);background:rgba(232,160,32,0.12)!important}
+.cat-card:active{transform:scale(.96)}
+.cat-icon{font-size:28px;line-height:1}
+.cat-name{font-size:13px;font-weight:700;color:#fff;line-height:1.3}
+.cat-count{font-size:11px;color:var(--text2);font-weight:600}
 
 /* all-card — span full width, horizontal layout */
 .cat-card.all-card{
@@ -354,9 +326,25 @@ body{display:flex;flex-direction:column}
 .cat-card.all-card .cat-icon{font-size:20px}
 .cat-card.all-card .cat-name{font-size:13px}
 
+/* ── QR Scanner ── */
+.scanner-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none!important;flex-direction:column;align-items:center;justify-content:center}
+.scanner-overlay.open{display:flex!important}
+.scanner-frame{width:260px;height:260px;position:relative}
+.scanner-frame video{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.scanner-corners{position:absolute;inset:0;pointer-events:none}
+.corner{position:absolute;width:24px;height:24px;border-color:var(--amber);border-style:solid}
+.corner.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.corner.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.corner.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.corner.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+.scanner-line{position:absolute;left:6px;right:6px;height:2px;background:var(--amber);animation:scan 2s linear infinite;opacity:.8}
+@keyframes scan{0%{top:6px}100%{top:calc(100% - 8px)}}
+.scanner-label{color:#fff;font-size:13px;margin-top:20px;opacity:.7}
+.scanner-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.15);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer}
+
 /* back button row */
 .back-row{display:flex;align-items:center;gap:8px;padding:10px 12px 4px;flex-shrink:0}.back-row.hidden{display:none!important}
-.back-btn{background:none;border:none;color:var(--text2);font-family:'Prompt',sans-serif;font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 0}
+.back-btn{background:none;border:none;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 0}
 .back-btn i{font-size:13px}
 .active-cat-label{font-size:12px;font-weight:600;color:var(--amber);background:var(--amber-dim);border:1px solid var(--amber);border-radius:999px;padding:3px 10px;margin-left:auto}
 
@@ -364,7 +352,7 @@ body{display:flex;flex-direction:column}
 
 /* ── Mine tab ── */
 .mine-sub-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;margin:0 12px}
-.mine-sub-tab{flex:1;padding:10px;font-family:'Prompt',sans-serif;font-size:12px;font-weight:600;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;transition:all .2s}
+.mine-sub-tab{flex:1;padding:10px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;transition:all .2s}
 .mine-sub-tab.active{color:var(--purple);border-bottom-color:var(--purple)}
 .mine-section{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
 .mine-section.active{display:flex}
@@ -393,7 +381,7 @@ body{display:flex;flex-direction:column}
 .mine-stat{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 10px;text-align:center}
 .mine-stat-num{font-size:22px;font-weight:700}
 .mine-stat-label{font-size:10px;color:var(--text2);margin-top:2px}
-.mine-refresh-btn{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 12px 4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-family:'Prompt',sans-serif;font-size:12px;padding:8px;cursor:pointer;transition:all .2s}
+.mine-refresh-btn{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 12px 4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-family:'Sarabun',sans-serif;font-size:12px;padding:8px;cursor:pointer;transition:all .2s}
 .mine-refresh-btn:active{border-color:var(--purple);color:var(--purple)}
 
 /* ── Toast ── */
@@ -444,6 +432,206 @@ body{display:flex;flex-direction:column}
   .sheet-footer{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
   /* Mobile: 3 คอลัมน์ */
   .cat-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ── SweetAlert2 Custom Styling Overrides ── */
+:root {
+  --swal2-success-line-color: var(--green) !important;
+  --swal2-success-ring-color: rgba(102, 187, 106, 0.2) !important;
+  --swal2-error-line-color: var(--red) !important;
+  --swal2-error-ring-color: rgba(239, 83, 80, 0.2) !important;
+  --swal2-warning-color: var(--amber) !important;
+  --swal2-info-color: var(--blue) !important;
+  --swal2-question-color: var(--blue) !important;
+}
+.swal2-container {
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+.swal2-popup {
+  background: rgba(22, 25, 34, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6) !important;
+  font-family: 'Sarabun', sans-serif !important;
+  padding: 24px 20px !important;
+}
+.swal2-title {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  font-family: 'Sarabun', sans-serif !important;
+  margin-bottom: 8px !important;
+}
+.swal2-html-container {
+  color: var(--text) !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 13px !important;
+  margin: 12px 0 0 0 !important;
+  line-height: 1.5 !important;
+}
+.swal2-input, .swal2-textarea, .swal2-select {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 14px !important;
+  padding: 12px !important;
+  margin: 10px 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: auto !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+.swal2-input:focus, .swal2-textarea:focus, .swal2-select:focus {
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 12px rgba(232, 160, 32, 0.25) !important;
+}
+.swal2-actions {
+  margin-top: 20px !important;
+  gap: 10px !important;
+}
+.swal2-confirm, .swal2-styled.swal2-confirm {
+  background: linear-gradient(135deg, var(--amber), #f59e0b) !important;
+  color: #000 !important;
+  font-weight: 800 !important;
+  border-radius: 12px !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 13px !important;
+  padding: 10px 20px !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(232, 160, 32, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+.swal2-confirm:hover, .swal2-styled.swal2-confirm:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(232, 160, 32, 0.45) !important;
+}
+.swal2-confirm:active, .swal2-styled.swal2-confirm:active {
+  transform: scale(0.96) !important;
+}
+
+/* Custom background styles for confirm buttons to support red, blue, green, and indigo types */
+.swal2-styled.swal2-confirm[style*="background-color: rgb(239, 68, 68)"],
+.swal2-styled.swal2-confirm[style*="background-color: #ef4444"],
+.swal2-styled.swal2-confirm[style*="background-color: rgb(239, 83, 80)"],
+.swal2-styled.swal2-confirm[style*="background-color: #ef5350"] {
+  background: linear-gradient(135deg, var(--red), #dc2626) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(239, 83, 80, 0.3) !important;
+}
+.swal2-styled.swal2-confirm[style*="background-color: rgb(239, 68, 68)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #ef4444"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: rgb(239, 83, 80)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #ef5350"]:hover {
+  box-shadow: 0 6px 16px rgba(239, 83, 80, 0.45) !important;
+}
+
+.swal2-styled.swal2-confirm[style*="background-color: rgb(59, 130, 246)"],
+.swal2-styled.swal2-confirm[style*="background-color: #3b82f6"],
+.swal2-styled.swal2-confirm[style*="background-color: rgb(66, 165, 245)"],
+.swal2-styled.swal2-confirm[style*="background-color: #42a5f5"] {
+  background: linear-gradient(135deg, var(--blue), #2563eb) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3) !important;
+}
+.swal2-styled.swal2-confirm[style*="background-color: rgb(59, 130, 246)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #3b82f6"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: rgb(66, 165, 245)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #42a5f5"]:hover {
+  box-shadow: 0 6px 16px rgba(66, 165, 245, 0.45) !important;
+}
+
+.swal2-styled.swal2-confirm[style*="background-color: rgb(79, 70, 229)"],
+.swal2-styled.swal2-confirm[style*="background-color: #4f46e5"] {
+  background: linear-gradient(135deg, #4f46e5, #3730a3) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+}
+.swal2-styled.swal2-confirm[style*="background-color: rgb(79, 70, 229)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #4f46e5"]:hover {
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.45) !important;
+}
+
+.swal2-styled.swal2-confirm[style*="background-color: rgb(102, 187, 106)"],
+.swal2-styled.swal2-confirm[style*="background-color: #66bb6a"] {
+  background: linear-gradient(135deg, var(--green), #4caf50) !important;
+  color: #000 !important;
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3) !important;
+}
+.swal2-styled.swal2-confirm[style*="background-color: rgb(102, 187, 106)"]:hover,
+.swal2-styled.swal2-confirm[style*="background-color: #66bb6a"]:hover {
+  box-shadow: 0 6px 16px rgba(102, 187, 106, 0.45) !important;
+}
+
+.swal2-cancel, .swal2-styled.swal2-cancel {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text) !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 13px !important;
+  padding: 10px 20px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+}
+.swal2-cancel:hover, .swal2-styled.swal2-cancel:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+.swal2-cancel:active, .swal2-styled.swal2-cancel:active {
+  transform: scale(0.96) !important;
+}
+.swal2-validation-message {
+  background: rgba(239, 83, 80, 0.1) !important;
+  color: #ef5350 !important;
+  border: 1px solid rgba(239, 83, 80, 0.2) !important;
+  border-radius: 10px !important;
+  font-family: 'Sarabun', sans-serif !important;
+  font-size: 12px !important;
+  padding: 8px 12px !important;
+  margin-top: 10px !important;
+}
+.swal2-close {
+  color: var(--text2) !important;
+  font-family: sans-serif !important;
+}
+.swal2-close:hover {
+  color: #fff !important;
+}
+.swal2-icon.swal2-success {
+  border-color: var(--green) !important;
+}
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: var(--green) !important;
+}
+.swal2-icon.swal2-success .swal2-success-ring {
+  border: .25em solid rgba(102, 187, 106, 0.2) !important;
+}
+.swal2-icon.swal2-error {
+  border-color: var(--red) !important;
+}
+.swal2-icon.swal2-error [class^='swal2-error-line'] {
+  background-color: var(--red) !important;
+}
+.swal2-icon.swal2-warning {
+  border-color: var(--amber) !important;
+  color: var(--amber) !important;
+}
+.swal2-icon.swal2-info {
+  border-color: var(--blue) !important;
+  color: var(--blue) !important;
+}
+.swal2-icon.swal2-question {
+  border-color: var(--blue) !important;
+  color: var(--blue) !important;
 }
 </style>
 </head>
@@ -700,30 +888,30 @@ body{display:flex;flex-direction:column}
 </div>
 
 <!-- ── TAB รับเข้า (admin only) ── -->
-<div class="content" id="contentReceive">
-  <div class="receive-form" id="receiveForm">
-    <div class="receive-section-title"><i class="fas fa-truck-loading"></i> รับสินค้าเข้าคลัง</div>
+<div class="content" id="contentReceive" style="padding:16px;overflow-y:auto;">
+  <div class="receive-form" id="receiveForm" style="background:rgba(26,29,41,0.85);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+    <div class="receive-section-title" style="font-size:16px;font-weight:800;color:#fff;margin-bottom:16px;display:flex;align-items:center;gap:10px;"><i class="fas fa-truck-loading text-success" style="font-size:20px;filter:drop-shadow(0 0 8px rgba(16,185,129,0.4));"></i> รับสินค้าเข้าคลัง</div>
 
     <!-- รายการที่จะรับเข้า -->
     <div id="receiveCart"></div>
 
     <!-- ปุ่มเพิ่มรายการ -->
-    <button class="add-item-btn" onclick="openReceivePicker()">
-      <i class="fas fa-plus"></i> เพิ่มรายการสินค้า
+    <button class="add-item-btn" onclick="openReceivePicker()" style="background:rgba(16,185,129,0.12)!important;border:2px dashed #10b981!important;color:#10b981!important;font-weight:800!important;border-radius:14px!important;padding:16px!important;font-size:15px!important;box-shadow:0 4px 18px rgba(16,185,129,0.2)!important;transition:all 0.2s ease!important;margin-bottom:20px;">
+      <i class="fas fa-plus-circle me-1" style="font-size:18px;"></i> เลือกรายการสินค้าที่ต้องการรับเข้า
     </button>
 
-    <div class="receive-section-title" style="margin-top:20px"><i class="fas fa-file-alt"></i> ข้อมูลการรับเข้า</div>
-    <div class="field">
-      <div class="field-label">เลขที่ใบส่งของ / PO</div>
-      <input class="field-input" id="receivePoNo" placeholder="เช่น PO-2568-001">
+    <div class="receive-section-title" style="margin-top:24px;font-size:14px;font-weight:800;color:var(--amber);display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;"><i class="fas fa-file-invoice"></i> รายละเอียดเอกสารการรับเข้า</div>
+    <div class="field" style="margin-top:12px;">
+      <div class="field-label" style="color:var(--text2);font-weight:700;">เลขที่ใบส่งของ / PO</div>
+      <input class="field-input" id="receivePoNo" placeholder="เช่น PO-2568-001" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;">
     </div>
     <div class="field">
-      <div class="field-label">ผู้จัดส่ง / Supplier</div>
-      <input class="field-input" id="receiveSupplier" placeholder="เช่น บริษัท ABC จำกัด">
+      <div class="field-label" style="color:var(--text2);font-weight:700;">ผู้จัดส่ง / Supplier</div>
+      <input class="field-input" id="receiveSupplier" placeholder="เช่น บริษัท ABC จำกัด" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;">
     </div>
     <div class="field">
-      <div class="field-label">หมายเหตุ</div>
-      <input class="field-input" id="receiveRemark" placeholder="บันทึกเพิ่มเติม...">
+      <div class="field-label" style="color:var(--text2);font-weight:700;">หมายเหตุ</div>
+      <input class="field-input" id="receiveRemark" placeholder="บันทึกเพิ่มเติม..." style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;">
     </div>
   </div>
   <div class="receive-cart-bar">
@@ -1052,14 +1240,14 @@ body{display:flex;flex-direction:column}
     <input type="file" id="profileImgInput" accept="image/*" style="display:none" onchange="onProfileImgPicked(event)">
     <button onclick="closeUserMenu();openChangePin()" style="
       width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);
-      color:var(--text);font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;
+      color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;
       padding:13px 16px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;margin-bottom:8px;transition:all .15s
     " onmouseenter="this.style.borderColor='var(--amber)'" onmouseleave="this.style.borderColor='var(--border2)'">
       <i class="fas fa-key" style="color:var(--amber);width:18px"></i> เปลี่ยนรหัส PIN
     </button>
     <button onclick="closeUserMenu();confirmLogout()" style="
       width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);
-      color:var(--red);font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;
+      color:var(--red);font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;
       padding:13px 16px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:all .15s
     " onmouseenter="this.style.borderColor='var(--red)'" onmouseleave="this.style.borderColor='var(--border2)'">
       <i class="fas fa-sign-out-alt" style="width:18px"></i> ออกจากระบบ
@@ -1219,14 +1407,27 @@ body{display:flex;flex-direction:column}
       </div>
     </div>
     
-    <div style="margin-top: 15px;">
+    <div id="hsActionBtns" style="margin-top: 12px; display: none; gap: 8px;">
+      <button id="hsBtnReturn" class="reg-submit-btn" style="flex: 1; padding: 10px; font-size: 12px; background: linear-gradient(135deg,#3b82f6,#2563eb);">
+        <i class="fas fa-undo me-1"></i> คืนเข้าคลัง
+      </button>
+      <button id="hsBtnDamage" class="reg-submit-btn" style="flex: 1; padding: 10px; font-size: 12px; background: linear-gradient(135deg,#ef4444,#dc2626);">
+        <i class="fas fa-exclamation-triangle me-1"></i> แจ้งชำรุด
+      </button>
+    </div>
+    <div id="hsAlreadyDoneMsg" style="margin-top: 12px; display: none; text-align:center;">
+      <span style="background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;display:inline-block"><i class="fas fa-check-circle me-1"></i> คืน/แจ้งชำรุดครบแล้ว</span>
+    </div>
+    <div id="hsBreakdown" style="margin-top: 8px; display: none; text-align:center; font-size:11px; color:#94a3b8;"></div>
+
+    <div style="margin-top: 10px;">
       <button class="reg-cancel-btn" style="width: 100%; padding: 12px; font-size: 14px;" onclick="closeHistorySlipModal()">ปิดหน้าต่าง</button>
     </div>
   </div>
 </div>
 
 </div><!-- /appWrap -->
-<script>const __GAS_URL__ = 'https://script.google.com/macros/s/AKfycbyHljTeKi0DuuseQE6QnTNnSs1ECfMYJyxSmvQ3OsE0vLo6zCwP0yKXhGL4F9lMUodn_Q/exec';</script>
+<script>const __GAS_URL__ = 'https://script.google.com/macros/s/AKfycbzb6p2kuTkoP5jLlEC0ZX8wkSSm5pDtYDDNM4wRfTxXT1LlPmh2aNFiHyGErTZMVuvvqA/exec';</script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script>
 /* ══ STATE ══ */
@@ -1236,6 +1437,7 @@ let withdrawCart = [];
 let borrowCart   = [];
 let receiveCart  = [];
 let pinBuffer    = '';
+let failedAttemptsMap = {};
 let scannerStream = null, scanInterval = null, scanTarget = 'withdraw';
 const PIN_LEN = 4;
 
@@ -1254,14 +1456,46 @@ window.addEventListener('DOMContentLoaded', () => {
     allData = data || {};
     applyBrandingToLoginScreen(allData.settings || {});
     hide('loadingScreen');
-    show('loginScreen'); document.getElementById('appWrap').classList.remove('visible');
-    populateUsers(allData.users || []);
+    
+    let restored = false;
+    try {
+      const sessionStr = localStorage.getItem('user_session');
+      if (sessionStr) {
+        const session = JSON.parse(sessionStr);
+        if (session && session.uid && (Date.now() - session.timestamp < 86400000)) {
+          const userExists = (allData.users || []).some(x => x.userId === session.uid);
+          if (userExists) {
+            loginSuccess(session.uid);
+            restored = true;
+          } else {
+            localStorage.removeItem('user_session');
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    if (!restored) {
+      populateUsers(allData.users || []); show('loginScreen'); document.getElementById('appWrap').classList.remove('visible');
+      populateUsers(allData.users || []);
+    }
     startUserPoll();
   }, () => {
-    allData = demoData();
+    // ★ เอาโหมด Demo ออก — เดิมถ้าโหลดข้อมูลคลังตอนเปิดแอปครั้งแรกไม่สำเร็จ จะสลับไปใช้ "แคตตาล็อกสินค้าปลอม" ทั้งชุดแทน
+    // ผู้ใช้จะเห็นรายการสินค้า/รหัสที่ไม่มีอยู่จริงในระบบ ถ้าลองเบิกไปจริงๆ จะส่งรหัสสินค้าปลอมไปให้แอดมิน หาไม่เจอ อนุมัติไม่ได้
+    // เปลี่ยนเป็นโชว์หน้า error พร้อมปุ่มลองใหม่แทน ไม่ให้เข้าแอปด้วยข้อมูลปลอมอีก
     hide('loadingScreen');
-    show('loginScreen'); document.getElementById('appWrap').classList.remove('visible');
-    populateUsers(allData.users || []);
+    show('loginScreen');
+    const errBox = document.getElementById('loginScreen');
+    if (errBox) {
+      errBox.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:24px;text-align:center;gap:12px">
+        <i class="fas fa-triangle-exclamation" style="font-size:2.5rem;color:#f87171"></i>
+        <div style="font-weight:700;color:#fff;font-size:1.1rem">โหลดข้อมูลระบบไม่สำเร็จ</div>
+        <div style="color:rgba(255,255,255,.5);font-size:.85rem">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่</div>
+        <button onclick="location.reload()" style="margin-top:8px;padding:10px 24px;border-radius:10px;background:#4f46e5;color:#fff;border:none;font-weight:600;cursor:pointer">ลองใหม่</button>
+      </div>`;
+    }
   });
 });
 
@@ -1270,6 +1504,7 @@ function applyBrandingToLoginScreen(settings) {
     const imgEl = document.getElementById('loginLogoImg');
     const emojiEl = document.getElementById('loginLogoEmoji');
     if (settings.sysLogo) {
+      updateDynamicManifest(settings.sysLogo);
       imgEl.src = getProxyImgUrl(settings.sysLogo) || settings.sysLogo;
       imgEl.onload = () => { imgEl.style.display = 'block'; emojiEl.style.display = 'none'; };
       imgEl.onerror = () => { imgEl.style.display = 'none'; emojiEl.style.display = 'block'; };
@@ -1279,6 +1514,40 @@ function applyBrandingToLoginScreen(settings) {
       if (titleEl) titleEl.textContent = settings.sysName;
     }
   } catch (e) { /* ไม่ให้ error ตรงนี้บล็อกการเข้าสู่ระบบ */ }
+}
+
+function updateDynamicManifest(logoUrl) {
+  try {
+    let manifestLink = document.querySelector('link[rel="manifest"]');
+    if (!manifestLink) {
+      manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      document.head.appendChild(manifestLink);
+    }
+    const baseLogo = logoUrl || "https://cdn-icons-png.flaticon.com/512/583/583278.png";
+    const myManifest = {
+      "short_name": "MountainWMS",
+      "name": "Mountain WMS - คลังอะไหล่เมาท์เทน",
+      "icons": [
+        {
+          "src": baseLogo,
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any maskable"
+        }
+      ],
+      "start_url": "./index.html",
+      "background_color": "#0f0f0f",
+      "theme_color": "#e8a020",
+      "display": "standalone",
+      "orientation": "portrait"
+    };
+    const blob = new Blob([JSON.stringify(myManifest)], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(blob);
+    manifestLink.setAttribute('href', manifestURL);
+  } catch(e) {
+    console.warn('Failed to update PWA manifest:', e);
+  }
 }
 
 function startUserPoll() {
@@ -1327,12 +1596,14 @@ function renderUserDropdown(query) {
   }
   dd.innerHTML = filtered.map(u => {
     const rc = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
+    // role qr: ถ้ามีตำแหน่ง (dept) ที่กรอกไว้ตอนสมัคร ให้โชว์ตำแหน่งแทนป้าย "QR" (permission/role ข้างในยังเป็น qr เหมือนเดิม)
+    const badgeLabel = (u.role === 'qr' && u.dept) ? u.dept : rc.badgeText;
     return `<div class="user-dropdown-item" onclick="selectUser('${u.userId}','${u.name.replace(/'/g,"\\'")}','${u.role}')"
       style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s"
       onmouseenter="this.style.background='var(--surface)'" onmouseleave="this.style.background=''">
       <span style="font-size:18px">${rc.icon}</span>
       <span style="font-size:14px;color:var(--text);flex:1">${u.name}</span>
-      <span style="font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;background:var(--surface);border:1px solid var(--border2);color:var(--text2)">${rc.badgeText}</span>
+      <span style="font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;background:var(--surface);border:1px solid var(--border2);color:var(--text2)">${badgeLabel}</span>
     </div>`;
   }).join('');
 }
@@ -1411,6 +1682,8 @@ function numDel() {
   document.getElementById('loginError').style.display = 'none';
 }
 
+
+
 function updatePinDots() {
   for (let i = 0; i < PIN_LEN; i++) {
     document.getElementById('d' + i).classList.toggle('filled', i < pinBuffer.length);
@@ -1429,25 +1702,21 @@ function doLogin() {
   if (!uid || pin.length < PIN_LEN) return;
   const btn = document.getElementById('loginBtn');
   btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
-  
-  const isDemo = !GAS_URL && typeof google === 'undefined';
-  if (isDemo) {
-    btn.textContent = 'เข้าสู่ระบบ';
-    if (pin === '1234' || pin === 'admin') {
-      loginSuccess(uid);
-    } else {
-      clearPin();
-      document.getElementById('loginError').style.display = 'block';
-    }
-    return;
-  }
 
   callGAS('webVerifyUserPin', [uid, pin], isValid => {
     btn.textContent = 'เข้าสู่ระบบ';
     if (isValid) {
+      failedAttemptsMap[uid] = 0;
       loginSuccess(uid);
     }
-    else { clearPin(); document.getElementById('loginError').style.display = 'block'; }
+    else { 
+      clearPin(); 
+      document.getElementById('loginError').style.display = 'block'; 
+      failedAttemptsMap[uid] = (failedAttemptsMap[uid] || 0) + 1;
+      if (failedAttemptsMap[uid] >= 3) {
+        callGAS('webReportFailedLoginAttempt', [uid, failedAttemptsMap[uid]], () => {});
+      }
+    }
   }, () => {
     btn.textContent = 'เข้าสู่ระบบ';
     clearPin(); document.getElementById('loginError').style.display = 'block';
@@ -1457,6 +1726,13 @@ function doLogin() {
 function loginSuccess(uid) {
   const u  = (allData.users || []).find(x => x.userId === uid);
   me = { uid, name: u ? u.name : 'ผู้ใช้', role: u ? u.role : 'user', photoUrl: u ? (u.photoUrl || null) : null };
+  localStorage.setItem('user_session', JSON.stringify({
+    uid: me.uid,
+    name: me.name,
+    role: me.role,
+    photoUrl: me.photoUrl,
+    timestamp: Date.now()
+  }));
   Swal.fire({
     icon: 'success',
     title: 'เข้าสู่ระบบสำเร็จ',
@@ -1485,8 +1761,24 @@ function loginSuccess(uid) {
   document.getElementById('mineBorrowCount').textContent = '0';
   document.getElementById('mineHistoryList').innerHTML = '<div class="mine-empty"><i class="fas fa-history"></i><p>กดรีเฟรชเพื่อโหลดข้อมูล</p></div>';
   document.getElementById('mineBorrowList').innerHTML = '<div class="mine-empty"><i class="fas fa-clock"></i><p>กดรีเฟรชเพื่อโหลดข้อมูล</p></div>';
-  checkPendingRetroWithdraws();
+  try {
+    withdrawCart = JSON.parse(sessionStorage.getItem('withdrawCart')) || [];
+    borrowCart = JSON.parse(sessionStorage.getItem('borrowCart')) || [];
+    receiveCart = JSON.parse(sessionStorage.getItem('receiveCart')) || [];
+    updateCartBar('withdraw');
+    updateCartBar('borrow');
+    renderReceiveCart();
+  } catch (e) {
+    console.error('Failed to restore carts:', e);
+  }
   initApp();
+  
+  const lastTab = sessionStorage.getItem('lastTab') || 'withdraw';
+  const allowed = (lastTab === 'newitem' && me.role === 'admin') ||
+                  (lastTab === 'receive' && me.role === 'admin') ||
+                  (lastTab === 'stocktake' && (me.role === 'admin' || me.role === 'staff')) ||
+                  (['withdraw', 'borrow', 'mine'].indexOf(lastTab) !== -1);
+  switchTab(allowed ? lastTab : 'withdraw');
 }
 
 // เช็คว่ามีรายการตกเบิกที่ถูกมอบหมายให้มายืนยันไหม — ถ้ามีเด้งแจ้งเตือนทันทีตอน login
@@ -1698,9 +1990,20 @@ function confirmLogout() {
     confirmButtonColor: '#ef5350', background: '#1e1e1e', color: '#c0c0c0',
   }).then(r => {
     if (!r.isConfirmed) return;
+    localStorage.removeItem('user_session');
+    try {
+      sessionStorage.removeItem('withdrawCart');
+      sessionStorage.removeItem('borrowCart');
+      sessionStorage.removeItem('receiveCart');
+      ['niName','niUnit','niRemark','niLocation','niQty','niMin','niCode','niCat','niType'].forEach(id => {
+        sessionStorage.removeItem('form_' + id);
+      });
+    } catch(e) {}
     me = { uid: null, name: '', role: 'user', photoUrl: null };
     withdrawCart = []; borrowCart = []; receiveCart = [];
     mineData = { history: [], borrows: [], retro: [], retroPending: [] };
+    _retroPendingQueue = [];
+    _updateRetroBellBadge();
     clearPin();
     document.getElementById('loginUid').value = '';
     document.getElementById('loginSearch').value = '';
@@ -1737,11 +2040,15 @@ let _retroPendingQueue = [];
 function checkMyPendingRetroWithdraws() {
   if (!me || !me.uid) return;
   callGAS('webGetMyPendingRetroWithdraws', [{ userId: me.uid }], res => {
-    if (!res || !res.success || !res.items || !res.items.length) return;
-    _retroPendingQueue = res.items.slice();
+    // ★ แก้บั๊ก: เดิมถ้า items ว่าง จะ return ทันทีโดยไม่ล้าง _retroPendingQueue เดิม
+    // ทำให้กระดิ่ง/รายการของ user คนก่อนหน้า (ที่ล็อกอินไว้ในเบราว์เซอร์เดียวกัน) ค้างโชว์ต่อให้ user คนใหม่เห็น
+    _retroPendingQueue = (res && res.success && res.items) ? res.items.slice() : [];
     _updateRetroBellBadge();
-    showRetroPendingBanner();
-  }, () => {});
+    if (_retroPendingQueue.length) showRetroPendingBanner();
+  }, () => {
+    _retroPendingQueue = [];
+    _updateRetroBellBadge();
+  });
 }
 
 function _updateRetroBellBadge() {
@@ -1764,7 +2071,9 @@ function showRetroPendingBanner() {
     showCancelButton: true,
     cancelButtonText: 'ไว้ทีหลัง',
     background: '#1a1f2e',
-    color: '#c0c0c0'
+    color: '#c0c0c0',
+    confirmButtonColor: '#f59e0b',
+    cancelButtonColor: 'rgba(255,255,255,.15)'
   }).then(r => {
     if (r.isConfirmed) openRetroPendingModal();
   });
@@ -1794,11 +2103,21 @@ function renderRetroPendingList() {
       <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-bottom:8px">${esc(it.itemCode)} • ${diffTxt} ${esc(it.unit || '')}${it.assignedRemark ? ' • หมายเหตุจากแอดมิน: ' + esc(it.assignedRemark) : ''}</div>
       <label style="font-size:.72rem;color:rgba(255,255,255,.4);display:block;margin-bottom:3px">จำนวนที่เบิกย้อนหลัง</label>
       <input type="number" id="retroPendQty_${idx}" value="${it.assignedQty}" min="1" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:#fff;margin-bottom:8px">
+      <label style="font-size:.72rem;color:rgba(255,255,255,.4);display:block;margin-bottom:3px">วันที่/เวลาที่เบิกจริง (ย้อนหลังได้)</label>
+      <input type="datetime-local" id="retroPendDate_${idx}" value="${_defaultRetroDateTimeLocal()}" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:#fff;margin-bottom:8px;color-scheme:dark">
       <label style="font-size:.72rem;color:rgba(255,255,255,.4);display:block;margin-bottom:3px">เหตุผล / สาเหตุที่ขาด</label>
       <textarea id="retroPendRemark_${idx}" rows="2" placeholder="เช่น ใช้ซ่อม Line 2 แล้วลืมบันทึกเบิก" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:#fff;margin-bottom:8px"></textarea>
-      <button onclick="submitRetroPendingItem(${idx})" style="width:100%;padding:9px;border:none;border-radius:10px;background:var(--amber);color:#111;font-weight:700;cursor:pointer"><i class="fas fa-check me-1"></i> ยืนยันเบิกย้อนหลัง</button>
+      <button id="retroPendBtn_${idx}" onclick="submitRetroPendingItem(${idx})" style="width:100%;padding:9px;border:none;border-radius:10px;background:var(--amber);color:#111;font-weight:700;cursor:pointer"><i class="fas fa-check me-1"></i> ยืนยันเบิกย้อนหลัง</button>
     </div>`;
   }).join('');
+}
+
+// คืนค่าเวลาปัจจุบัน (โซนเวลาเครื่องผู้ใช้) เป็น string รูปแบบที่ input[type=datetime-local] ต้องการ ("YYYY-MM-DDTHH:mm")
+// ใช้เป็นค่าเริ่มต้นของช่องเลือกวันเวลา เพื่อให้พฤติกรรมเดิม (ไม่แก้ไขอะไร) เท่ากับก่อนมีฟีเจอร์นี้
+function _defaultRetroDateTimeLocal() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function submitRetroPendingItem(idx) {
@@ -1806,15 +2125,36 @@ function submitRetroPendingItem(idx) {
   if (!it) return;
   const qty = Number(document.getElementById('retroPendQty_' + idx).value);
   const remark = document.getElementById('retroPendRemark_' + idx).value.trim();
+  const dateInput = document.getElementById('retroPendDate_' + idx);
+  const customDateTime = dateInput ? dateInput.value : '';
   if (!qty || qty <= 0) { showToast('กรุณาระบุจำนวนให้ถูกต้อง', 'error'); return; }
   if (!remark) { showToast('กรุณาระบุเหตุผล', 'error'); return; }
+
+  // ★ แสดงสถานะกำลังโหลดบนปุ่ม ป้องกันผู้ใช้กดซ้ำ + ให้เห็นว่าระบบกำลังทำงานอยู่ระหว่างรอ callGAS ตอบกลับ
+  const btn = document.getElementById('retroPendBtn_' + idx);
+  const btnOriginalHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.style.opacity = '.6';
+    btn.style.cursor = 'not-allowed';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> กำลังบันทึก...';
+  }
+  const restoreBtn = () => {
+    if (!btn) return;
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor = 'pointer';
+    btn.innerHTML = btnOriginalHtml;
+  };
+
   callGAS('webSubmitRetroWithdrawByUser', [{
     sessionId: it.sessionId,
     itemCode: it.itemCode,
     qty: qty,
     remark: remark,
     userId: me.uid,
-    userName: me.name
+    userName: me.name,
+    customDateTime: customDateTime
   }], res => {
     if (res && res.success) {
       showToast('บันทึกเบิกย้อนหลังเรียบร้อย', 'success');
@@ -1824,8 +2164,9 @@ function submitRetroPendingItem(idx) {
       if (!_retroPendingQueue.length) setTimeout(closeRetroPendingModal, 900);
     } else {
       showToast('บันทึกไม่สำเร็จ: ' + ((res && res.error) || ''), 'error');
+      restoreBtn();
     }
-  }, () => { showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error'); });
+  }, () => { showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error'); restoreBtn(); });
 }
 
 /* ══ REAL-TIME STOCK POLLING (ทุก 3 วิ) ══ */
@@ -1922,7 +2263,7 @@ function catIcon(cat) { return CAT_ICON[cat] || CAT_ICON['default']; }
 function renderCats(mode) {
   const gridId = mode === 'withdraw' ? 'wCatGrid' : 'bCatGrid';
   const grid   = document.getElementById(gridId);
-  const items  = getAllItems();
+  const items  = mode === 'borrow' ? (allData.tools || []) : (allData.items || []);
   const catMap = {};
   items.forEach(i => {
     const c = i.category || 'อื่นๆ';
@@ -2027,7 +2368,7 @@ let stState = { sessionId: null, items: [], loaded: false };
 function stLoad() {
   const listEl = document.getElementById('stList');
   if (!stState.loaded) listEl.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>กำลังโหลดรายการนับสต็อก...</p></div>';
-  callGAS('webGetStockTakeProgress', [{ role: me.role, userName: me.name, adminUid: me.uid }], res => {
+  callGAS('webGetStockTakeProgress', [{ uid: me.uid, role: me.role, userName: me.name }], res => {
     stState.sessionId = res.sessionId;
     stState.items = res.items || [];
     stState.loaded = true;
@@ -2097,7 +2438,7 @@ function stOpenCount(code) {
 function stSaveCount(code, countedQty) {
   callGAS('webSubmitStockCount', [{
     sessionId: stState.sessionId, itemCode: code, countedQty: countedQty,
-    role: me.role, userName: me.name, adminUid: me.uid, source: 'scan'
+    uid: me.uid, role: me.role, userName: me.name, source: 'scan'
   }], res => {
     showToast(res.diff === 0 ? 'ยอดตรง บันทึกแล้ว' : ('ปรับยอด ' + (res.diff > 0 ? '+' : '') + res.diff + ' แล้ว'), 'success');
     stLoad();
@@ -2116,7 +2457,7 @@ function stCloseSession() {
     background: '#1a1f2e', color: '#e0e0e0', confirmButtonColor: '#f59e0b'
   }).then(r => {
     if (!r.isConfirmed) return;
-    callGAS('webCloseStockTake', [{ sessionId: stState.sessionId, role: me.role, userName: me.name, adminUid: me.uid }], () => {
+    callGAS('webCloseStockTake', [{ sessionId: stState.sessionId, uid: me.uid, role: me.role, userName: me.name }], () => {
       showToast('ปิดรอบนับสต็อกแล้ว', 'success');
       stLoad();
     }, err => Swal.fire({ icon: 'error', title: 'ปิดรอบไม่สำเร็จ', text: String(err), background: '#1a1f2e', color: '#e0e0e0' }));
@@ -2126,10 +2467,30 @@ function stCloseSession() {
 /* ══ ITEMS ══ */
 function getAllItems() { return [...(allData.items || []), ...(allData.tools || [])]; }
 
+function isItemDamaged(code) {
+  if (!allData || !allData.history) return false;
+  let damagedQty = 0;
+  for (let i = allData.history.length - 1; i >= 0; i--) {
+    let log = allData.history[i];
+    if (String(log.code).trim() === String(code).trim()) {
+      let qty = parseFloat(String(log.amount).replace(/[^0-9.]/g, '')) || 0;
+      let act = String(log.action).trim().toLowerCase();
+      let userStr = String(log.user || '');
+      if (act === 'แจ้งชำรุด' || (act === 'เบิก' && userStr.includes('ชำรุด'))) {
+        damagedQty += qty;
+      }
+      if (act === 'ซ่อมแซมแล้ว' || (act === 'รับเข้า' && userStr.includes('ซ่อมแซมแล้ว'))) {
+        damagedQty -= qty;
+      }
+    }
+  }
+  return damagedQty > 0;
+}
+
 function renderList(mode, kw, cat) {
   const el   = document.getElementById(mode === 'withdraw' ? 'withdrawList' : 'borrowList');
   const cart = mode === 'withdraw' ? withdrawCart : borrowCart;
-  let list   = getAllItems();
+  let list   = mode === 'borrow' ? (allData.tools || []) : (allData.items || []);
   if (cat && cat !== '__all__') list = list.filter(i => (i.category || 'อื่นๆ') === cat);
   if (kw) list = list.filter(i => i.name.toLowerCase().includes(kw) || i.code.toLowerCase().includes(kw));
   if (!list.length) {
@@ -2140,13 +2501,25 @@ function renderList(mode, kw, cat) {
     const inCart = cart.find(function(c) { return c.code === item.code; });
     const sc     = item.stock <= 0 ? 'stock-zero' : item.stock <= (item.min || 0) ? 'stock-low' : 'stock-ok';
     const imgUrl = getProxyImgUrl(item.imageUrl);
+    const isDamaged = isItemDamaged(item.code);
+    
     const iconHtml = imgUrl
       ? '<img src="' + imgUrl + '" alt="' + esc(item.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:6px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'">'
         + '<span style="display:none;font-size:18px">📦</span>'
       : '<span style="font-size:18px">📦</span>';
+      
     const imgClickHtml = imgUrl
-      ? '<div style="position:relative;width:56px;height:56px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="event.stopPropagation();showItemGallery(\'' + item.code + '\',\'' + esc(item.name) + '\')">'        + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'        + (item.images && item.images.length > 1 ? '<div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:1px 4px;border-radius:6px">' + item.images.length + '</div>' : '')        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:22px">📦</div></div>'      : '<div style="width:56px;height:56px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">📦</div>';
-    return '<div class="item-card' + (inCart ? ' in-cart' : '') + '" style="padding:10px 12px">'      + imgClickHtml      + '<div class="item-info" style="flex:1;min-width:0" onclick="addToCart(\'' + item.code + '\',\'' + mode + '\')">'      + '<div class="item-name">' + esc(item.name) + '</div>'      + '<div class="item-code">' + item.code + '</div>'      + (inCart ? '<div class="in-cart-badge"><i class="fas fa-check-circle"></i> ในตะกร้า ×' + inCart.qty + '</div>' : '')      + '</div>'      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">'      + '<div class="item-stock" style="text-align:right"><div class="stock-num ' + sc + '">' + item.stock + '</div><div class="stock-unit">' + item.unit + '</div></div>'      + '<button onclick="event.stopPropagation();addToCart(\'' + item.code + '\',\'' + mode + '\')" style="background:' + (inCart ? 'var(--green)' : 'var(--amber)') + ';color:#111;border:none;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;cursor:pointer">'      + (inCart ? '✓ เพิ่ม' : '+ เพิ่ม') + '</button>'      + '</div>'      + '</div>';
+      ? '<div style="position:relative;width:76px;height:76px;overflow:hidden;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;cursor:zoom-in" onclick="event.stopPropagation();showItemGallery(\'' + item.code + '\',\'' + esc(item.name) + '\')">'        + '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'        + (item.images && item.images.length > 1 ? '<div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:1px 4px;border-radius:6px">' + item.images.length + '</div>' : '')        + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:22px">📦</div></div>'      : '<div style="width:76px;height:76px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">📦</div>';
+      
+    const badgeHtml = isDamaged 
+      ? '<div style="font-size:10px;font-weight:700;color:var(--red);background:var(--red-dim);padding:2px 6px;border-radius:4px;width:fit-content;margin-top:2px"><i class="fas fa-heart-broken"></i> ชำรุด/ส่งซ่อม</div>'
+      : (inCart ? '<div class="in-cart-badge"><i class="fas fa-check-circle"></i> ในตะกร้า ×' + inCart.qty + '</div>' : '');
+
+    const buttonHtml = isDamaged
+      ? '<button style="background:var(--red-dim);color:var(--red);border:1px solid var(--red);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;cursor:not-allowed" disabled>ชำรุด</button>'
+      : '<button onclick="event.stopPropagation();addToCart(\'' + item.code + '\',\'' + mode + '\')" style="background:' + (inCart ? 'var(--green)' : 'var(--amber)') + ';color:#111;border:none;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;cursor:pointer">' + (inCart ? '✓ เพิ่ม' : '+ เพิ่ม') + '</button>';
+
+    return '<div class="item-card' + (inCart ? ' in-cart' : '') + '" style="padding:10px 12px">'      + imgClickHtml      + '<div class="item-info" style="flex:1;min-width:0" onclick="addToCart(\'' + item.code + '\',\'' + mode + '\')">'      + '<div class="item-name">' + esc(item.name) + '</div>'      + '<div class="item-code">' + item.code + '</div>'      + badgeHtml      + '</div>'      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">'      + '<div class="item-stock" style="text-align:right"><div class="stock-num ' + sc + '">' + item.stock + '</div><div class="stock-unit">' + item.unit + '</div></div>'      + buttonHtml      + '</div>'      + '</div>';
   }).join('');
 }
 
@@ -2173,6 +2546,17 @@ function renderReturnList() {
 function addToCart(code, mode) {
   const item = getAllItems().find(i => i.code === code);
   if (!item) return;
+  if (isItemDamaged(code)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'ไม่สามารถทำรายการได้',
+      text: 'อุปกรณ์ชิ้นนี้อยู่ในสถานะชำรุด/กำลังส่งซ่อมบำรุง',
+      confirmButtonColor: '#ef5350',
+      background: '#1a1f2e',
+      color: '#e2e8f0'
+    });
+    return;
+  }
   if (item.stock <= 0 && mode !== 'borrow') { showToast('สินค้าหมดสต็อก', 'error'); return; }
   const cart  = mode === 'withdraw' ? withdrawCart : borrowCart;
   const exist = cart.find(c => c.code === code);
@@ -2193,6 +2577,7 @@ function addToCart(code, mode) {
 
 function updateCartBar(mode) {
   if (mode === 'withdraw') {
+    try { sessionStorage.setItem('withdrawCart', JSON.stringify(withdrawCart)); } catch(e) {}
     const n = withdrawCart.length;
     document.getElementById('wCartCount').textContent = n;
     const btn = document.getElementById('wCartBtn');
@@ -2203,6 +2588,7 @@ function updateCartBar(mode) {
       : `<i class="fas fa-shopping-basket"></i> ดูตะกร้า & ยืนยัน`;
     if (bar) { n > 0 ? bar.classList.add('active') : bar.classList.remove('active'); }
   } else {
+    try { sessionStorage.setItem('borrowCart', JSON.stringify(borrowCart)); } catch(e) {}
     const n = borrowCart.length;
     document.getElementById('bCartCount').textContent = n;
     const bBtn = document.getElementById('bCartBtn');
@@ -2335,9 +2721,19 @@ function addToReceiveCart(code) {
 }
 
 function renderReceiveCart() {
+  try { sessionStorage.setItem('receiveCart', JSON.stringify(receiveCart)); } catch(e) {}
   const el = document.getElementById('receiveCart');
+  const rBtn = document.getElementById('receiveSubmitBtn');
   document.getElementById('receiveCount').textContent = receiveCart.length;
-  document.getElementById('receiveSubmitBtn').disabled = receiveCart.length === 0;
+  rBtn.disabled = receiveCart.length === 0;
+  const rBar = rBtn.closest('.receive-cart-bar');
+  if (rBar) {
+    if (receiveCart.length > 0) {
+      rBar.classList.add('active');
+    } else {
+      rBar.classList.remove('active');
+    }
+  }
   if (!receiveCart.length) {
     el.innerHTML = `<div class="empty-state" style="padding:20px 0"><i class="fas fa-inbox"></i><p>ยังไม่มีรายการ<br>กด "+ เพิ่มรายการ" ด้านล่าง</p></div>`;
     return;
@@ -2391,9 +2787,10 @@ function submitReceive() {
   const payloads = receiveCart.map(item => ({
     code: item.code, qty: item.qty,
     type: 'รับเข้า', user: me.name, uid: me.uid,
-    remark: [poNo, supplier, remark].filter(Boolean).join(' | ')
+    remark: [poNo, supplier, remark].filter(Boolean).join(' | '),
+    deviceInfo: getDeviceInfoString()
   }));
-  callGAS('webBatchTransaction', [payloads], res => {
+  callGASQueued('webBatchTransaction', [payloads], res => {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-check-circle"></i> ยืนยันรับเข้า';
     receiveCart = [];
@@ -2534,12 +2931,21 @@ function niInit() {
   const isBlank = !niName || !niName.value.trim();
   if (isBlank || !_niInitialized) {
     niImgBase64 = null; niImgMime = 'image/jpeg';
-    ['niName','niUnit','niRemark','niLocation'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-    const niMin=document.getElementById('niMin'); if(niMin) niMin.value='0';
-    const niQty=document.getElementById('niQty'); if(niQty) niQty.value='0';
-    const niCat=document.getElementById('niCat'); if(niCat) niCat.value='';
+    ['niName','niUnit','niRemark','niLocation'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = sessionStorage.getItem('form_' + id) || '';
+    });
+    const niMin=document.getElementById('niMin'); if(niMin) niMin.value = sessionStorage.getItem('form_niMin') || '0';
+    const niQty=document.getElementById('niQty'); if(niQty) niQty.value = sessionStorage.getItem('form_niQty') || '0';
+    const niCat=document.getElementById('niCat'); if(niCat) niCat.value = sessionStorage.getItem('form_niCat') || '';
+    const niType=document.getElementById('niType'); if(niType) niType.value = sessionStorage.getItem('form_niType') || 'Items';
     niResetImage();
     niUpdateCode();
+    const savedCode = sessionStorage.getItem('form_niCode');
+    if (savedCode) {
+      const el = document.getElementById('niCode');
+      if (el) el.value = savedCode;
+    }
     _niInitialized = true;
   }
 }
@@ -2706,6 +3112,16 @@ function submitNewItem() {
   if (!name) { showToast('กรุณากรอกชื่อรายการ', 'error'); return; }
   if (!unit) { showToast('กรุณากรอกหน่วย', 'error'); return; }
 
+  // เช็คชื่อรายการซ้ำกับข้อมูลที่มีอยู่ (client-side guard)
+  const existingNames = [
+    ...(allData.items || []).map(i => String(i.name).trim().toLowerCase()),
+    ...(allData.tools || []).map(i => String(i.name).trim().toLowerCase())
+  ];
+  if (existingNames.includes(name.toLowerCase())) {
+    showToast('ชื่อรายการนี้มีอยู่ในระบบแล้ว: ' + name, 'error');
+    return;
+  }
+
   const btn = document.getElementById('niSubmitBtn');
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...'; }
 
@@ -2725,6 +3141,9 @@ function submitNewItem() {
         arr.push({ code:code, name:name, category:cat, location:location, unit:unit, min:min, stock:qty, remark:remark, imageUrl:tempUrl });
         showToast('เพิ่ม "' + name + '" สำเร็จ!', 'success');
         if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
+        ['niName','niUnit','niRemark','niLocation','niQty','niMin','niCode','niCat','niType'].forEach(id => {
+          sessionStorage.removeItem('form_' + id);
+        });
         _niInitialized = false; // force reset form ครั้งถัดไป
         niInit();
         if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
@@ -2734,6 +3153,9 @@ function submitNewItem() {
       arr.push({ code, name, category: cat, location, unit, min, stock: qty, remark, imageUrl: '' });
       showToast(`เพิ่ม "${name}" สำเร็จ!`, 'success');
       if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-save"></i> บันทึก'; }
+      ['niName','niUnit','niRemark','niLocation','niQty','niMin','niCode','niCat','niType'].forEach(id => {
+        sessionStorage.removeItem('form_' + id);
+      });
       _niInitialized = false; // force reset form ครั้งถัดไป
       niInit();
       callGAS('getInventoryData', [], d => { if(d) allData = d; }, null);
@@ -2748,10 +3170,24 @@ function submitNewItem() {
 function submitCart(mode) {
   const cart = mode === 'withdraw' ? withdrawCart : borrowCart;
   if (!cart.length) { showToast('ตะกร้าว่าง', 'error'); return; }
+  const remarkEl = document.getElementById(mode === 'withdraw' ? 'wRemark' : 'bRemark');
+  const remark = remarkEl ? remarkEl.value.trim() : '';
+  if (!remark) { showToast('กรุณาระบุเหตุผลก่อนยืนยัน', 'error'); if (remarkEl) remarkEl.focus(); return; }
   openSignatureModal(mode);
 }
 
 function executeSubmitCart(mode, signatureBase64) {
+  // ★ แก้บั๊ก: เดิมเรียก Swal.fire({...}) เนื้อหาเดียวกันซ้ำ 2 ครั้งติดกัน (copy-paste ซ้ำ) ทำให้ popup loading เด้งซ้อน/กระตุกโดยไม่จำเป็น เหลือแค่ครั้งเดียว
+  Swal.fire({
+    title: 'กำลังส่งคำขอ...',
+    text: 'กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูลและส่งใบเบิก',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
   const cart   = mode === 'withdraw' ? withdrawCart : borrowCart;
   const remark = document.getElementById(mode === 'withdraw' ? 'wRemark' : 'bRemark').value.trim();
   const typeText = mode === 'withdraw' ? 'เบิก' : 'ยืม';
@@ -2764,30 +3200,50 @@ function executeSubmitCart(mode, signatureBase64) {
   const payloads = cart.map(item => ({
     code: item.code, qty: item.qty,
     type: mode === 'withdraw' ? 'เบิก' : 'ยืม',
-    user: me.name, uid: me.uid, remark
+    user: me.name, uid: me.uid, remark,
+    deviceInfo: getDeviceInfoString() // 🆕 แนบข้อมูลอุปกรณ์ไว้เผื่อสืบย้อนความรับผิดชอบ (ไม่กระทบ payload เดิม)
   }));
   
-  callGAS('webBatchTransaction', [payloads, signatureBase64], res => {
+  const handleSuccess = (pendingN) => {
     btn.disabled = false;
     btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
     closeSheet(mode === 'withdraw' ? 'sheetWithdraw' : 'sheetBorrow');
+    savedSignatureDataURL = null; // ส่งสำเร็จแล้ว รอบถัดไปให้เริ่มเซ็นใหม่
     if (mode === 'withdraw') { withdrawCart = []; document.getElementById('withdrawSearch').value = ''; document.getElementById('wRemark').value = ''; }
     else                     { borrowCart = [];   document.getElementById('borrowSearch').value = '';  document.getElementById('bRemark').value = ''; }
     updateCartBar(mode);
-    const pendingN = (res && res.pendingCount) || payloads.length;
     Swal.fire({
       icon: 'success',
       title: 'ส่งคำขอแล้ว!',
-      text: `ส่งคำขอ${typeText} ${pendingN} รายการเรียบร้อย รอแอดมินกดอนุมัติในไลน์ก่อน ของจะถูกกันไว้ให้ระหว่างนี้`,
+      text: `ส่งคำขอ${typeText} ${pendingN} รายการเรียบร้อย รอแอดมินกดอนุมัติ ของจะถูกกันไว้ให้ระหว่างนี้`,
       confirmButtonColor: '#4f46e5',
       background: '#1a1f2e', color: '#e2e8f0'
     });
+    renderList(mode, ''); renderReturnList();
+    renderMineApproval();
+  };
+
+  callGASQueued('webBatchTransaction', [payloads, signatureBase64], res => {
+    handleSuccess((res && res.pendingCount) || payloads.length);
     callGAS('getInventoryData', [], d => { allData = d; renderList(mode, ''); renderReturnList(); }, null);
     loadMineApproval();
   }, err => {
+    // ★ เอาโหมด Demo/ออฟไลน์-หลอกสำเร็จออกทั้งหมด — เดิมถ้าเจอ error ใดๆ ที่ตรวจว่า "น่าจะเป็น demo" จะปลอมข้อมูลลง
+    // localStorage แล้วบอกผู้ใช้ว่า "ส่งคำขอแล้ว!" ทั้งที่ backend จริงไม่เคยได้รับข้อมูลเลย ผู้ใช้เข้าใจผิดว่าเบิกสำเร็จ
+    // ของจริงไม่ได้ถูกกันสต็อกให้เลย ตอนนี้ error อะไรก็ตามจะโชว์ตรงไปตรงมาเสมอ ไม่มีการหลอกว่าสำเร็จอีก
     btn.disabled = false;
     btn.innerHTML = mode === 'withdraw' ? '<i class="fas fa-check"></i> ยืนยันเบิก' : '<i class="fas fa-clipboard-check"></i> ยืนยันการยืม';
-    showToast('เกิดข้อผิดพลาด: ' + err, 'error');
+    Swal.fire({
+      icon: 'error',
+      title: 'เกิดข้อผิดพลาดในการบันทึก!',
+      html: `<div class="text-start small">
+               <div class="text-danger fw-bold mb-2">❌ ไม่สามารถบันทึกรายการได้ในขั้นตอนส่งข้อมูล:</div>
+               <div>• สาเหตุ: <b>${esc(err)}</b></div>
+               <div>• กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต หรือติดต่อผู้ดูแลระบบ</div>
+             </div>`,
+      confirmButtonColor: '#ef4444',
+      background: '#1a1f2e', color: '#e2e8f0'
+    });
   });
 }
 
@@ -2800,10 +3256,31 @@ function doReturn(reqId, name, qty) {
     confirmButtonColor: '#66bb6a', background: '#1e1e1e', color: '#c0c0c0',
   }).then(r => {
     if (!r.isConfirmed) return;
+    Swal.fire({
+      title: 'กำลังทำรายการ...',
+      text: 'กำลังบันทึกรายการคืนอะไหล่',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     callGAS('webReturnItem', [reqId, me.name, me.uid], () => {
-      showToast('คืนเรียบร้อย!', 'success');
+      Swal.fire({
+        icon: 'success',
+        title: 'คืนเรียบร้อย!',
+        timer: 1500,
+        showConfirmButton: false
+      });
       callGAS('getInventoryData', [], d => { allData = d; renderReturnList(); }, null);
-    }, e => showToast('เกิดข้อผิดพลาด: ' + e, 'error'));
+    }, e => {
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: String(e)
+      });
+    });
   });
 }
 
@@ -2849,13 +3326,102 @@ function handleQR(code) {
 }
 
 /* ══ HELPERS ══ */
-const GAS_URL = (typeof __GAS_URL__ !== 'undefined') ? __GAS_URL__ : '';
+// 🚨 วาง URL ของ Web App หลังบ้าน (Google Apps Script) ที่นี่
+const MY_GAS_URL = "วาง_URL_ของ_Web_App_หลังบ้านที่นี่";
+const GAS_URL = (MY_GAS_URL && MY_GAS_URL.indexOf("วาง_URL") === -1) ? MY_GAS_URL : ((typeof __GAS_URL__ !== 'undefined') ? __GAS_URL__ : '');
+
+// 🆕 ═══════════════════════════════════════════════════
+//  OFFLINE DETECTION + RETRY QUEUE (เพิ่มใหม่ ไม่แตะ logic เดิมของ callGAS)
+//  แสดง banner ตอนเน็ตหลุด และเก็บรายการที่ยังไม่ได้ส่งไว้ใน localStorage
+//  แล้ว auto-retry ให้เองทันทีที่เน็ตกลับมา กันข้อมูลตะกร้าหายตอนกดยืนยันแล้วเน็ตหลุดพอดี
+// ═══════════════════════════════════════════════════
+const OFFLINE_QUEUE_KEY = 'pendingOfflineQueue_v1';
+
+function getDeviceInfoString() {
+  try {
+    const ua = navigator.userAgent || 'unknown';
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua);
+    return (isMobile ? '📱 มือถือ' : '💻 คอมพิวเตอร์') + ' | ' + ua;
+  } catch (e) { return 'ไม่ทราบอุปกรณ์'; }
+}
+
+function _offlineQueueRead() {
+  try { return JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+function _offlineQueueWrite(list) {
+  try { localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(list)); } catch (e) {}
+}
+
+function _ensureOfflineBanner() {
+  let el = document.getElementById('offlineBanner');
+  if (el) return el;
+  el = document.createElement('div');
+  el.id = 'offlineBanner';
+  el.style.cssText = 'display:none;position:fixed;top:0;left:0;right:0;z-index:99999;'
+    + 'background:#7c2d12;color:#fed7aa;text-align:center;font-size:13px;'
+    + 'padding:8px 12px;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+  document.body.appendChild(el);
+  return el;
+}
+
+function _renderOfflineBanner() {
+  const el = _ensureOfflineBanner();
+  const queued = _offlineQueueRead();
+  if (!navigator.onLine) {
+    el.style.display = 'block';
+    el.innerHTML = '📡 ขาดการเชื่อมต่ออินเทอร์เน็ต — รายการที่ทำระหว่างนี้จะถูกเก็บไว้และส่งอัตโนมัติเมื่อเน็ตกลับมา'
+      + (queued.length ? ` (ค้างอยู่ ${queued.length} รายการ)` : '');
+  } else if (queued.length) {
+    el.style.display = 'block';
+    el.innerHTML = `🔄 กำลังส่งรายการที่ค้างไว้ตอนเน็ตหลุด (${queued.length} รายการ)...`;
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// เรียกฟังก์ชันเดิม (fn/args) ซ้ำสำหรับรายการที่ค้างอยู่ในคิว ทีละรายการ
+function _flushOfflineQueue() {
+  const queued = _offlineQueueRead();
+  if (!queued.length || !navigator.onLine) { _renderOfflineBanner(); return; }
+  const item = queued[0];
+  callGAS(item.fn, item.args, () => {
+    const rest = _offlineQueueRead().slice(1);
+    _offlineQueueWrite(rest);
+    showToast(`ส่งรายการที่ค้างไว้สำเร็จแล้ว (เหลืออีก ${rest.length})`, 'success');
+    _renderOfflineBanner();
+    if (rest.length) setTimeout(_flushOfflineQueue, 800);
+    else callGAS('getInventoryData', [], d => { allData = d; }, null);
+  }, () => {
+    // ยังส่งไม่สำเร็จ (อาจเน็ตหลุดอีก) รอลองใหม่ในอีก 5 วิ ไม่ลบออกจากคิว กันข้อมูลหาย
+    setTimeout(_flushOfflineQueue, 5000);
+  });
+  _renderOfflineBanner();
+}
+
+window.addEventListener('online', () => { _renderOfflineBanner(); _flushOfflineQueue(); });
+window.addEventListener('offline', () => { _renderOfflineBanner(); });
+document.addEventListener('DOMContentLoaded', () => { _renderOfflineBanner(); if (navigator.onLine) _flushOfflineQueue(); });
+
+// เรียกใช้แทน callGAS ตรงๆ เฉพาะจุดที่เป็นการ "ส่งคำขอ/ยืนยันรายการ" ที่ห้ามให้ข้อมูลหายตอนเน็ตหลุด
+// ถ้าออนไลน์อยู่ ทำงานเหมือน callGAS ทุกประการ ถ้าออฟไลน์ จะเก็บลงคิวแทนการยิง error ทันที
+function callGASQueued(fn, args, onOk, onFail) {
+  if (!navigator.onLine) {
+    const queued = _offlineQueueRead();
+    queued.push({ fn, args, ts: Date.now() });
+    _offlineQueueWrite(queued);
+    _renderOfflineBanner();
+    if (onFail) onFail('ขณะนี้ไม่มีอินเทอร์เน็ต ระบบได้เก็บรายการนี้ไว้แล้ว จะส่งอัตโนมัติทันทีที่เน็ตกลับมา');
+    return;
+  }
+  callGAS(fn, args, onOk, onFail);
+}
 
 function callGAS(fn, args, onOk, onFail) {
   // 1. ถ้ารันอยู่บน Google Apps Script Web App (มี google.script.run) ให้ใช้ช่องทางหลักเสมอ เพื่อเลี่ยงปัญหา CORS
   if (typeof google !== 'undefined' && google.script && google.script.run) {
     let done = false;
-    const timer = setTimeout(() => { if (!done) { done = true; if (onFail) onFail('timeout'); } }, 20000);
+    const timer = setTimeout(() => { if (!done) { done = true; if (onFail) onFail('เซิร์ฟเวอร์ตอบกลับช้ากว่าปกติ (อาจกำลังประมวลผลอยู่) กรุณารีเฟรชเพื่อตรวจสอบผลก่อนทำรายการซ้ำ'); } }, 55000);
     google.script.run
       .withSuccessHandler(res => {
         if (done) return; done = true; clearTimeout(timer);
@@ -2872,7 +3438,14 @@ function callGAS(fn, args, onOk, onFail) {
   // 2. ถ้ารันแบบโลคอลในเครื่องคอมพิวเตอร์ และมี GAS_URL ค่อยใช้ fetch (ช่องทางสำรอง)
   if (GAS_URL) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 25000);
+    // ⏱️ ขยายเวลารอเป็น 55 วิ (Apps Script ที่มีการยิงไลน์แจ้งเตือน/ล็อกชีต อาจใช้เวลานานกว่าปกติ)
+    // และใส่ "เหตุผล" ตอน abort ไว้ด้วย เพื่อให้ error message อ่านเข้าใจง่ายขึ้น แทนคำว่า
+    // "signal is aborted without reason" ที่ทำให้ผู้ใช้ตกใจว่าระบบพัง ทั้งที่จริงแล้วฝั่งเซิร์ฟเวอร์
+    // (Google) ยังทำงานต่อจนจบอยู่ดี แค่เบราว์เซอร์เลิกรอไปก่อน
+    const timer = setTimeout(() => {
+      try { controller.abort('เซิร์ฟเวอร์ตอบกลับช้ากว่าปกติ (อาจกำลังประมวลผลอยู่ และอาจบันทึกสำเร็จแล้ว) กรุณากด "รีเฟรช" เพื่อตรวจสอบผลก่อนทำรายการซ้ำ'); }
+      catch (e) { controller.abort(); } // เผื่อเบราว์เซอร์เก่าที่ไม่รองรับ abort(reason)
+    }, 55000);
     fetch(GAS_URL, {
       method: 'POST', headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ fn, args: args || [] }), signal: controller.signal
@@ -2883,11 +3456,19 @@ function callGAS(fn, args, onOk, onFail) {
       if (res && res.success === false) { if (onFail) onFail(res.error || 'error'); return; }
       onOk(res);
     })
-    .catch(err => { clearTimeout(timer); if (onFail) onFail(err.message || 'fetch error'); });
+    .catch(err => {
+      clearTimeout(timer);
+      // ถ้าเป็นการยกเลิกจากตัวจับเวลาของเราเอง ให้ใช้ข้อความที่อธิบายเหตุผลไว้แล้ว (ผูกกับ signal.reason)
+      const isAbort = err && (err.name === 'AbortError' || String(err.message || '').toLowerCase().includes('abort'));
+      const friendlyMsg = isAbort
+        ? (controller.signal.reason || 'การเชื่อมต่อใช้เวลานานเกินไป อาจกำลังประมวลผลอยู่ กรุณารีเฟรชเพื่อตรวจสอบผลก่อนทำรายการซ้ำ')
+        : (err.message || 'fetch error');
+      if (onFail) onFail(friendlyMsg);
+    });
     return;
   }
   
-  if (onFail) onFail('no GAS');
+  if (onFail) onFail('ไม่พบการตั้งค่า URL เซิร์ฟเวอร์ (GAS_URL) กรุณาแจ้งผู้ดูแลระบบ');
 }
 
 /* ══ REGISTER ══ */
@@ -3013,12 +3594,7 @@ function submitRegister() {
     callGAS('getLoginUsers', [], users => { if (users && users.length) { allData.users = users; populateUsers(users); } }, () => {});
   }, e => {
     btn.textContent = 'ส่งคำขอสมัคร'; btn.disabled = false;
-    if (e === 'demo mode') {
-      document.getElementById('regSuccessMsg').textContent = `[Demo] ส่งคำขอของ "${name}" เรียบร้อย!`;
-      err.style.display = 'none'; showRegStep(3);
-    } else {
-      err.textContent = 'เกิดข้อผิดพลาด: ' + e; err.style.display = 'block';
-    }
+    err.textContent = 'เกิดข้อผิดพลาด: ' + e; err.style.display = 'block';
   });
 }
 
@@ -3064,23 +3640,14 @@ function loadMineData() {
         `<div class="mine-empty"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i><p>${esc(errMsg)}</p></div>`;
     }
   }, err => {
-    // GAS ไม่ตอบ / timeout / ไม่มี GAS → ใช้ demo
+    // ★ เอาโหมด Demo ออก — เดิมถ้าโหลดไม่ได้จะเงียบๆ สลับไปโชว์ข้อมูลตัวอย่างปลอมแทน ทำให้ผู้ใช้เข้าใจผิดว่าเป็นประวัติจริงของตัวเอง
     mineLoading = false;
     if (icon) icon.style.animation = '';
-    const isDemo = !GAS_URL && typeof google === 'undefined';
-    if (isDemo || err === 'no GAS' || err === 'demo mode') {
-      mineData = buildDemoMineData();
-    } else {
-      mineData = { history: [], borrows: [], retro: [], retroPending: [] };
-      document.getElementById('mineHistoryList').innerHTML =
-        `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
-      document.getElementById('mineBorrowList').innerHTML =
-        `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
-      return;
-    }
-    renderMineHistory();
-    renderMineBorrows();
-    updateMineStats();
+    mineData = { history: [], borrows: [], retro: [], retroPending: [] };
+    document.getElementById('mineHistoryList').innerHTML =
+      `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
+    document.getElementById('mineBorrowList').innerHTML =
+      `<div class="mine-empty"><i class="fas fa-wifi" style="color:var(--red)"></i><p>เชื่อมต่อไม่ได้: ${esc(err)}</p></div>`;
   });
 }
 
@@ -3110,7 +3677,6 @@ function loadMineApproval() {
     mineData.pendingApproval = (res && res.success) ? (res.items || []) : [];
     renderMineApproval();
     _updateApprovalBellBadge();
-    // ถ้ามีรายการที่หายไปจากลิสต์ (เมื่อเทียบกับรอบก่อน) แปลว่าแอดมินเพิ่งอนุมัติ/ปฏิเสธไป — เช็คผลแล้วแจ้งเตือนในแอปทันที (ไม่เปลืองโควต้า LINE)
     const newIds = (mineData.pendingApproval || []).map(it => it.reqId);
     const disappeared = prevIds.filter(id => !newIds.includes(id));
     if (disappeared.length && me && me.uid) {
@@ -3120,7 +3686,6 @@ function loadMineApproval() {
           if (!disappeared.includes(d.reqId)) return;
           if (d.status === 'approved') {
             Swal.fire({icon:'success', title:'✅ อนุมัติแล้ว', text:`"${d.itemName}" x${d.qty} ได้รับการอนุมัติแล้วครับ`, timer:3500, showConfirmButton:false, background:'#1a1f2e', color:'#c0c0c0'});
-            // โหลดรายการยืม/ประวัติใหม่ทันที ไม่งั้นของที่เพิ่งอนุมัติจะไม่ขึ้นในแท็บ "คนยืม" จนกว่าจะรีเฟรชเอง
             loadMineData();
           } else if (d.status === 'rejected') {
             Swal.fire({icon:'error', title:'❌ ถูกปฏิเสธ', text:`"${d.itemName}" x${d.qty} ถูกปฏิเสธครับ`, timer:3500, showConfirmButton:false, background:'#1a1f2e', color:'#c0c0c0'});
@@ -3128,15 +3693,22 @@ function loadMineApproval() {
         });
       }, () => {});
     }
-  }, () => { renderMineApproval(); });
+  }, err => {
+    // ★ เอาโหมด Demo ออก — เดิมถ้าโหลดไม่ได้จะไปอ่าน localStorage มาโชว์แทน อาจกลายเป็นข้อมูลเก่า/ปลอมที่ไม่ตรงกับสถานะจริงบน server
+    mineData.pendingApproval = [];
+    renderMineApproval();
+    _updateApprovalBellBadge();
+  });
 }
 
 function renderMineApproval() {
   const list = document.getElementById('mineApprovalList');
   if (!list) return;
   const items = mineData.pendingApproval || [];
+  // ★ นับเฉพาะที่ยัง "รออนุมัติ" จริงๆ สำหรับ badge ตัวเลข — รายการที่ถูกปฏิเสธไปแล้วไม่นับ (ไม่ใช่รายการที่ต้องรออะไรอีก แค่โชว์เป็นประวัติ)
+  const pendingOnlyCount = items.filter(it => it.status !== 'rejected').length;
   const countEl = document.getElementById('mineApprovalCount');
-  if (countEl) countEl.textContent = items.length;
+  if (countEl) countEl.textContent = pendingOnlyCount;
 
   if (!items.length) {
     list.innerHTML = '<div class="mine-empty"><i class="fas fa-check-circle" style="color:var(--green)"></i><p>ไม่มีรายการค้างรออนุมัติ 🎉</p></div>';
@@ -3144,20 +3716,32 @@ function renderMineApproval() {
   }
   list.innerHTML = items.map(it => {
     const typeIcon = it.type === 'ยืม' ? '🤝' : '📦';
+    // ★ เพิ่ม: แสดงรายการที่ถูกแอดมินปฏิเสธด้วย (เดิมพอถูกปฏิเสธจะหายไปเงียบๆ จากลิสต์นี้ ผู้ใช้ไม่รู้ว่าเกิดอะไรขึ้นถ้าพลาดป๊อปอัพตอนนั้น)
+    const isRejected = it.status === 'rejected';
     const imgTag = it.imageUrl
-      ? `<img src="${it.imageUrl}" alt="${esc(it.itemName)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-         <div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:none;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`
-      : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`;
-    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(251,191,36,.3);border-radius:14px;margin-bottom:8px">
+      ? `<img src="${it.imageUrl}" alt="${esc(it.itemName)}" style="width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0${isRejected ? ';filter:grayscale(60%);opacity:.75' : ''}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+         <div style="width:64px;height:64px;border-radius:10px;background:rgba(251,191,36,.12);display:none;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${typeIcon}</div>`
+      : `<div style="width:64px;height:64px;border-radius:10px;background:rgba(251,191,36,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px${isRejected ? ';filter:grayscale(60%);opacity:.75' : ''}">${typeIcon}</div>`;
+    const statusBadge = isRejected
+      ? `<span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#ef444422;color:#f87171;border:1px solid #ef444455">ถูกปฏิเสธ</span>`
+      : `<span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2455">รออนุมัติ</span>`;
+    const actionBtn = isRejected
+      ? '' // ปฏิเสธไปแล้ว ไม่มีอะไรให้ยกเลิกอีก
+      : `<button onclick="cancelMyPendingRequest('${it.reqId}')" style="font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:14px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.35);cursor:pointer">ยกเลิก</button>`;
+    const rejectedInfo = isRejected && (it.rejectedBy || it.rejectedAt)
+      ? `<div style="font-size:.68rem;color:#f87171;margin-top:3px">✗ ปฏิเสธโดย ${esc(it.rejectedBy || 'แอดมิน')}${it.rejectedAt ? ' • ' + esc(it.rejectedAt) : ''}</div>`
+      : '';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid ${isRejected ? 'rgba(239,68,68,.3)' : 'rgba(251,191,36,.3)'};border-radius:14px;margin-bottom:8px${isRejected ? ';opacity:.85' : ''}">
       ${imgTag}
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.itemName)}</div>
         <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px">${esc(it.itemCode)} • ${esc(it.qty)} • ${esc(it.date)}</div>
         ${it.remark ? `<div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:3px">📝 ${esc(it.remark)}</div>` : ''}
+        ${rejectedInfo}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
-        <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:#fbbf2422;color:#fbbf24;border:1px solid #fbbf2455">รออนุมัติ</span>
-        <button onclick="cancelMyPendingRequest('${it.reqId}')" style="font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:14px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.35);cursor:pointer">ยกเลิก</button>
+        ${statusBadge}
+        ${actionBtn}
       </div>
     </div>`;
   }).join('');
@@ -3171,6 +3755,16 @@ function cancelMyPendingRequest(reqId) {
     confirmButtonColor: '#ef4444', background: '#1a1f2e', color: '#c0c0c0'
   }).then(r => {
     if (!r.isConfirmed) return;
+    Swal.fire({
+      title: 'กำลังยกเลิกคำขอ...',
+      text: 'กรุณารอสักครู่ ระบบกำลังลบรายการคำขอ',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     callGAS('webCancelMyPendingRequest', [{ reqId: reqId, userId: me.uid }], res => {
       if (res && res.success) {
         Swal.fire({icon: 'success', title: 'ยกเลิกแล้ว', timer: 1300, showConfirmButton: false, background: '#1a1f2e', color: '#c0c0c0'});
@@ -3179,6 +3773,7 @@ function cancelMyPendingRequest(reqId) {
         Swal.fire({icon: 'error', title: 'ยกเลิกไม่สำเร็จ', text: (res && res.error) || '', background: '#1a1f2e', color: '#c0c0c0'});
       }
     }, err => {
+      // ★ เอาโหมด Demo ออก — เดิมถ้าเจอ error จะหลอกโชว์ "ยกเลิกแล้ว" ทั้งที่ backend จริงไม่รู้เรื่อง คำขออาจยังค้างอยู่จริง
       Swal.fire({icon: 'error', title: 'เกิดข้อผิดพลาด', text: String(err), background: '#1a1f2e', color: '#c0c0c0'});
     });
   });
@@ -3189,7 +3784,8 @@ function _updateApprovalBellBadge() {
   const btn = document.getElementById('approvalBellBtn');
   const badge = document.getElementById('approvalBellBadge');
   if (!btn || !badge) return;
-  const n = (mineData.pendingApproval || []).length;
+  // ★ นับเฉพาะ "pending" จริงๆ เหมือนกับ mineApprovalCount — รายการที่ถูกปฏิเสธไปแล้วไม่ต้องรอผู้ใช้ทำอะไรอีก ไม่ควรทำให้กระดิ่งเด้ง
+  const n = (mineData.pendingApproval || []).filter(it => it.status !== 'rejected').length;
   btn.style.display = n > 0 ? 'flex' : 'none';
   badge.textContent = n;
 }
@@ -3198,6 +3794,16 @@ function submitMyRetroWithdraw(sessionId, itemCode, suggestedQty) {
   const remarkEl = document.getElementById('retroReason_' + itemCode);
   const remark = remarkEl ? remarkEl.value.trim() : '';
   if (!remark) { Swal.fire({icon:'warning', title:'กรุณาระบุเหตุผล', background:'#1a1f2e', color:'#c0c0c0'}); return; }
+  Swal.fire({
+    title: 'กำลังส่งข้อมูล...',
+    text: 'กรุณารอสักครู่ ระบบกำลังบันทึกเหตุผลตกเบิก',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
   callGAS('webSubmitRetroWithdrawByUser', [{
     sessionId: sessionId, itemCode: itemCode, qty: suggestedQty, remark: remark, userId: me.uid
   }], res => {
@@ -3246,7 +3852,7 @@ function renderMineRetro() {
     html += done.map(it => {
       const reason = esc(it.remark.split(' (เบิกย้อนหลัง')[0]);
       return `<div class="hist-card" style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:8px">
-        <div style="width:44px;height:44px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">✅</div>
+        <div style="width:64px;height:64px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">✅</div>
         <div style="flex:1;min-width:0">
           <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(it.itemName)}</div>
           <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px">${esc(it.itemCode)} • ${it.qty} ชิ้น • ${esc(it.date)}</div>
@@ -3257,26 +3863,6 @@ function renderMineRetro() {
   }
 
   list.innerHTML = html;
-}
-
-function buildDemoMineData() {
-  const now = new Date();
-  const fmt = d => d.toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'2-digit'});
-  const d1 = new Date(now); d1.setDate(d1.getDate()-2);
-  const d2 = new Date(now); d2.setDate(d2.getDate()-5);
-  const d3 = new Date(now); d3.setDate(d3.getDate()-10);
-  const d4 = new Date(now); d4.setDate(d4.getDate()-20);
-  return {
-    history: [
-      { txId:'TX001', itemName:'น้ำมันหล่อลื่น 68', itemCode:'OL-003', qty:2, unit:'ลิตร', type:'เบิก', date: fmt(d1), remark:'บำรุงรักษา' },
-      { txId:'TX002', itemName:'ฟิลเตอร์อากาศ',      itemCode:'FL-009', qty:1, unit:'อัน',  type:'เบิก', date: fmt(d2), remark:'ซ่อม Line 1' },
-      { txId:'TX003', itemName:'น็อต M8×30',          itemCode:'PN-007', qty:10, unit:'ตัว', type:'เบิก', date: fmt(d3), remark:'' },
-      { txId:'TX004', itemName:'ประแจปากตาย 13',      itemCode:'TL-001', qty:1, unit:'อัน',  type:'ยืม',  date: fmt(d4), remark:'งานซ่อมปั๊ม' },
-    ],
-    activeBorrows: [
-      { reqId:'BW001', itemName:'ประแจปากตาย 13', itemCode:'TL-001', qty:1, unit:'อัน', borrowDate: fmt(d4), daysAgo: 20 },
-    ]
-  };
 }
 
 function updateMineStats() {
@@ -3305,15 +3891,15 @@ function renderMineHistory() {
     el.innerHTML = '<div class="mine-empty"><i class="fas fa-history"></i><p>ยังไม่มีประวัติการทำรายการ</p></div>';
     return;
   }
-  const typeColor = { 'เบิก':'#f59e0b','รับเข้า':'#22c55e','คืน':'#60a5fa','ปรับสต็อก':'#a78bfa' };
+  const typeColor = { 'เบิก':'#f59e0b','รับเข้า':'#22c55e','คืน':'#60a5fa','แจ้งชำรุด':'#ef4444','ปรับสต็อก':'#a78bfa' };
   el.innerHTML = list.map(h => {
     const color = typeColor[h.type] || '#888';
     const _hImgUrl = getProxyImgUrl(h.imageUrl);
     const _hImgFull = getFullImgUrl(h.imageUrl) || _hImgUrl;
     const imgHtml = _hImgUrl
-      ? `<img src="${_hImgUrl}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1);cursor:zoom-in" onclick="event.stopPropagation();viewImg('${_hImgFull}','${esc(h.itemName)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-        + `<div style="display:none;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${h.type==='เบิก'?'📦':h.type==='รับเข้า'?'📥':h.type==='คืน'?'↩️':'🔧'}</div>`
-      : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${h.type==='เบิก'?'📦':h.type==='รับเข้า'?'📥':h.type==='คืน'?'↩️':'🔧'}</div>`;
+      ? `<img src="${_hImgUrl}" style="width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1);cursor:zoom-in" onclick="event.stopPropagation();viewImg('${_hImgFull}','${esc(h.itemName)}')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        + `<div style="display:none;width:64px;height:64px;border-radius:10px;background:rgba(255,255,255,.06);align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${h.type==='เบิก'?'📦':h.type==='รับเข้า'?'📥':h.type==='คืน'?'↩️':h.type==='แจ้งชำรุด'?'⚠️':'🔧'}</div>`
+      : `<div style="width:64px;height:64px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">${h.type==='เบิก'?'📦':h.type==='รับเข้า'?'📥':h.type==='คืน'?'↩️':h.type==='แจ้งชำรุด'?'⚠️':'🔧'}</div>`;
       
     const escName = esc(h.itemName).replace(/'/g, "\\'");
     const escCode = esc(h.itemCode).replace(/'/g, "\\'");
@@ -3323,16 +3909,199 @@ function renderMineHistory() {
     const escSig = esc(h.signatureUrl || '').replace(/'/g, "\\'");
     const escImg = esc(h.imageUrl || '').replace(/'/g, "\\'");
     
-    return `<div class="hist-card" style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:8px;cursor:pointer" onclick="openHistorySlip('${escName}', '${escCode}', '${escQty}', '${escUnit}', '${h.date}', '${esc(h.type)}', '${escRemark}', '${escImg}', '${escSig}')">
+    const isWithdraw = (h.type === 'เบิก');
+    // ★ ปรับปรุง: ใช้ h.canReturn ที่คำนวณฝั่ง server แล้ว (เช็คทั้งยอดคงเหลือ + เกิน 7 วันหรือยัง)
+    // แทนที่จะเช็คแค่ remainingQty เฉยๆ เหมือนเดิม กันปัญหา parse วันที่ผิดพลาดฝั่ง client ด้วย
+    const hasRemaining = (h.remainingQty === null || h.remainingQty === undefined) ? true : h.remainingQty > 0;
+    const canReturn = (h.canReturn === null || h.canReturn === undefined) ? hasRemaining : h.canReturn;
+    const isExpired = hasRemaining && !canReturn; // เหลืออยู่จริง แต่เกิน 7 วันแล้ว กดคืนไม่ได้แล้ว
+    const returnMaxQty = (h.remainingQty !== null && h.remainingQty !== undefined) ? Math.min(h.qty, h.remainingQty) : h.qty;
+    const returnedQty = h.returnedQty || 0;
+    const damagedQty = h.damagedQty || 0;
+    const totalWithdrawnQty = h.totalWithdrawnQty || h.qty;
+    // 🆕 สรุปให้เห็นว่าเบิกไปทั้งหมด/คืนแล้ว/แจ้งชำรุดแล้วกี่ชิ้น เฉพาะตอนมีการคืน/แจ้งชำรุดไปแล้วบางส่วน(หรือครบ)
+    const breakdownParts = [];
+    if (returnedQty > 0) breakdownParts.push(`คืนแล้ว ${returnedQty}`);
+    if (damagedQty > 0) breakdownParts.push(`แจ้งชำรุด ${damagedQty}`);
+    const breakdownHtml = breakdownParts.length
+      ? `<div style="font-size:10px;color:#94a3b8;margin-top:4px">เบิกทั้งหมด ${totalWithdrawnQty} • ${breakdownParts.join(' • ')}${hasRemaining ? ' • เหลือ ' + (h.remainingQty || 0) : ''}</div>`
+      : '';
+    const actionsHtml = isWithdraw
+      ? (canReturn ? `
+      <div style="display:flex;gap:6px;margin-top:6px" onclick="event.stopPropagation()">
+        <button onclick="openReturnItemModal('${escCode}','${escName}',${returnMaxQty},${h.ts})" style="background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer"><i class="fas fa-undo me-1"></i> คืนเข้าคลัง</button>
+        <button onclick="openReportDamageModal('${escCode}','${escName}',${returnMaxQty},${h.ts})" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;cursor:pointer"><i class="fas fa-exclamation-triangle me-1"></i> แจ้งชำรุด</button>
+      </div>${breakdownHtml}` : isExpired ? `
+      <div style="margin-top:6px" onclick="event.stopPropagation()">
+        <span style="background:rgba(148,163,184,.12);color:#94a3b8;border:1px solid rgba(148,163,184,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600"><i class="fas fa-clock me-1"></i> เกิน 7 วัน ไม่สามารถคืน/แจ้งชำรุดได้แล้ว</span>
+      </div>${breakdownHtml}` : `
+      <div style="margin-top:6px" onclick="event.stopPropagation()">
+        <span style="background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600"><i class="fas fa-check-circle me-1"></i> ${damagedQty > 0 && returnedQty === 0 ? 'แจ้งชำรุดครบแล้ว' : returnedQty > 0 && damagedQty === 0 ? 'คืนเข้าคลังครบแล้ว' : 'คืน/แจ้งชำรุดครบแล้ว'}</span>
+      </div>${breakdownHtml}`)
+      : '';
+
+    return `<div class="hist-card" style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:8px;cursor:pointer" onclick="openHistorySlip('${escName}', '${escCode}', '${escQty}', '${escUnit}', '${h.date}', '${esc(h.type)}', '${escRemark}', '${escImg}', '${escSig}', ${h.remainingQty === null || h.remainingQty === undefined ? 'null' : Number(h.remainingQty)}, ${h.canReturn === null || h.canReturn === undefined ? 'null' : !!h.canReturn}, ${returnedQty}, ${damagedQty}, ${totalWithdrawnQty}, ${h.ts})">
       ${imgHtml}
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;color:#fff;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(h.itemName)}</div>
         <div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px">${esc(h.itemCode)} • ${esc(h.qty)}${h.unit?' '+esc(h.unit):''} • ${h.date}</div>
         ${h.remark && h.remark!=='-' ? `<div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:3px">📝 ${esc(h.remark)}</div>` : ''}
+        ${actionsHtml}
       </div>
       <span style="flex-shrink:0;font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:${color}22;color:${color};border:1px solid ${color}55">${esc(h.type)}</span>
     </div>`;
   }).join('');
+}
+
+/* ══ MODAL แจ้งอะไหล่ชำรุด / คืนอะไหล่ ══ */
+function openReportDamageModal(code, name, maxQty, sourceRef) {
+  const defaultQty = maxQty || 1;
+  Swal.fire({
+    title: '⚠️ แจ้งอะไหล่ชำรุด / เสีย',
+    html: `
+      <div style="text-align:left;color:#e0e0e0;font-size:13px">
+        <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:2px">${esc(name)}</div>
+        <div style="color:#a0aec0;font-size:11px;margin-bottom:10px">รหัส: ${esc(code)}</div>
+        
+        <label style="display:block;margin-bottom:4px;font-weight:600">จำนวนที่ชำรุด/ใช้ไม่ได้ <span style="color:#ef4444">*</span></label>
+        <input id="swalDamageQty" type="number" min="1" max="${defaultQty}" value="${defaultQty}" class="swal2-input" style="width:100%;margin:0 0 10px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px" oninput="if(Number(this.value)>${defaultQty})this.value=${defaultQty}; if(Number(this.value)<1 && this.value!=='')this.value=1;">
+
+        <label style="display:block;margin-bottom:4px;font-weight:600">ระบุอาการชำรุด / สาเหตุ <span style="color:#ef4444">*</span></label>
+        <textarea id="swalDamageRemark" class="swal2-textarea" rows="2" placeholder="เช่น แตกหักจากการใช้งาน, เกลียวหวาน, ใช้งานไม่ได้..." style="width:100%;margin:0 0 8px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px;padding:8px"></textarea>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: '<i class="fas fa-paper-plane me-1"></i> ยืนยันแจ้งชำรุด',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#ef4444',
+    background: '#1a2230',
+    color: '#e0e0e0',
+    preConfirm: () => {
+      const qty = Number(document.getElementById('swalDamageQty').value);
+      const remark = document.getElementById('swalDamageRemark').value.trim();
+      if (!qty || qty <= 0) { Swal.showValidationMessage('กรุณาระบุจำนวนที่ถูกต้อง'); return false; }
+      // ★ แก้บั๊กเดียวกับ openReturnItemModal: attribute max ไม่ได้บังคับจริง ต้องเช็คซ้ำก่อนส่ง
+      if (qty > defaultQty) { Swal.showValidationMessage(`แจ้งชำรุดได้ไม่เกิน ${defaultQty} ชิ้น (จำนวนที่เบิกไป/ยังไม่ได้คืน)`); return false; }
+      if (!remark) { Swal.showValidationMessage('กรุณาระบุอาการชำรุด/สาเหตุ'); return false; }
+      return { qty, remark };
+    }
+  }).then(res => {
+    if (!res.isConfirmed || !res.value) return;
+    const { qty, remark } = res.value;
+    // 🆕 ถ้ากดมาจากใบเบิกใบใดใบหนึ่งโดยเฉพาะ (มี sourceRef) ให้ฝัง [ref:xxx] ไว้ใน remark (มองไม่เห็นในหน้าจอ)
+    // เพื่อให้ backend (getUserHistory) ผูกการแจ้งชำรุดครั้งนี้กลับไปยังใบเบิกใบนั้นแบบ 1:1 แทนการหาร FIFO เฉลี่ยรวม
+    const finalRemark = 'แจ้งชำรุด: ' + remark + (sourceRef ? ` [ref:${sourceRef}]` : '');
+    const payload = [{ code, qty, type: 'แจ้งชำรุด', user: me.name, uid: me.uid, remark: finalRemark, deviceInfo: getDeviceInfoString() }];
+
+    Swal.fire({
+      title: 'กำลังส่งข้อมูล...',
+      text: 'กรุณารอสักครู่ ระบบกำลังบันทึกรายการแจ้งชำรุด',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    callGASQueued('webBatchTransaction', [payload, ''], r => {
+      Swal.fire({
+        icon: 'success',
+        title: 'แจ้งชำรุดเรียบร้อย!',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      loadMineData();
+      callGAS('getInventoryData', [], d => { allData = d; }, null);
+    }, err => {
+      // ★ แก้ไข: เดิมตรงนี้จะหลอกโชว์ว่า "สำเร็จ (Demo)" แล้วเก็บแค่ใน localStorage เครื่องนี้เครื่องเดียว
+      // ทำให้ข้อมูลไม่ไปถึง Admin จริง แต่ผู้ใช้เข้าใจผิดว่าส่งสำเร็จแล้ว (เช่นเวลาเกินจำนวนที่ backend เพิ่งเพิ่มเช็คไปก็จะถูกกลืน error ทิ้งเงียบๆ)
+      // เปลี่ยนเป็นโชว์ error จริงแทน เหมือนที่แก้ไปแล้วใน openReturnItemModal
+      Swal.fire({
+        icon: 'error',
+        title: 'แจ้งชำรุดไม่สำเร็จ',
+        text: 'เชื่อมต่อระบบหลังบ้านไม่ได้ (' + err + ') กรุณาลองใหม่อีกครั้ง หรือแจ้ง Admin ถ้ายังไม่ได้',
+        confirmButtonColor: '#ef4444',
+        background: '#1a2230',
+        color: '#e0e0e0'
+      });
+    });
+  });
+}
+
+function openReturnItemModal(code, name, maxQty, sourceRef) {
+  const defaultQty = maxQty || 1;
+  Swal.fire({
+    title: '↩️ ขอส่งคืนอะไหล่เข้าคลัง',
+    html: `
+      <div style="text-align:left;color:#e0e0e0;font-size:13px">
+        <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:2px">${esc(name)}</div>
+        <div style="color:#a0aec0;font-size:11px;margin-bottom:10px">รหัส: ${esc(code)}</div>
+        
+        <label style="display:block;margin-bottom:4px;font-weight:600">จำนวนที่ต้องการคืน <span style="color:#22c55e">*</span></label>
+        <input id="swalReturnQty" type="number" min="1" max="${defaultQty}" value="${defaultQty}" class="swal2-input" style="width:100%;margin:0 0 10px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px" oninput="if(Number(this.value)>${defaultQty})this.value=${defaultQty}; if(Number(this.value)<1 && this.value!=='')this.value=1;">
+
+        <label style="display:block;margin-bottom:4px;font-weight:600">เหตุผลการคืน / หมายเหตุ</label>
+        <textarea id="swalReturnRemark" class="swal2-textarea" rows="2" placeholder="เช่น ใช้ไม่หมด, เบิกเกิน, เบิกผิดรายการ..." style="width:100%;margin:0 0 8px 0;background:#232838;color:#fff;border:1px solid #2a2f3d;border-radius:8px;padding:8px"></textarea>
+        <div style="font-size:11px;color:#60a5fa;margin-top:4px"><i class="fas fa-info-circle me-1"></i> รายการจะถูกส่งไปให้ Admin กดอนุมัติรับคืนในหน้าหลักก่อนคืนเข้าสต็อก</div>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: '<i class="fas fa-paper-plane me-1"></i> ส่งคำขอคืนอะไหล่',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#3b82f6',
+    background: '#1a2230',
+    color: '#e0e0e0',
+    preConfirm: () => {
+      const qty = Number(document.getElementById('swalReturnQty').value);
+      const remark = document.getElementById('swalReturnRemark').value.trim();
+      if (!qty || qty <= 0) { Swal.showValidationMessage('กรุณาระบุจำนวนที่ถูกต้อง'); return false; }
+      // ★ แก้บั๊ก: attribute max="${defaultQty}" บน input เป็นแค่ hint ให้เบราว์เซอร์ ไม่ได้บังคับจริง — พิมพ์เกินจำนวนที่เบิกไปได้เฉยๆ ต้องเช็คซ้ำใน JS ก่อนส่ง
+      if (qty > defaultQty) { Swal.showValidationMessage(`คืนได้ไม่เกิน ${defaultQty} ชิ้น (จำนวนที่เบิกไป/ยังไม่ได้คืน)`); return false; }
+      return { qty, remark: remark || 'ขอคืนอะไหล่ที่เบิกไป' };
+    }
+  }).then(res => {
+    if (!res.isConfirmed || !res.value) return;
+    const { qty, remark } = res.value;
+    // 🆕 ผูกกลับไปยังใบเบิกต้นทางแบบ 1:1 ผ่าน [ref:xxx] เหมือนกับ openReportDamageModal (ดูคอมเมนต์ที่นั่น)
+    const finalRemark = 'ขอคืนอะไหล่: ' + remark + (sourceRef ? ` [ref:${sourceRef}]` : '');
+    const payload = [{ code, qty, type: 'คืน', user: me.name, uid: me.uid, remark: finalRemark, deviceInfo: getDeviceInfoString() }];
+
+    Swal.fire({
+      title: 'กำลังส่งข้อมูล...',
+      text: 'กรุณารอสักครู่ ระบบกำลังบันทึกคำขอคืนอะไหล่',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    callGASQueued('webBatchTransaction', [payload, ''], r => {
+      Swal.fire({
+        icon: 'success',
+        title: 'ส่งคำขอคืนแล้ว!',
+        text: 'ส่งเรื่องขอคืนอะไหล่เรียบร้อยแล้ว รอ Admin กดอนุมัติรับคืนในระบบใหญ่ครับ',
+        confirmButtonColor: '#3b82f6',
+        background: '#1a2230',
+        color: '#e0e0e0'
+      });
+      loadMineData();
+      loadMineApproval();
+    }, err => {
+      // ★ แก้ไข: เดิมตรงนี้จะหลอกโชว์ว่า "สำเร็จ (Demo)" แล้วเก็บแค่ใน localStorage เครื่องนี้เครื่องเดียว
+      // ทำให้ข้อมูลไม่ไปถึง Admin จริง แต่ผู้ใช้เข้าใจผิดว่าส่งสำเร็จแล้ว — เปลี่ยนเป็นโชว์ error จริงแทน
+      Swal.fire({
+        icon: 'error',
+        title: 'ส่งคำขอคืนไม่สำเร็จ',
+        text: 'เชื่อมต่อระบบหลังบ้านไม่ได้ (' + err + ') กรุณาลองใหม่อีกครั้ง หรือแจ้ง Admin ถ้ายังไม่ได้',
+        confirmButtonColor: '#ef4444',
+        background: '#1a2230',
+        color: '#e0e0e0'
+      });
+    });
+  });
 }
 
 function renderMineBorrows() {
@@ -3348,8 +4117,8 @@ function renderMineBorrows() {
     const color = isOverdue ? '#f87171' : '#fbbf24';
     const badgeText = isOverdue ? `⚠️ เกิน ${days} วัน` : `${days} วันที่แล้ว`;
     const imgHtml = b.imageUrl
-      ? `<img src="${esc(b.imageUrl)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
-      : `<div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">🔧</div>`;
+      ? `<img src="${esc(b.imageUrl)}" style="width:64px;height:64px;border-radius:10px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.1)" onerror="this.style.display='none'">`
+      : `<div style="width:64px;height:64px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">🔧</div>`;
     return `<div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.04);border:1px solid ${isOverdue?'rgba(248,113,113,.3)':'rgba(255,255,255,.08)'};border-radius:14px;margin-bottom:8px${isOverdue?';box-shadow:0 0 0 1px rgba(248,113,113,.15)':''}">
       ${imgHtml}
       <div style="flex:1;min-width:0">
@@ -3406,39 +4175,12 @@ function getFullImgUrl(url) {
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
-function demoData() {
-  return {
-    items: [
-      {code:'BL-001',name:'สายยางอุตสาหกรรม 1/2"',category:'ระบบน้ำ',unit:'เมตร',stock:48,min:10},
-      {code:'EL-012',name:'สายไฟ VAF 2×1.5',category:'ไฟฟ้า',unit:'เมตร',stock:5,min:10},
-      {code:'ME-041',name:'สายพาน V-Belt B62',category:'เครื่องจักร',unit:'เส้น',stock:0,min:5},
-      {code:'PN-007',name:'น็อต M8×30',category:'ของเบ็ดเตล็ด',unit:'ตัว',stock:200,min:50},
-      {code:'OL-003',name:'น้ำมันหล่อลื่น 68',category:'น้ำมัน',unit:'ลิตร',stock:12,min:5},
-      {code:'FL-009',name:'ฟิลเตอร์อากาศ',category:'ระบบลม',unit:'อัน',stock:3,min:4},
-    ],
-    tools: [
-      {code:'TL-001',name:'ประแจปากตาย 13',category:'เครื่องมือ',unit:'อัน',stock:3,min:1},
-      {code:'TL-002',name:'สว่านไฟฟ้า Bosch',category:'เครื่องมือไฟฟ้า',unit:'เครื่อง',stock:2,min:1},
-      {code:'TL-003',name:'ไขควงชุด 6 ชิ้น',category:'เครื่องมือ',unit:'ชุด',stock:5,min:2},
-    ],
-    activeBorrows: [
-      {reqId:'BW001',itemCode:'TL-001',itemName:'ประแจปากตาย 13',qty:1,borrower:'สมชาย',date:'01/06/68'},
-    ],
-    users: [
-      {userId:'u001',name:'สมชาย ใจดี',role:'user'},
-      {userId:'u002',name:'วิชัย เก่งงาน',role:'staff'},
-      {userId:'u_admin',name:'Admin',role:'admin'},
-      {userId:'u_qr',name:'QR Station',role:'qr'},
-    ],
-    settings: {}
-  };
-}
-
 /* ══ SIGNATURE PAD LOGIC ══ */
 let sigCanvas, sigCtx;
 let isDrawing = false;
 let sigMode = 'withdraw';
 let isCanvasClean = true;
+let savedSignatureDataURL = null; // เก็บลายเซ็นไว้กันหาย ถ้ามือไปโดนพื้นหลังจนโมดัลปิดโดยไม่ตั้งใจ ระหว่างเปิดใหม่จะวาดคืนให้แทนการล้างทิ้ง
 
 function initSignaturePad() {
   sigCanvas = document.getElementById('sigCanvas');
@@ -3456,7 +4198,19 @@ function initSignaturePad() {
   sigCtx.lineCap = 'round';
   sigCtx.lineJoin = 'round';
 
-  clearSignatureCanvas();
+  if (savedSignatureDataURL) {
+    // มีลายเซ็นเดิมค้างอยู่ (ยังไม่ได้กด "เขียนใหม่") → วาดคืนแทนการล้าง
+    const img = new Image();
+    img.onload = () => {
+      sigCtx.fillStyle = '#ffffff';
+      sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+      sigCtx.drawImage(img, 0, 0, sigCanvas.width / ratio, sigCanvas.height / ratio);
+    };
+    img.src = savedSignatureDataURL;
+    isCanvasClean = false;
+  } else {
+    clearSignatureCanvas();
+  }
 
   // เหตุการณ์เมาส์
   sigCanvas.removeEventListener('mousedown', startDrawing);
@@ -3514,7 +4268,10 @@ function draw(e) {
 }
 
 function stopDrawing() {
-  isDrawing = false;
+  if (isDrawing) {
+    isDrawing = false;
+    try { savedSignatureDataURL = sigCanvas.toDataURL('image/png'); } catch (e) {}
+  }
 }
 
 function drawSignatureWatermark() {
@@ -3537,6 +4294,7 @@ function clearSignatureCanvas() {
   sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
   drawSignatureWatermark();
   isCanvasClean = true;
+  savedSignatureDataURL = null; // กด "เขียนใหม่" คือความตั้งใจล้างจริง ๆ เท่านั้นที่ล้างลายเซ็นที่เก็บไว้
 }
 
 function openSignatureModal(mode) {
@@ -3562,10 +4320,7 @@ function openSignatureModal(mode) {
     }).join('');
   }
   document.getElementById('signatureModal').classList.add('open');
-  // เริ่มต้น canvas เฉพาะตอนที่ยังไม่มีลายเซ็น — ถ้ามีลายเซ็นอยู่แล้วจะคงไว้จนกว่าผู้ใช้กด "เขียนใหม่" เอง
-  if (!sigCanvas || !sigCtx || isCanvasClean) {
-    setTimeout(initSignaturePad, 200);
-  }
+  setTimeout(initSignaturePad, 200);
 }
 
 function closeSignatureModal() {
@@ -3573,7 +4328,7 @@ function closeSignatureModal() {
 }
 
 /* ══ HISTORY SLIP MODAL LOGIC ══ */
-function openHistorySlip(itemName, itemCode, qty, unit, date, type, remark, imageUrl, signatureUrl) {
+function openHistorySlip(itemName, itemCode, qty, unit, date, type, remark, imageUrl, signatureUrl, remainingQty, canReturnParam, returnedQty, damagedQty, totalWithdrawnQty, sourceTs) {
   document.getElementById('hsItemName').textContent = itemName;
   document.getElementById('hsItemCode').textContent = itemCode;
   document.getElementById('hsQty').textContent = qty + ' ' + unit;
@@ -3603,6 +4358,59 @@ function openHistorySlip(itemName, itemCode, qty, unit, date, type, remark, imag
     sigContainer.innerHTML = `<span style="font-style: italic; color: #94a3b8; font-size: 12px;">ไม่มีลายเซ็น</span>`;
   }
   
+  // ★ ปรับปรุง: ใช้ canReturn ที่คำนวณฝั่ง server (เช็คทั้งยอดคงเหลือ + เกิน 7 วันหรือยัง) แทน remainingQty เฉยๆ
+  // และแสดง breakdown คืนแล้ว/แจ้งชำรุดแล้วกี่ชิ้น เหมือนกับใน list การ์ดด้านนอก ให้สอดคล้องกัน
+  const actionBtns = document.getElementById('hsActionBtns');
+  const alreadyDoneMsg = document.getElementById('hsAlreadyDoneMsg');
+  const breakdownEl = document.getElementById('hsBreakdown');
+  const hasRemaining = (remainingQty === null || remainingQty === undefined) ? true : remainingQty > 0;
+  const canReturn = (canReturnParam === null || canReturnParam === undefined) ? hasRemaining : canReturnParam;
+  const isExpired = hasRemaining && !canReturn;
+  const maxQty = (remainingQty !== null && remainingQty !== undefined) ? Math.min(Number(qty), remainingQty) : Number(qty);
+
+  if (breakdownEl) {
+    const parts = [];
+    if (returnedQty > 0) parts.push(`คืนแล้ว ${returnedQty}`);
+    if (damagedQty > 0) parts.push(`แจ้งชำรุด ${damagedQty}`);
+    if (parts.length) {
+      breakdownEl.style.display = 'block';
+      breakdownEl.textContent = `เบิกทั้งหมด ${totalWithdrawnQty || qty} • ${parts.join(' • ')}${hasRemaining ? ' • เหลือ ' + remainingQty : ''}`;
+    } else {
+      breakdownEl.style.display = 'none';
+    }
+  }
+
+  if (actionBtns) {
+    if (type === 'เบิก' && canReturn) {
+      actionBtns.style.display = 'flex';
+      if (alreadyDoneMsg) alreadyDoneMsg.style.display = 'none';
+      document.getElementById('hsBtnReturn').onclick = function() {
+        closeHistorySlipModal();
+        openReturnItemModal(itemCode, itemName, maxQty, sourceTs);
+      };
+      document.getElementById('hsBtnDamage').onclick = function() {
+        closeHistorySlipModal();
+        openReportDamageModal(itemCode, itemName, maxQty, sourceTs);
+      };
+    } else if (type === 'เบิก' && isExpired) {
+      actionBtns.style.display = 'none';
+      if (alreadyDoneMsg) {
+        alreadyDoneMsg.style.display = 'block';
+        alreadyDoneMsg.innerHTML = '<span style="background:rgba(148,163,184,.12);color:#94a3b8;border:1px solid rgba(148,163,184,.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;display:inline-block"><i class="fas fa-clock me-1"></i> เกิน 7 วัน ไม่สามารถคืน/แจ้งชำรุดได้แล้ว</span>';
+      }
+    } else if (type === 'เบิก' && !hasRemaining) {
+      actionBtns.style.display = 'none';
+      if (alreadyDoneMsg) {
+        alreadyDoneMsg.style.display = 'block';
+        const label = damagedQty > 0 && returnedQty === 0 ? 'แจ้งชำรุดครบแล้ว' : returnedQty > 0 && damagedQty === 0 ? 'คืนเข้าคลังครบแล้ว' : 'คืน/แจ้งชำรุดครบแล้ว';
+        alreadyDoneMsg.innerHTML = `<span style="background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;display:inline-block"><i class="fas fa-check-circle me-1"></i> ${label}</span>`;
+      }
+    } else {
+      actionBtns.style.display = 'none';
+      if (alreadyDoneMsg) alreadyDoneMsg.style.display = 'none';
+    }
+  }
+
   document.getElementById('historySlipModal').classList.add('open');
 }
 
@@ -3628,6 +4436,27 @@ function submitCartWithSignature() {
   
   closeSignatureModal();
   executeSubmitCart(sigMode, base64);
+}
+
+document.addEventListener('input', e => {
+  if (e.target && e.target.id && e.target.id.startsWith('ni')) {
+    try { sessionStorage.setItem('form_' + e.target.id, e.target.value); } catch(err) {}
+  }
+});
+document.addEventListener('change', e => {
+  if (e.target && e.target.id && e.target.id.startsWith('ni')) {
+    try { sessionStorage.setItem('form_' + e.target.id, e.target.value); } catch(err) {}
+  }
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./service-worker.js').then(function(reg) {
+      console.log('PWA ServiceWorker registered');
+    }).catch(function(err) {
+      console.log('PWA ServiceWorker registration failed: ', err);
+    });
+  });
 }
 </script>
 </body>
